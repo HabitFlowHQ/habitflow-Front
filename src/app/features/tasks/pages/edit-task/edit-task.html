@@ -1,0 +1,57 @@
+<div class="edit-task-page">
+
+  <div *ngIf="isLoadingTask">Loading...</div>
+
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <form *ngIf="!isLoadingTask" (ngSubmit)="onSubmit()">
+    <h1>Edit Task</h1>
+
+    <div class="form-group">
+      <label>Title *</label>
+      <input type="text"
+             [(ngModel)]="formData.title"
+             name="title"
+             required />
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea [(ngModel)]="formData.description"
+                name="description"
+                rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Priority</label>
+      <select [(ngModel)]="formData.priority" name="priority">
+        <option [value]="TaskPriority.Low">🟢 Low</option>
+        <option [value]="TaskPriority.Medium">🟡 Medium</option>
+        <option [value]="TaskPriority.High">🔴 High</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Due Date</label>
+      <input type="date"
+             [(ngModel)]="formData.dueDate"
+             name="dueDate" />
+    </div>
+
+    <div class="form-group">
+      <label>Estimated Time (minutes)</label>
+      <input type="number"
+             [(ngModel)]="formData.estimatedMinutes"
+             name="estimatedMinutes"
+             min="1" />
+    </div>
+
+    <div class="form-actions">
+      <button type="button" (click)="onCancel()">Cancel</button>
+      <button type="submit" [disabled]="isSaving">
+        {{ isSaving ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,89 @@
+<div class="task-detail-page">
+
+  <div *ngIf="isLoading">Loading...</div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="error">⚠️ {{ errorMessage }}</div>
+
+  <div *ngIf="task" class="task-detail">
+
+    <div class="detail-header">
+      <h1>{{ task.title }}</h1>
+
+      <a [routerLink]="['/tasks', task.id, 'edit']">edit</a>
+    </div>
+
+    <div class="detail-info">
+      <p *ngIf="task.description">{{ task.description }}</p>
+
+      <div class="meta-grid">
+        <div>
+          <span>Status</span>
+          <span [class]="'status-' + task.status">
+            {{ task.status === TaskStatus.Pending    ? 'Pending' :
+               task.status === TaskStatus.InProgress ? 'In Progress' : 'Completed' }}
+          </span>
+        </div>
+
+        <div>
+          <span>Priority</span>
+          <span>
+            {{ task.priority === TaskPriority.Low    ? 'Low' :
+               task.priority === TaskPriority.Medium ? 'Medium' : 'High' }}
+          </span>
+        </div>
+
+        <div *ngIf="task.dueDate">
+          <span>Due Date</span>
+
+          <span>{{ task.dueDate | date:'yyyy-MM-dd' }}</span>
+        </div>
+
+        <div>
+          <span>Estimated Time</span>
+          <span>{{ task.estimatedMinutes }} minutes</span>
+        </div>
+
+        <div *ngIf="task.actualMinutes > 0">
+          <span>Actual Time</span>
+          <span>{{ task.actualMinutes }} minutes </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-actions">
+
+      <button *ngIf="task.status === TaskStatus.Pending"
+              (click)="startTask()">
+Task start
+            </button>
+
+      <button *ngIf="task.status === TaskStatus.InProgress"
+              (click)="showCompleteForm = true">
+         Complete Task
+      </button>
+
+      <div *ngIf="showCompleteForm" class="complete-form">
+        <label>How many minutes did it take?</label>
+        <input type="number"
+               [(ngModel)]="actualMinutes"
+               min="1"
+               placeholder="مثال: 45" />
+        <button (click)="completeTask()">Confirm</button>
+
+        <button (click)="showCompleteForm = false">Cancel</button>
+      </div>
+
+      <button (click)="deleteTask()" class="btn-danger">Delete</button>
+
+    </div>
+
+    <div class="task-logs" *ngIf="task.logs && task.logs.length > 0">
+      <h3>📋 Task Logs</h3>
+
+
+    </div>
+
+  </div>
+
+</div>

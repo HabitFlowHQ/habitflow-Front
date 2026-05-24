@@ -1,0 +1,67 @@
+
+<div class="create-task-page">
+  <h1>➕ new task</h1>
+
+  <form (ngSubmit)="onSubmit()">
+
+    <div class="form-group">
+      <label>title</label>
+
+      <input type="text"
+             [(ngModel)]="formData.title"
+             name="title"
+             placeholder="what is the task?"
+             required />
+    </div>
+
+    <div class="form-group">
+      <label>description</label>
+      <textarea [(ngModel)]="formData.description"
+                name="description"
+                placeholder="any details about the task?"
+                rows="3"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>priority</label>
+      <select [(ngModel)]="formData.priority" name="priority">
+        <option [value]="TaskPriority.Low"> Low (+10 XP)</option>
+        <option [value]="TaskPriority.Medium"> Medium (+20 XP)</option>
+        <option [value]="TaskPriority.High"> High (+30 XP)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>due date </label>
+      <input type="date"
+             [(ngModel)]="formData.dueDate"
+             name="dueDate" />
+    </div>
+
+    <div class="form-group">
+      <label>estimated time (minutes)</label>
+      <input type="number"
+             [(ngModel)]="formData.estimatedMinutes"
+             name="estimatedMinutes"
+             min="1"
+             max="1440" />
+    </div>
+
+    <div *ngIf="errorMessage" class="error-message">
+      ⚠️ {{ errorMessage }}
+    </div>
+
+    <div class="form-actions">
+      <button type="button"
+              (click)="onCancel()">
+        Cancel
+      </button>
+
+      <button type="submit"
+              [disabled]="isLoading">
+        {{ isLoading ? ' Saving...' : ' Save Task' }}
+      </button>
+    </div>
+
+  </form>
+</div>

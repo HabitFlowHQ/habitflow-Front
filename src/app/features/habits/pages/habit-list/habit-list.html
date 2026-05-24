@@ -1,0 +1,8 @@
+<div *ngFor="let habit of habits">
+  <app-habit-card
+    [habit]="habit"
+    (onComplete)="completeHabit($event)"
+    (onDelete)="deleteHabit($event)">
+  </app-habit-card>
+</div>
+
