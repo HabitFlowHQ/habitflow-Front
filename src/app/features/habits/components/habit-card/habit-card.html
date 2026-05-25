@@ -1,6 +1,15 @@
 <div class="card">
-  <h3>{{ habit.title }}</h3>
-  <p>🔥 {{ habit.currentStreak }} Days</p>
-  <button (click)="complete()">Completed</button>
-  <button (click)="delete()"> Delete</button>
+  <div class="card-header">
+    <span class="card-icon" *ngIf="habit.icon">{{ habit.icon }}</span>
+    <h3>{{ habit.title }}</h3>
+  </div>
+  <p class="card-desc" *ngIf="habit.description">{{ habit.description }}</p>
+  <div class="card-meta">
+    <span class="streak">🔥 {{ habit.currentStreak }} Days Streak</span>
+    <span class="category">📂 {{ habit.category }}</span>
+  </div>
+  <div class="card-actions">
+    <button class="btn-complete" (click)="complete()">✅ Complete</button>
+    <button class="btn-delete" (click)="delete()">🗑 Delete</button>
+  </div>
 </div>

@@ -1,42 +1,42 @@
+
 import { Routes } from '@angular/router';
 
-// -Habit Page
+import { Layout }      from './shared/components/layout/layout';
 import { HabitList }   from './features/habits/pages/habit-list/habit-list';
 import { HabitDetail } from './features/habits/pages/habit-detail/habit-detail';
 import { CreateHabit } from './features/habits/pages/create-habit/create-habit';
 import { EditHabit }   from './features/habits/pages/edit-habit/edit-habit';
+import { TaskList }    from './features/tasks/pages/task-list/task-list';
+import { TaskDetail }  from './features/tasks/pages/task-detail/task-detail';
+import { CreateTask }  from './features/tasks/pages/create-task/create-task';
+import { EditTask }    from './features/tasks/pages/edit-task/edit-task';
 
-// -Task Page
-import { TaskList }   from './features/tasks/pages/task-list/task-list';
-import { TaskDetail } from './features/tasks/pages/task-detail/task-detail';
-import { CreateTask } from './features/tasks/pages/create-task/create-task';
-import { EditTask }   from './features/tasks/pages/edit-task/edit-task';
+import { Login }    from './features/auth/pages/login/login';
+import { Register } from './features/auth/pages/register/register';
+import { authGuard } from './core/guards/auth.guard.ts';
 
 export const routes: Routes = [
 
-  {path: '', redirectTo: 'habits', pathMatch: 'full'},
+  { path: 'login',    component: Login    },
+  { path: 'register', component: Register },
 
-  // -Habit Routes
+  {
+    path: '',
+    component: Layout,
+    canActivate: [authGuard],
+    children: [
+      { path: '',                redirectTo: 'habits', pathMatch: 'full' },
+      { path: 'habits',          component: HabitList   },
+      { path: 'habits/create',   component: CreateHabit },
+      { path: 'habits/:id',      component: HabitDetail },
+      { path: 'habits/:id/edit', component: EditHabit   },
+      { path: 'tasks',           component: TaskList    },
+      { path: 'tasks/create',    component: CreateTask  },
+      { path: 'tasks/:id',       component: TaskDetail  },
+      { path: 'tasks/:id/edit',  component: EditTask    },
+    ]
+  },
 
-  {path : 'habits',component : HabitList}
-
-
-  {path : 'habits/create', component : CreateHabit},
-
-  {path: 'habits/:id',         component: HabitDetail },
-
-  {path: 'habits/:id/edit',    component: EditHabit   },
-
-  // -Task Routes
-
-  { path: 'tasks',              component: TaskList    },
-  { path: 'tasks/create',       component: CreateTask  },
-  { path: 'tasks/:id',          component: TaskDetail  },
-  { path: 'tasks/:id/edit',     component: EditTask    },
-
-
-  //
-  // { path: '**', redirectTo: '' }
-
+  { path: '**', redirectTo: 'login' }
 
 ];

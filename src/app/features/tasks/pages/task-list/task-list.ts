@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule }  from '@angular/common';
 import { RouterLink }    from '@angular/router';
 import { Subscription }  from 'rxjs';
-import { TaskService }   from '../../../core/services/task.service';
+import { TaskService }   from '../../../../core/services/task.service';
 
 import { Task, TaskStatus, TaskPriority } from '../../../../shared/models/task.model';
 
@@ -71,8 +71,8 @@ export class TaskList implements OnInit, OnDestroy {
 
   startTask(id: number): void {
     this.taskService.startTask(id).subscribe({
-      next: (error: any) => {
-        console.log(error.message);
+      next: (res: { message: string }) => {
+        console.log(res.message);
 
         const task = this.tasks.find(t => t.id === id);
         if (task) task.status = TaskStatus.InProgress;
