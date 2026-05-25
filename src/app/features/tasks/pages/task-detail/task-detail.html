@@ -80,8 +80,13 @@ Task start
 
     <div class="task-logs" *ngIf="task.logs && task.logs.length > 0">
       <h3>📋 Task Logs</h3>
-
-
+      <ul class="logs-list">
+        <li *ngFor="let log of task.logs" class="log-item">
+          <span class="log-action">{{ getActionLabel(log.actionType) }}</span>
+          <span class="log-date">{{ log.actionDate | date:'yyyy-MM-dd HH:mm' }}</span>
+          <span class="log-notes" *ngIf="log.notes">— {{ log.notes }}</span>
+        </li>
+      </ul>
     </div>
 
   </div>

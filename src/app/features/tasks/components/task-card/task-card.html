@@ -1,1 +1,32 @@
-<p>task-card works!</p>
+<div class="task-card">
+  <div class="task-card-header">
+    <span class="task-priority priority-{{ task.priority }}">
+      {{ task.priority === TaskPriority.High ? '🔴 High' :
+         task.priority === TaskPriority.Medium ? '🟡 Medium' : '🟢 Low' }}
+    </span>
+    <span class="task-status status-{{ task.status }}">
+      {{ task.status === TaskStatus.Pending    ? 'Pending' :
+         task.status === TaskStatus.InProgress ? 'In Progress' : 'Completed' }}
+    </span>
+  </div>
+
+  <h3 class="task-title">
+    <a [routerLink]="['/tasks', task.id]">{{ task.title }}</a>
+  </h3>
+
+  <div class="task-meta">
+    <span *ngIf="task.dueDate">📅 {{ task.dueDate | date:'yyyy-MM-dd' }}</span>
+    <span>⏱ {{ task.estimatedMinutes }} min</span>
+  </div>
+
+  <div class="task-actions">
+    <button
+      *ngIf="task.status === TaskStatus.Pending"
+      class="btn-start"
+      (click)="start()">
+      ▶ Start
+    </button>
+    <a class="btn-edit" [routerLink]="['/tasks', task.id, 'edit']">✏ Edit</a>
+    <button class="btn-delete" (click)="delete()">🗑 Delete</button>
+  </div>
+</div>

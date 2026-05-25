@@ -1,1 +1,47 @@
-<p>habit-detail works!</p>
+<div class="habit-detail-page">
+
+  <div *ngIf="isLoading">Loading habit...</div>
+  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+
+  <div *ngIf="habit" class="habit-detail">
+
+    <div class="detail-header">
+      <span class="habit-icon" *ngIf="habit.icon">{{ habit.icon }}</span>
+      <h1>{{ habit.title }}</h1>
+      <a [routerLink]="['/habits', habit.id, 'edit']" class="btn-edit">✏ Edit</a>
+    </div>
+
+    <p *ngIf="habit.description" class="habit-desc">{{ habit.description }}</p>
+
+    <div class="habit-meta">
+      <div>
+        <span>Category</span>
+        <span>{{ habit.category }}</span>
+      </div>
+      <div>
+        <span>Frequency</span>
+        <span>{{ habit.frequencyType === 0 ? 'Daily' : 'Weekly' }}</span>
+      </div>
+      <div>
+        <span>Target Count</span>
+        <span>{{ habit.targetCount }}</span>
+      </div>
+      <div>
+        <span>🔥 Current Streak</span>
+        <span>{{ habit.currentStreak }} days</span>
+      </div>
+      <div>
+        <span>🏆 Longest Streak</span>
+        <span>{{ habit.longestStreak }} days</span>
+      </div>
+    </div>
+
+    <div class="detail-actions">
+      <button class="btn-complete" (click)="completeHabit()">✅ Mark Complete</button>
+      <button class="btn-delete" (click)="deleteHabit()">🗑 Delete</button>
+      <a class="btn-back" [routerLink]="['/habits']">← Back to Habits</a>
+    </div>
+
+  </div>
+
+</div>

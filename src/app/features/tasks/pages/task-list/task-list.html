@@ -1,1 +1,60 @@
-<p>task-list works!</p>
+<div class="task-list-page">
+
+  <div class="page-header">
+    <h1>📋 My Tasks</h1>
+    <a class="btn-primary" [routerLink]="['/tasks/create']">+ New Task</a>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-indicator">Loading tasks...</div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && tasks.length === 0 && !errorMessage" class="empty-state">
+    <p>No tasks yet. Create your first task!</p>
+    <a class="btn-primary" [routerLink]="['/tasks/create']">+ Create Task</a>
+  </div>
+
+  <!-- Task cards -->
+  <div class="task-grid" *ngIf="tasks.length > 0">
+    <div class="task-card" *ngFor="let task of tasks">
+
+      <div class="task-card-header">
+        <span class="task-priority priority-{{ task.priority }}">
+          {{ task.priority === TaskPriority.High ? '🔴 High' :
+             task.priority === TaskPriority.Medium ? '🟡 Medium' : '🟢 Low' }}
+        </span>
+        <span class="task-status status-{{ task.status }}">
+          {{ task.status === TaskStatus.Pending    ? 'Pending' :
+             task.status === TaskStatus.InProgress ? 'In Progress' : 'Completed' }}
+        </span>
+      </div>
+
+      <h3 class="task-title">
+        <a [routerLink]="['/tasks', task.id]">{{ task.title }}</a>
+      </h3>
+
+      <div class="task-meta">
+        <span *ngIf="task.dueDate">📅 {{ task.dueDate | date:'yyyy-MM-dd' }}</span>
+        <span>⏱ {{ task.estimatedMinutes }} min</span>
+      </div>
+
+      <div class="task-actions">
+        <button
+          *ngIf="task.status === TaskStatus.Pending"
+          class="btn-start"
+          (click)="startTask(task.id)">
+          ▶ Start
+        </button>
+
+        <a class="btn-edit" [routerLink]="['/tasks', task.id, 'edit']">✏ Edit</a>
+
+        <button class="btn-delete" (click)="deleteTask(task.id)">🗑 Delete</button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

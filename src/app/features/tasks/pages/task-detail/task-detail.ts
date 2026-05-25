@@ -107,7 +107,6 @@ export class TaskDetail implements OnInit {
     });
   }
 
-  ─
   deleteTask(): void {
     if (!this.task) return;
     if (!confirm('Are you sure you want to delete this task?')) return;
@@ -116,6 +115,15 @@ export class TaskDetail implements OnInit {
       next: () => this.router.navigate(['/tasks']),
       error: (err) => console.error(err)
     });
+  }
+  getActionLabel(actionType: number): string {
+    switch (actionType) {
+      case this.TaskActionType.Created:   return '✅ Created';
+      case this.TaskActionType.Updated:   return '✏️ Updated';
+      case this.TaskActionType.Started:   return '▶️ Started';
+      case this.TaskActionType.Completed: return '🏁 Completed';
+      default: return 'Unknown';
+    }
   }
 
 

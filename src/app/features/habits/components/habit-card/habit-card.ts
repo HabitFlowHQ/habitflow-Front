@@ -1,27 +1,27 @@
-import { Component, EventEmitter, input, output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Habit } from '../../../../shared/models/habit.model';
 
 @Component({
   selector: 'app-habit-card',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './habit-card.html',
   styleUrl: './habit-card.scss',
 })
 export class HabitCard {
 
-  @input() habit!: Habit;
+  @Input() habit!: Habit;
 
-  @output() onComplete = new EventEmitter<number>();
+  @Output() onComplete = new EventEmitter<number>();
 
-  @output() onDelete = new EventEmitter<number>();
+  @Output() onDelete = new EventEmitter<number>();
 
-  complete(){
+  complete() {
     this.onComplete.emit(this.habit.id);
   }
 
-  delete(){
+  delete() {
     this.onDelete.emit(this.habit.id);
   }
-
 }
-
