@@ -1,7 +1,13 @@
 <nav class="navbar">
   <a class="navbar-brand" [routerLink]="['/habits']">⚡ LevelUP</a>
+
   <div class="navbar-links">
     <a [routerLink]="['/habits']" routerLinkActive="active">🎯 Habits</a>
     <a [routerLink]="['/tasks']"  routerLinkActive="active">📋 Tasks</a>
+  </div>
+
+  <div class="navbar-user">
+    <span>👤 {{ authService.getUserName() }}</span>
+    <button (click)="authService.logout()">Logout</button>
   </div>
 </nav>

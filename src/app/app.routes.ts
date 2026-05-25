@@ -13,7 +13,7 @@ import { EditTask }    from './features/tasks/pages/edit-task/edit-task';
 
 import { Login }    from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
-import { authGuard } from './core/guards/auth.guard.ts';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
 

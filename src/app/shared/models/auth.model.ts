@@ -10,7 +10,7 @@ export interface LoginDto {
 }
 
 export interface AuthResponse {
-  token?:   string;   cd
+  token?:   string;
   userName: string;
   email:    string;
 }
