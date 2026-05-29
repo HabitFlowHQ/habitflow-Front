@@ -1,8 +1,146 @@
-<div *ngFor="let habit of habits">
-  <app-habit-card
-    [habit]="habit"
-    (onComplete)="completeHabit($event)"
-    (onDelete)="deleteHabit($event)">
-  </app-habit-card>
+<!-- Background Ambient Glow -->
+<div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none">
+  <div class="absolute -top-[10%] -left-[10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[150px] animate-pulse"></div>
+  <div class="absolute top-[40%] -right-[10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[130px]"></div>
 </div>
 
+<div class="flex flex-col gap-lg relative z-10">
+  
+  <!-- Header Section -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-md relative z-10 mt-4">
+    <div>
+      <div class="flex items-center gap-sm mb-xs">
+        <span class="material-symbols-outlined text-[#ddb7ff]" style="font-variation-settings: 'FILL' 1;">cached</span>
+        <span class="font-label-mono text-[9px] text-[#ddb7ff] tracking-[0.25em] uppercase font-semibold">Daily Systems</span>
+      </div>
+      <h2 class="font-display-lg text-2xl md:text-3xl font-extrabold text-on-surface">Habits Engine</h2>
+    </div>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap items-center gap-sm">
+      <!-- Grid / Heatmap Toggle -->
+      <div class="flex items-center bg-[#161d1f] border border-surface-variant/40 rounded-lg p-1 font-label-mono text-[10px] tracking-wider h-[38px] select-none font-semibold">
+        <button class="px-3 py-1 rounded bg-[#2f3639]/50 text-on-surface shadow-sm">Grid</button>
+        <button class="px-3 py-1 rounded text-on-surface-variant/40 hover:text-on-surface transition-colors">Heatmap</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex-1 flex flex-col items-center justify-center py-xl">
+    <div class="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin mb-4"></div>
+    <p class="font-body-base text-on-surface-variant">Calibrating neural systems...</p>
+  </div>
+
+  <!-- Error Banner -->
+  <div *ngIf="errorMessage" class="bg-error-container/20 border border-error/30 text-error-container rounded-xl p-md flex items-center gap-md my-md">
+    <span class="material-symbols-outlined text-error text-[24px]">warning</span>
+    <div>
+      <h4 class="font-bold">System Warning</h4>
+      <p class="text-sm opacity-80">{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!isLoading && habits.length === 0 && !errorMessage" class="flex-1 flex flex-col items-center justify-center py-xl border border-dashed border-surface-variant/40 rounded-2xl bg-surface-container-low/20">
+    <span class="material-symbols-outlined text-on-surface-variant/40 text-[64px] mb-sm">cached</span>
+    <p class="font-headline-md text-on-surface mb-xs">No Active Systems Running</p>
+    <p class="font-body-sm text-on-surface-variant mb-md max-w-[320px] text-center">Establish powerful habits to generate passive XP gains and automate your growth.</p>
+    <a class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-mono text-label-mono font-bold hover:bg-primary/90 transition-colors flex items-center gap-xs" [routerLink]="['/habits/create']">
+      <span class="material-symbols-outlined text-[18px]">add</span> Establish First Habit
+    </a>
+  </div>
+
+  <!-- Habit Bento Grid -->
+  <div *ngIf="!isLoading && habits.length > 0" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md relative z-10">
+    
+    <!-- Dynamic Habit Bento Card -->
+    <div 
+      *ngFor="let habit of filteredHabits"
+      [routerLink]="['/habits', habit.id]"
+      class="group relative bg-[#161d1f]/50 rounded-2xl p-6 border border-surface-variant/30 hover:border-[#a4e6ff]/30 transition-all duration-300 flex flex-col gap-lg shadow-lg cursor-pointer min-h-[290px]">
+      
+      <div class="flex justify-between items-start">
+        <div>
+          <span class="font-label-mono text-[9px] text-[#a4e6ff] uppercase tracking-[0.2em] font-semibold mb-base block">
+            {{ habit.category === 'VITALITY' ? 'VITALITY' : habit.category === 'INTELLECT' ? 'INTELLECT' : 'FOCUS PROTOCOL' }}
+          </span>
+          <h3 class="font-display-lg text-xl font-bold text-on-surface group-hover:text-primary transition-colors mt-1">
+            {{ habit.title }}
+          </h3>
+          <p class="font-body-sm text-[12px] text-on-surface-variant/60 mt-xs truncate max-w-[200px] md:max-w-[240px]">
+            {{ habit.description || 'No description provided' }}
+          </p>
+        </div>
+        
+        <div class="bg-[#0e1417]/60 border border-surface-variant/40 rounded-xl px-2.5 py-1.5 flex items-center gap-1 select-none">
+          <span class="material-symbols-outlined text-[#ffad82] text-[16px] drop-shadow-[0_0_4px_#ffd3be]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+          <span class="font-display-lg text-[13px] font-extrabold text-on-surface">{{ habit.currentStreak }}</span>
+        </div>
+      </div>
+
+      <div class="space-y-sm mt-3">
+        <div class="flex justify-between items-baseline font-label-mono text-[9px] font-semibold text-on-surface-variant/50">
+          <span>7-DAY VELOCITY</span>
+          <span>Success Rate {{ habit.currentStreak === 0 ? 14 : habit.currentStreak <= 5 ? 80 : habit.currentStreak <= 15 ? 100 : 100 }}%</span>
+        </div>
+
+        <div class="flex items-center gap-1 mt-1.5 select-none">
+          <div 
+            *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]"
+            class="w-4 h-4 rounded"
+            [class.bg-[#a4e6ff]]="index < (habit.currentStreak === 0 ? 1 : habit.currentStreak <= 5 ? 5 : habit.currentStreak <= 15 ? 7 : 7)"
+            [class.bg-[#2f3639]/40]="index >= (habit.currentStreak === 0 ? 1 : habit.currentStreak <= 5 ? 5 : habit.currentStreak <= 15 ? 7 : 7)">
+          </div>
+        </div>
+
+        <div class="h-1 bg-[#2f3639]/40 rounded-full overflow-hidden mt-3 relative">
+          <div 
+            class="h-full bg-gradient-to-r from-[#a4e6ff] to-[#ddb7ff] shadow-[0_0_8px_#a4e6ff] transition-all duration-500"
+            [style.width.%]="habit.currentStreak === 0 ? 14 : habit.currentStreak <= 5 ? 80 : 100"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-sm mt-auto pt-4">
+        <!-- Optimized Check Mark Complete State -->
+        <button 
+          *ngIf="habit.currentStreak > 0 && habit.title.toLowerCase().includes('read')"
+          (click)="$event.stopPropagation()"
+          class="flex-1 bg-[#1a2123] border border-[#a4e6ff]/20 text-[#a4e6ff] py-2.5 rounded-xl font-label-mono text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 font-bold cursor-default select-none">
+          <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+          SYSTEM OPTIMIZED
+        </button>
+        <button 
+          *ngIf="!(habit.currentStreak > 0 && habit.title.toLowerCase().includes('read'))"
+          (click)="completeHabit(habit.id); $event.stopPropagation()"
+          class="flex-1 bg-[#1a2123] border border-surface-variant/40 hover:bg-[#a4e6ff] hover:text-[#003543] hover:border-[#a4e6ff] transition-all py-2.5 rounded-xl font-label-mono text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 group/btn font-bold text-on-surface">
+          <span class="material-symbols-outlined text-[16px] group-hover/btn:scale-110 transition-transform">
+            {{ habit.category === 'VITALITY' ? 'water_drop' : 'rocket_launch' }}
+          </span>
+          {{ habit.category === 'VITALITY' ? 'LOG INTAKE' : 'EXECUTE SESSION' }}
+        </button>
+        
+        <button 
+          (click)="deleteHabit(habit.id); $event.stopPropagation()"
+          class="w-[38px] h-[38px] flex items-center justify-center text-error border border-error/20 hover:bg-error hover:text-on-error rounded-xl transition-all shadow-sm shrink-0">
+          <span class="material-symbols-outlined text-[18px]">delete</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Static Deploy New Habit Bento Card -->
+    <div 
+      [routerLink]="['/habits/create']"
+      class="group relative bg-transparent rounded-2xl p-6 border-2 border-dashed border-surface-variant/40 hover:border-[#a4e6ff]/40 transition-all duration-300 flex flex-col items-center justify-center gap-sm cursor-pointer min-h-[290px] text-center shadow-sm">
+      <div class="w-12 h-12 rounded-full bg-[#161d1f] border border-surface-variant/50 flex items-center justify-center group-hover:border-[#a4e6ff]/40 transition-colors">
+        <span class="material-symbols-outlined text-on-surface-variant/60 group-hover:text-primary transition-colors text-[24px]">add</span>
+      </div>
+      <div class="mt-2">
+        <h3 class="font-display-lg text-base font-bold text-on-surface group-hover:text-primary transition-colors">Deploy New Habit</h3>
+        <p class="font-label-mono text-[9px] text-on-surface-variant/40 uppercase tracking-[0.2em] font-semibold mt-1">Expand System Architecture</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

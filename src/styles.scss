@@ -3,24 +3,24 @@
    =================================================== */
 
 /* Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap');
 
 /* ── CSS Variables ──────────────────────────────── */
 :root {
-  --bg:          #0f1117;
-  --bg-surface:  #1a1d27;
-  --bg-card:     #1e2130;
-  --border:      #2e3148;
-  --accent:      #6c63ff;
-  --accent-glow: rgba(108, 99, 255, 0.25);
+  --bg:          #0e1417;
+  --bg-surface:  #161d1f;
+  --bg-card:     #1a2123;
+  --border:      #3c494e;
+  --accent:      #a4e6ff;
+  --accent-glow: rgba(164, 230, 255, 0.15);
   --success:     #22c55e;
-  --warning:     #f59e0b;
-  --danger:      #ef4444;
-  --text:        #e2e8f0;
-  --text-muted:  #8892a4;
+  --warning:     #ffd3be;
+  --danger:      #ffb4ab;
+  --text:        #dde3e7;
+  --text-muted:  #bbc9cf;
   --radius:      12px;
   --radius-sm:   8px;
-  --shadow:      0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow:      0 8px 32px rgba(0, 0, 0, 0.3);
   --transition:  all 0.2s ease;
 }
 
@@ -33,7 +33,7 @@
 
 html, body {
   height: 100%;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Geist', sans-serif;
   background-color: var(--bg);
   color: var(--text);
   font-size: 16px;

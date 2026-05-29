@@ -24,23 +24,46 @@ export class HabitDetail implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (!idParam) {
-      this.errorMessage = 'Habit ID not found in URL';
-      return;
-    }
-    this.loadHabit(+idParam);
+    console.log('[HabitDetail] Component OnInit initialized');
+    this.route.paramMap.subscribe({
+      next: (params) => {
+        const idParam = params.get('id');
+        console.log('[HabitDetail] Route parameter "id" changed:', idParam);
+        if (!idParam) {
+          this.errorMessage = 'Habit ID not found in URL';
+          return;
+        }
+        const id = +idParam;
+        if (isNaN(id)) {
+          this.errorMessage = 'Invalid Habit ID provided';
+          return;
+        }
+        this.loadHabit(id);
+      },
+      error: (err) => {
+        console.error('[HabitDetail] Error reading route params:', err);
+        this.errorMessage = 'Failed to parse route parameters';
+      }
+    });
   }
 
   loadHabit(id: number): void {
+    console.log(`[HabitDetail] Sending API request to load habit ID: ${id}`);
     this.isLoading = true;
+    this.errorMessage = '';
+    this.habit = null;
+
     this.habitService.getHabitById(id).subscribe({
       next: (data) => {
+        console.log('[HabitDetail] Successfully loaded habit details:', data);
         this.habit     = data;
         this.isLoading = false;
       },
       error: (err) => {
-        this.errorMessage = err.status === 404 ? 'Habit not found' : 'Failed to load habit';
+        console.error('[HabitDetail] API error occurred:', err);
+        this.errorMessage = err.status === 404 
+          ? 'Habit not found' 
+          : 'Failed to load habit (' + (err.message || 'connection error') + ')';
         this.isLoading    = false;
       }
     });

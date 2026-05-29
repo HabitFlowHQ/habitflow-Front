@@ -18,7 +18,7 @@ export class CreateHabit {
     title: '',
     description: '',
     category: '',
-    frequencyType: 0,
+    frequencyType: 'Daily',
     targetCount: 1,
     color: '',
     icon: ''

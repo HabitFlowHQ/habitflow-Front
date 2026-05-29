@@ -33,6 +33,6 @@ export class HabitService {
   }
 
   completeHabit(id: number): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}/${id}/complete`, {});
+    return this.http.post(`${this.apiUrl}/${id}/complete`, {}, { responseType: 'text' });
   }
 }

@@ -25,9 +25,9 @@
     <div class="form-group">
       <label>priority</label>
       <select [(ngModel)]="formData.priority" name="priority">
-        <option [value]="TaskPriority.Low"> Low (+10 XP)</option>
-        <option [value]="TaskPriority.Medium"> Medium (+20 XP)</option>
-        <option [value]="TaskPriority.High"> High (+30 XP)</option>
+        <option [ngValue]="TaskPriority.Low"> Low (+10 XP)</option>
+        <option [ngValue]="TaskPriority.Medium"> Medium (+20 XP)</option>
+        <option [ngValue]="TaskPriority.High"> High (+30 XP)</option>
       </select>
     </div>
 
@@ -35,6 +35,7 @@
       <label>due date </label>
       <input type="date"
              [(ngModel)]="formData.dueDate"
+             [min]="minDate"
              name="dueDate" />
     </div>
 

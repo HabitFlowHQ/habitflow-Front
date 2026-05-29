@@ -1,5 +1,5 @@
 
-import { Component }  from '@angular/core';
+import { Component, OnInit }  from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule }  from '@angular/forms';
 import { Router }       from '@angular/router';
@@ -17,7 +17,7 @@ import { CreateTaskDto, TaskPriority } from '../../../../shared/models/task.mode
   templateUrl: './create-task.html',
   styleUrl: './create-task.scss'
 })
-export class CreateTask {
+export class CreateTask implements OnInit {
 
 
   formData: CreateTaskDto = {
@@ -30,6 +30,7 @@ export class CreateTask {
 
   isLoading: boolean = false;
   errorMessage: string = '';
+  minDate: string = '';
 
   TaskPriority = TaskPriority;
 
@@ -38,6 +39,15 @@ export class CreateTask {
     private taskService: TaskService,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    this.minDate = `${yyyy}-${mm}-${dd}`;
+    this.formData.dueDate = this.minDate;
+  }
 
 
   onSubmit(): void {

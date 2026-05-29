@@ -1,60 +1,266 @@
-<div class="task-list-page">
+<!-- Ambient Background Glow -->
+<div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none">
+  <div class="absolute -top-[10%] -left-[10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[150px] animate-pulse"></div>
+  <div class="absolute top-[40%] -right-[10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[130px]"></div>
+</div>
 
-  <div class="page-header">
-    <h1>📋 My Tasks</h1>
-    <a class="btn-primary" [routerLink]="['/tasks/create']">+ New Task</a>
+<div class="flex flex-col gap-lg relative z-10">
+  
+  <!-- Page Header & Controls -->
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-md shrink-0 mt-4">
+    <div>
+      <h2 class="font-display-lg text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">Active Ops</h2>
+      <p class="font-body-base text-[13px] text-on-surface-variant/60 mt-0.5">Manage and track your operational objectives.</p>
+    </div>
+    
+    <div class="flex flex-wrap items-center gap-sm font-label-mono text-[10px] font-semibold tracking-wider">
+      <!-- Filter Capsule -->
+      <div class="flex items-center bg-[#161d1f] border border-surface-variant/40 rounded-lg p-1 h-[38px] select-none text-on-surface-variant/60">
+        <button class="px-3 py-1 rounded bg-[#2f3639]/50 text-on-surface shadow-xs">Today</button>
+        <button class="px-3 py-1 rounded hover:text-on-surface transition-colors">Week</button>
+        <button class="px-3 py-1 rounded text-error/80 hover:text-error transition-colors flex items-center gap-1 bg-error/5 border border-error/10 ml-0.5">
+          Overdue <span class="bg-error text-on-error text-[8px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ml-0.5">{{ overdueTasksCount || 2 }}</span>
+        </button>
+      </div>
+
+      <!-- View Toggle -->
+      <div class="flex items-center bg-[#161d1f] border border-surface-variant/40 rounded-lg p-1 h-[38px] text-on-surface-variant/50 select-none">
+        <button class="w-7 h-7 flex items-center justify-center rounded bg-surface-variant/20 text-[#a4e6ff]">
+          <span class="material-symbols-outlined text-[18px]">table_rows</span>
+        </button>
+        <button class="w-7 h-7 flex items-center justify-center rounded hover:text-on-surface transition-colors">
+          <span class="material-symbols-outlined text-[18px]">grid_view</span>
+        </button>
+      </div>
+
+      <!-- Deploy Task Button -->
+      <a 
+        [routerLink]="['/tasks/create']"
+        class="h-[38px] px-md bg-[#a4e6ff] text-[#003543] rounded-lg flex items-center gap-xs font-bold hover:bg-[#b7eaff] transition-all active:scale-[0.98] shadow-[0_0_15px_rgba(164,230,255,0.25)] select-none">
+        <span class="material-symbols-outlined text-[18px] font-bold">add</span>
+        Deploy Task
+      </a>
+    </div>
   </div>
 
-  <!-- Loading -->
-  <div *ngIf="isLoading" class="loading-indicator">Loading tasks...</div>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex-1 flex flex-col items-center justify-center py-xl">
+    <div class="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin mb-4"></div>
+    <p class="font-body-base text-on-surface-variant">Accessing encrypted telemetry...</p>
+  </div>
 
-  <!-- Error -->
-  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+  <!-- Error Banner -->
+  <div *ngIf="errorMessage" class="bg-error-container/20 border border-error/30 text-error-container rounded-xl p-md flex items-center gap-md my-md">
+    <span class="material-symbols-outlined text-error text-[24px]">warning</span>
+    <div>
+      <h4 class="font-bold">Operational Failure</h4>
+      <p class="text-sm opacity-80">{{ errorMessage }}</p>
+    </div>
+  </div>
 
   <!-- Empty state -->
-  <div *ngIf="!isLoading && tasks.length === 0 && !errorMessage" class="empty-state">
-    <p>No tasks yet. Create your first task!</p>
-    <a class="btn-primary" [routerLink]="['/tasks/create']">+ Create Task</a>
+  <div *ngIf="!isLoading && tasks.length === 0 && !errorMessage" class="flex-1 flex flex-col items-center justify-center py-xl border border-dashed border-surface-variant/40 rounded-2xl bg-surface-container-low/20">
+    <span class="material-symbols-outlined text-on-surface-variant/40 text-[64px] mb-sm">task</span>
+    <p class="font-headline-md text-on-surface mb-xs">No Active Ops Detected</p>
+    <p class="font-body-sm text-on-surface-variant mb-md max-w-[320px] text-center">Your queue is fully cleared. Deploy new objectives to level up your systems.</p>
+    <a class="px-md py-sm bg-primary text-on-primary rounded-lg font-label-mono text-label-mono font-bold hover:bg-primary/90 transition-colors flex items-center gap-xs" [routerLink]="['/tasks/create']">
+      <span class="material-symbols-outlined text-[18px]">add</span> Deploy First Task
+    </a>
   </div>
 
-  <!-- Task cards -->
-  <div class="task-grid" *ngIf="tasks.length > 0">
-    <div class="task-card" *ngFor="let task of tasks">
-
-      <div class="task-card-header">
-        <span class="task-priority priority-{{ task.priority }}">
-          {{ task.priority === TaskPriority.High ? '🔴 High' :
-             task.priority === TaskPriority.Medium ? '🟡 Medium' : '🟢 Low' }}
-        </span>
-        <span class="task-status status-{{ task.status }}">
-          {{ task.status === TaskStatus.Pending    ? 'Pending' :
-             task.status === TaskStatus.InProgress ? 'In Progress' : 'Completed' }}
-        </span>
+  <!-- List View -->
+  <div *ngIf="!isLoading && tasks.length > 0" class="flex-1 overflow-y-auto pr-2 pb-md flex flex-col gap-lg kanban-scroll">
+    
+    <!-- Section: To Do -->
+    <div class="flex flex-col gap-sm">
+      <div class="flex items-center gap-sm pb-sm border-b border-surface-variant/50">
+        <div class="w-3 h-3 rounded-full bg-outline"></div>
+        <h3 class="font-headline-md text-[16px] md:text-[18px] font-semibold text-on-surface">To Do</h3>
+        <span class="font-label-mono text-label-mono text-on-surface-variant bg-surface-variant px-2 py-1 rounded-full ml-sm">{{ pendingTasks.length }}</span>
       </div>
 
-      <h3 class="task-title">
-        <a [routerLink]="['/tasks', task.id]">{{ task.title }}</a>
-      </h3>
+      <div class="flex flex-col gap-[6px]">
+        <div 
+          *ngFor="let task of pendingTasks"
+          [routerLink]="['/tasks', task.id]"
+          class="bg-surface-container/50 hover:bg-surface-container-high/70 rounded-md p-sm border border-transparent hover:border-primary/20 transition-all flex flex-col sm:flex-row sm:items-center justify-between group cursor-pointer shadow-sm gap-sm sm:gap-0 relative">
+          
+          <div class="flex items-center gap-md flex-1">
+            <span class="material-symbols-outlined text-on-surface-variant/30 group-hover:text-on-surface-variant cursor-grab text-[18px] hidden sm:block">drag_indicator</span>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-md flex-1">
+              <h4 class="font-body-base text-[14px] text-on-surface font-medium truncate max-w-[300px] sm:max-w-[400px] md:max-w-[600px]">{{ task.title }}</h4>
+              
+              <!-- Priority Badge -->
+              <span 
+                [ngClass]="{
+                  'bg-error-container text-on-error-container border border-error/30': task.priority === TaskPriority.High,
+                  'bg-tertiary-container/20 text-tertiary-container border border-tertiary-container/30': task.priority === TaskPriority.Medium,
+                  'bg-surface-variant text-on-surface-variant border border-outline-variant': task.priority === TaskPriority.Low
+                }"
+                class="font-label-mono text-[10px] px-2 py-0.5 rounded-full w-max flex items-center gap-1">
+                <span *ngIf="task.priority === TaskPriority.High" class="material-symbols-outlined text-[12px]">priority_high</span>
+                {{ task.priority === TaskPriority.High ? 'Critical' : task.priority === TaskPriority.Medium ? 'Med Priority' : 'Low Priority' }}
+              </span>
+            </div>
+          </div>
 
-      <div class="task-meta">
-        <span *ngIf="task.dueDate">📅 {{ task.dueDate | date:'yyyy-MM-dd' }}</span>
-        <span>⏱ {{ task.estimatedMinutes }} min</span>
+          <div class="flex items-center justify-between sm:justify-end gap-md sm:gap-lg pl-8 sm:pl-0">
+            <div class="flex items-center gap-md text-on-surface-variant font-label-mono text-[11px]">
+              <div class="flex items-center gap-1 sm:w-[100px]">
+                <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                {{ task.dueDate ? (task.dueDate | date:'mediumDate') : 'TODAY' }}
+              </div>
+              <div class="flex items-center gap-1 sm:w-[80px]">
+                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                {{ task.estimatedMinutes >= 60 ? (task.estimatedMinutes / 60 - 0.5 | number:'1.0-0') + 'h ' + (task.estimatedMinutes % 60) + 'm' : task.estimatedMinutes + 'm' }}
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-sm sm:w-[150px] justify-end">
+              <span class="text-secondary font-stats-number text-[14px] text-right flex items-center gap-1 drop-shadow-[0_0_8px_rgba(221,183,255,0.2)]">
+                +{{ task.priority === TaskPriority.High ? 30 : task.priority === TaskPriority.Medium ? 20 : 10 }} XP
+              </span>
+              <button 
+                (click)="startTask(task.id); $event.stopPropagation()"
+                class="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-on-primary transition-all rounded text-xs font-semibold">
+                ▶ Start
+              </button>
+              <button 
+                (click)="deleteTask(task.id); $event.stopPropagation()"
+                class="w-7 h-7 flex items-center justify-center text-error border border-error/20 hover:bg-error hover:text-on-error rounded transition-all">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="pendingTasks.length === 0" class="text-on-surface-variant/40 font-body-sm text-[13px] py-sm pl-md">
+          No tasks waiting in this queue.
+        </div>
       </div>
-
-      <div class="task-actions">
-        <button
-          *ngIf="task.status === TaskStatus.Pending"
-          class="btn-start"
-          (click)="startTask(task.id)">
-          ▶ Start
-        </button>
-
-        <a class="btn-edit" [routerLink]="['/tasks', task.id, 'edit']">✏ Edit</a>
-
-        <button class="btn-delete" (click)="deleteTask(task.id)">🗑 Delete</button>
-      </div>
-
     </div>
+
+    <!-- Section: In Progress -->
+    <div class="flex flex-col gap-sm">
+      <div class="flex items-center gap-sm pb-sm border-b border-surface-variant/50 relative">
+        <div class="absolute -bottom-[1px] left-0 w-32 h-[2px] bg-primary/50 shadow-[0_0_8px_rgba(164,230,255,0.6)]"></div>
+        <div class="w-3 h-3 rounded-full bg-primary shadow-[0_0_8px_rgba(164,230,255,0.6)] animate-pulse"></div>
+        <h3 class="font-headline-md text-[16px] md:text-[18px] font-semibold text-on-surface">In Progress</h3>
+        <span class="font-label-mono text-label-mono text-primary bg-primary/10 px-2 py-1 rounded-full border border-primary/20 ml-sm">{{ inProgressTasks.length }}</span>
+      </div>
+
+      <div class="flex flex-col gap-[6px]">
+        <div 
+          *ngFor="let task of inProgressTasks"
+          [routerLink]="['/tasks', task.id]"
+          class="bg-surface-container/50 hover:bg-surface-container-high/70 rounded-md p-sm border border-primary/20 hover:border-primary/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between group cursor-pointer shadow-sm gap-sm sm:gap-0 relative overflow-hidden">
+          <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+          
+          <div class="flex items-center gap-md flex-1 pl-2">
+            <span class="material-symbols-outlined text-on-surface-variant/30 group-hover:text-on-surface-variant cursor-grab text-[18px] hidden sm:block">drag_indicator</span>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-md flex-1">
+              <h4 class="font-body-base text-[14px] text-on-surface font-medium truncate max-w-[300px] sm:max-w-[400px] md:max-w-[600px]">{{ task.title }}</h4>
+              
+              <!-- Priority Badge -->
+              <span 
+                [ngClass]="{
+                  'bg-error-container text-on-error-container border border-error/30': task.priority === TaskPriority.High,
+                  'bg-tertiary-container/20 text-tertiary-container border border-tertiary-container/30': task.priority === TaskPriority.Medium,
+                  'bg-surface-variant text-on-surface-variant border border-outline-variant': task.priority === TaskPriority.Low
+                }"
+                class="font-label-mono text-[10px] px-2 py-0.5 rounded-full w-max flex items-center gap-1">
+                <span *ngIf="task.priority === TaskPriority.High" class="material-symbols-outlined text-[12px]">priority_high</span>
+                {{ task.priority === TaskPriority.High ? 'Critical' : task.priority === TaskPriority.Medium ? 'Med Priority' : 'Low Priority' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between sm:justify-end gap-md sm:gap-lg pl-10 sm:pl-0">
+            <div class="flex items-center gap-md font-label-mono text-[11px]">
+              <div class="flex items-center gap-1 sm:w-[100px] text-primary">
+                <span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                {{ task.dueDate ? (task.dueDate | date:'mediumDate') : 'TODAY' }}
+              </div>
+              <div class="flex items-center gap-1 sm:w-[80px] text-on-surface-variant">
+                <span class="material-symbols-outlined text-[14px]">schedule</span>
+                {{ task.estimatedMinutes >= 60 ? (task.estimatedMinutes / 60 - 0.5 | number:'1.0-0') + 'h ' + (task.estimatedMinutes % 60) + 'm' : task.estimatedMinutes + 'm' }}
+              </div>
+            </div>
+
+            <div class="flex items-center gap-sm sm:w-[150px] justify-end">
+              <span class="text-secondary font-stats-number text-[14px] text-right flex items-center gap-1 drop-shadow-[0_0_8px_rgba(221,183,255,0.2)]">
+                +{{ task.priority === TaskPriority.High ? 30 : task.priority === TaskPriority.Medium ? 20 : 10 }} XP
+              </span>
+              <button 
+                class="px-2.5 py-1 bg-secondary-container/20 text-secondary border border-secondary-container/30 hover:bg-secondary-container hover:text-white transition-all rounded text-xs font-semibold">
+                ⚡ Active
+              </button>
+              <button 
+                (click)="deleteTask(task.id); $event.stopPropagation()"
+                class="w-7 h-7 flex items-center justify-center text-error border border-error/20 hover:bg-error hover:text-on-error rounded transition-all">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="inProgressTasks.length === 0" class="text-on-surface-variant/40 font-body-sm text-[13px] py-sm pl-md">
+          No operations currently executing.
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Completed -->
+    <div class="flex flex-col gap-sm opacity-80 hover:opacity-100 transition-opacity duration-300">
+      <div class="flex items-center gap-sm pb-sm border-b border-surface-variant/50">
+        <div class="w-3 h-3 rounded-full bg-secondary"></div>
+        <h3 class="font-headline-md text-[16px] md:text-[18px] font-semibold text-on-surface">Completed</h3>
+        <span class="font-label-mono text-label-mono text-on-surface-variant bg-surface-variant px-2 py-1 rounded-full ml-sm">{{ completedTasks.length }}</span>
+      </div>
+
+      <div class="flex flex-col gap-[6px]">
+        <div 
+          *ngFor="let task of completedTasks"
+          [routerLink]="['/tasks', task.id]"
+          class="bg-surface-container-lowest rounded-md p-sm border border-surface-variant/40 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-sm sm:gap-0 cursor-pointer hover:bg-surface-container-low transition-all">
+          
+          <div class="flex items-center gap-md flex-1">
+            <span class="material-symbols-outlined text-secondary text-[18px] hidden sm:block icon-fill">task_alt</span>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-md flex-1 pl-2">
+              <h4 class="font-body-base text-[14px] text-on-surface-variant font-medium line-through decoration-surface-variant/60 truncate max-w-[300px] sm:max-w-[400px] md:max-w-[600px]">{{ task.title }}</h4>
+              
+              <!-- Priority Badge (dimmed) -->
+              <span class="bg-surface-variant/40 text-on-surface-variant/60 font-label-mono text-[10px] px-2 py-0.5 rounded-full border border-outline-variant/30 w-max">
+                Completed
+              </span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between sm:justify-end gap-md sm:gap-lg pl-8 sm:pl-0">
+            <div class="flex items-center gap-md text-on-surface-variant/40 font-label-mono text-[11px]">
+              <div class="flex items-center gap-1 sm:w-[100px]">--</div>
+              <div class="flex items-center gap-1 sm:w-[80px]">--</div>
+            </div>
+
+            <div class="flex items-center gap-sm sm:w-[150px] justify-end">
+              <span class="text-on-surface-variant/60 font-stats-number text-[14px] text-right flex items-center gap-1">
+                +{{ task.priority === TaskPriority.High ? 30 : task.priority === TaskPriority.Medium ? 20 : 10 }} XP
+              </span>
+              <button 
+                (click)="deleteTask(task.id); $event.stopPropagation()"
+                class="w-7 h-7 flex items-center justify-center text-error/60 border border-error/10 hover:bg-error hover:text-on-error rounded transition-all">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="completedTasks.length === 0" class="text-on-surface-variant/40 font-body-sm text-[13px] py-sm pl-md">
+          No operations completed in this session.
+        </div>
+      </div>
+    </div>
+
   </div>
 
 </div>

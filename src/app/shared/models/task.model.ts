@@ -27,6 +27,8 @@ export interface Task {
   dueDate?: string;
   estimatedMinutes: number;
   actualMinutes: number;
+  isMock?: boolean;
+  mockLabel?: string;
 }
 
 export interface TaskLog {

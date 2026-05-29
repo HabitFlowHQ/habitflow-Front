@@ -38,34 +38,47 @@ export class TaskDetail implements OnInit {
   ) {}
 
   ngOnInit(): void {
-
-    const idParam = this.route.snapshot.paramMap.get('id');
-
-
-    if (!idParam) {
-      this.errorMessage = 'task id not provided in URL';
-      return;
-    }
-
-
-    const id = +idParam;
-
-    this.loadTask(id);
+    console.log('[TaskDetail] Component OnInit initialized');
+    this.route.paramMap.subscribe({
+      next: (params) => {
+        const idParam = params.get('id');
+        console.log('[TaskDetail] Route parameter "id" changed:', idParam);
+        if (!idParam) {
+          this.errorMessage = 'task id not provided in URL';
+          return;
+        }
+        const id = +idParam;
+        if (isNaN(id)) {
+          this.errorMessage = 'Invalid task ID provided';
+          return;
+        }
+        this.loadTask(id);
+      },
+      error: (err) => {
+        console.error('[TaskDetail] Error reading route params:', err);
+        this.errorMessage = 'Failed to parse route parameters';
+      }
+    });
   }
 
 
   loadTask(id: number): void {
+    console.log(`[TaskDetail] Sending API request to load task ID: ${id}`);
     this.isLoading = true;
+    this.errorMessage = '';
+    this.task = null;
 
     this.taskService.getTaskById(id).subscribe({
       next: (data: TaskDetails) => {
+        console.log('[TaskDetail] Successfully loaded task details:', data);
         this.task      = data;
         this.isLoading = false;
       },
       error: (err) => {
+        console.error('[TaskDetail] API error occurred:', err);
         this.errorMessage = err.status === 404
           ? 'Task not found'
-          : 'Failed to load task details';
+          : 'Failed to load task details (' + (err.message || 'connection error') + ')';
         this.isLoading = false;
       }
     });

@@ -20,7 +20,7 @@ export class EditHabit implements OnInit {
     title: '',
     description: '',
     category: '',
-    frequencyType: 0,
+    frequencyType: 'Daily',
     targetCount: 1,
     color: '',
     icon: ''

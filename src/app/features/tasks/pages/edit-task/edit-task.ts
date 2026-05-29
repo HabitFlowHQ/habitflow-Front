@@ -38,6 +38,7 @@ export class EditTask implements OnInit {
   isLoadingTask = true;
   isSaving      = false;
   errorMessage  = '';
+  minDate       = '';
 
   TaskPriority = TaskPriority;
 
@@ -48,6 +49,12 @@ export class EditTask implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    this.minDate = `${yyyy}-${mm}-${dd}`;
+
     const id = +this.route.snapshot.paramMap.get('id')!;
 
     this.taskId = id;

@@ -1,0 +1,318 @@
+<!-- Loading State -->
+<div *ngIf="isLoading()" class="flex-1 flex flex-col items-center justify-center py-xl bg-[#0e1417] min-h-[60vh]">
+  <div class="w-12 h-12 rounded-full border-4 border-primary/20 border-t-primary animate-spin mb-4"></div>
+  <p class="font-body-base text-on-surface-variant">Connecting to central systems...</p>
+</div>
+
+<!-- Error Banner -->
+<div *ngIf="errorMsg()" class="bg-error-container/20 border border-error/30 text-error-container rounded-xl p-md flex items-center gap-md my-md mx-gutter">
+  <span class="material-symbols-outlined text-error text-[24px]">warning</span>
+  <div>
+    <h4 class="font-bold">Operational Failure</h4>
+    <p class="text-sm opacity-80">{{ errorMsg() }}</p>
+    <button class="px-3 py-1 mt-2 bg-error text-on-error rounded text-xs font-semibold" (click)="loadDashboard()">Retry connection</button>
+  </div>
+</div>
+
+<div *ngIf="!isLoading() && !errorMsg()" class="flex flex-col gap-md relative z-10">
+  
+  <!-- Bento Grid Layout -->
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-md auto-rows-min mt-4">
+    
+    <!-- Hero: Today Score (Spans 8 cols) -->
+    <div class="md:col-span-8 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex flex-col relative overflow-hidden shadow-lg">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-[#a4e6ff]/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+      
+      <div class="flex items-center justify-between mb-lg z-10">
+        <div>
+          <h2 class="font-display-lg text-2xl font-bold text-on-surface animate-fade-in">Mission Status</h2>
+          <p class="font-body-sm text-[12px] text-on-surface-variant/70">Daily Objectives Overview</p>
+        </div>
+        <div class="px-3 py-1 rounded-full bg-[#1a2123] border border-surface-variant flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-[#a4e6ff] animate-pulse shadow-[0_0_8px_#a4e6ff]"></span>
+          <span class="font-label-mono text-[10px] text-[#a4e6ff] font-semibold tracking-wider">SYSTEM ONLINE</span>
+        </div>
+      </div>
+      
+      <div class="flex flex-col md:flex-row items-center gap-xl z-10 py-2">
+        <!-- Circular Progress SVG -->
+        <div class="relative w-36 h-36 flex items-center justify-center shrink-0">
+          <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+            <!-- Background track -->
+            <circle class="text-[#2f3639]/30" cx="50" cy="50" fill="none" r="42" stroke="currentColor" stroke-width="8"></circle>
+            <!-- Progress path -->
+            <circle 
+              class="text-[#a4e6ff] drop-shadow-[0_0_12px_rgba(164,230,255,0.6)]" 
+              cx="50" cy="50" fill="none" r="42" 
+              stroke="currentColor" 
+              stroke-width="8"
+              stroke-linecap="round"
+              stroke-dasharray="264" 
+              [attr.stroke-dashoffset]="264 - (264 * (completionRate() || 78) / 100)">
+            </circle>
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center">
+            <span class="font-display-lg text-3xl font-extrabold text-on-surface tracking-tighter">
+              {{ completionRate() || 78 }}<span class="text-xl text-[#a4e6ff] font-bold">%</span>
+            </span>
+            <span class="font-label-mono text-[9px] text-on-surface-variant/60 tracking-wider">COMPLETION</span>
+          </div>
+        </div>
+        
+        <div class="flex-1 grid grid-cols-2 gap-md w-full font-body-base">
+          <div class="bg-[#0e1417]/80 rounded-xl p-4 border border-surface-variant/40 flex flex-col justify-between h-[90px]">
+            <span class="font-label-mono text-[10px] text-on-surface-variant/50 tracking-wider">XP GAINED TODAY</span>
+            <div class="flex items-baseline">
+              <span class="font-display-lg text-2xl font-bold text-[#ddb7ff]">+{{ totalXp() | number }}</span>
+              <span class="font-label-mono text-[10px] text-[#ddb7ff]/60 ml-1 font-semibold">XP</span>
+            </div>
+          </div>
+          <div class="bg-[#0e1417]/80 rounded-xl p-4 border border-surface-variant/40 flex flex-col justify-between h-[90px]">
+            <span class="font-label-mono text-[10px] text-on-surface-variant/50 tracking-wider">TASKS CLEARED</span>
+            <div class="flex items-baseline">
+              <span class="font-display-lg text-2xl font-bold text-on-surface">{{ completedTasks() }}</span>
+              <span class="font-body-sm text-[12px] text-on-surface-variant/60 ml-1">/ {{ totalTasks() }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Stats Sidebar: Level & Streak (Spans 4 cols) -->
+    <div class="md:col-span-4 flex flex-col gap-md">
+      <!-- Level Card -->
+      <div class="flex-1 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex flex-col justify-center relative overflow-hidden shadow-lg">
+        <div class="absolute inset-0 bg-gradient-to-br from-[#ddb7ff]/5 to-transparent pointer-events-none"></div>
+        <div class="flex items-center gap-4 mb-3 z-10">
+          <div class="w-11 h-11 rounded-full bg-[#6f00be] flex items-center justify-center shadow-[0_0_12px_rgba(111,0,190,0.4)] shrink-0">
+            <span class="font-display-lg text-white text-base font-extrabold">{{ currentLevel() }}</span>
+          </div>
+          <div>
+            <h3 class="font-display-lg text-lg font-bold text-on-surface leading-tight">{{ rankTitle() }}</h3>
+            <p class="font-label-mono text-[9px] text-[#ddb7ff] font-semibold tracking-widest">{{ rankTier() }}</p>
+          </div>
+        </div>
+        <div class="w-full h-1.5 bg-[#2f3639]/40 rounded-full overflow-hidden z-10 mb-2 mt-1">
+          <div class="h-full bg-gradient-to-r from-[#6f00be] to-[#ddb7ff] rounded-full shadow-[0_0_8px_#ddb7ff]" [style.width.%]="levelProgressPercent()"></div>
+        </div>
+        <div class="flex justify-between font-label-mono text-[9px] text-on-surface-variant/60 z-10 font-semibold font-body-sm">
+          <span>{{ levelProgressXp() | number }} XP</span>
+          <span>500 XP</span>
+        </div>
+      </div>
+      
+      <!-- Streak Card -->
+      <div class="flex-1 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex items-center justify-between relative overflow-hidden shadow-lg group">
+        <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-[#ffd3be]/5 rounded-full blur-2xl group-hover:bg-[#ffd3be]/10 transition-colors duration-500 pointer-events-none"></div>
+        <div>
+          <p class="font-label-mono text-[10px] text-[#ffad82] mb-1 flex items-center gap-1 font-semibold tracking-wider">
+            <span class="material-symbols-outlined text-[14px]">local_fire_department</span>
+            CURRENT STREAK
+          </p>
+          <div class="flex items-baseline gap-1">
+            <span class="font-display-lg text-3xl font-extrabold text-on-surface tracking-tighter">{{ maxStreak() }}</span>
+            <span class="font-body-sm text-[12px] text-on-surface-variant/60 font-semibold">Days</span>
+          </div>
+        </div>
+        <div class="w-12 h-12 rounded-full bg-[#ffad82]/10 border border-[#ffad82]/20 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-[24px] text-[#ffad82] drop-shadow-[0_0_8px_#ffd3be]" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tasks Module (Spans 5 cols) -->
+    <div class="md:col-span-5 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex flex-col shadow-lg h-[350px]">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-display-lg text-sm font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-[#a4e6ff]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+          Priority Queue
+        </h3>
+        <a [routerLink]="['/tasks']" class="text-on-surface-variant/50 hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[20px]">more_horiz</span>
+        </a>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto pr-1 flex flex-col gap-2.5 kanban-scroll">
+        <!-- Dynamic Priority Task Cards -->
+        <div 
+          *ngFor="let task of priorityQueue()"
+          [routerLink]="task.isMock ? ['/tasks'] : ['/tasks', task.id]"
+          class="group flex items-start gap-3 p-3 rounded-xl bg-[#0e1417]/40 border border-surface-variant/40 hover:border-[#a4e6ff]/30 transition-all cursor-pointer relative overflow-hidden">
+          
+          <!-- Custom Checkbox -->
+          <div class="w-5 h-5 rounded border border-[#2f3639] group-hover:border-[#a4e6ff]/50 flex items-center justify-center shrink-0 mt-0.5 transition-colors">
+            <!-- Empty checkbox -->
+          </div>
+          
+          <div class="flex-1">
+            <p class="font-body-sm text-[13px] text-on-surface leading-tight font-medium group-hover:text-primary transition-colors">{{ task.title }}</p>
+            <p class="font-label-mono text-[9px] mt-1 flex items-center gap-1 font-semibold">
+              <span *ngIf="task.isMock" [class.text-[#ffb4ab]]="task.priority === TaskPriority.High" [class.text-on-surface-variant/60]="task.priority !== TaskPriority.High">
+                {{ task.mockLabel }}
+              </span>
+              <span *ngIf="!task.isMock" [class.text-[#ffb4ab]]="task.priority === TaskPriority.High" [class.text-[#ffd3be]]="task.priority === TaskPriority.Medium" [class.text-on-surface-variant/60]="task.priority === TaskPriority.Low">
+                DUE {{ task.dueDate ? (task.dueDate | date:'mediumDate') : 'TODAY' }} • {{ task.priority === TaskPriority.High ? 'HIGH' : task.priority === TaskPriority.Medium ? 'MEDIUM' : 'LOW' }} PRIORITY
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Habits Module (Spans 4 cols) -->
+    <div class="md:col-span-4 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex flex-col shadow-lg h-[350px]">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-display-lg text-sm font-bold text-on-surface flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px] text-[#ddb7ff]">cached</span>
+          Daily Routines
+        </h3>
+        <a [routerLink]="['/habits']" class="text-on-surface-variant/50 hover:text-secondary transition-colors">
+          <span class="material-symbols-outlined text-[20px]">more_horiz</span>
+        </a>
+      </div>
+      
+      <div class="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-1 kanban-scroll">
+        <!-- Dynamic Habits -->
+        <div 
+          *ngFor="let habit of activeHabits()"
+          [routerLink]="habit.isMock ? ['/habits'] : ['/habits', habit.id]"
+          class="flex items-center justify-between p-2.5 rounded-xl bg-[#0e1417]/50 border border-surface-variant/40 hover:border-[#ddb7ff]/30 transition-all cursor-pointer">
+          <div class="flex items-center gap-3">
+            <div 
+              class="w-9 h-9 rounded-lg border flex items-center justify-center shrink-0"
+              [style.background]="habit.category === 'VITALITY' ? '#a4e6ff10' : habit.category === 'STRENGTH' ? '#ddb7ff10' : '#ffd3be10'"
+              [style.borderColor]="habit.category === 'VITALITY' ? '#a4e6ff40' : habit.category === 'STRENGTH' ? '#ddb7ff40' : '#ffd3be40'">
+              <span class="material-symbols-outlined text-[18px]"
+                [class.text-[#a4e6ff]]="habit.category === 'VITALITY'"
+                [class.text-[#ddb7ff]]="habit.category === 'STRENGTH'"
+                [class.text-[#ffad82]]="habit.category === 'INTELLECT'">
+                {{ habit.icon || 'cached' }}
+              </span>
+            </div>
+            <div>
+              <span class="font-body-sm text-[13px] text-on-surface font-semibold truncate block max-w-[130px]">{{ habit.title }}</span>
+              <span class="font-label-mono text-[9px] text-on-surface-variant/50 uppercase tracking-wider font-semibold">{{ habit.category }}</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mr-1">
+            <!-- Custom checkboxes based on Mock State -->
+            <span *ngIf="habit.completedToday" class="material-symbols-outlined text-[20px] text-[#a4e6ff] shadow-sm" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            <div *ngIf="!habit.completedToday && !habit.isDotted" class="w-5 h-5 rounded-full border-2 border-[#2f3639] hover:border-[#ddb7ff] transition-colors"></div>
+            <div *ngIf="!habit.completedToday && habit.isDotted" class="w-5 h-5 rounded-full border-2 border-dashed border-[#2f3639] flex items-center justify-center">
+              <span class="w-1.5 h-1.5 rounded-full bg-outline-variant/40"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Focus Mode Module (Spans 3 cols) -->
+    <div class="md:col-span-3 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex flex-col items-center justify-center shadow-lg relative overflow-hidden h-[350px] group">
+      <div class="absolute inset-0 bg-gradient-to-t from-[#a4e6ff]/5 to-transparent pointer-events-none"></div>
+      <p class="font-label-mono text-[9px] text-on-surface-variant/55 mb-6 uppercase tracking-[0.2em] font-semibold text-center w-full">Focus Mode</p>
+      
+      <div class="relative w-32 h-32 flex items-center justify-center mb-6">
+        <svg class="absolute inset-0 w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+          <circle class="text-[#2f3639]/30" cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4"></circle>
+          <circle class="text-[#a4e6ff] transition-all duration-1000 drop-shadow-[0_0_8px_rgba(164,230,255,0.4)]" cx="50" cy="50" fill="none" r="44" stroke="currentColor" stroke-dasharray="276" stroke-dashoffset="80" stroke-linecap="round" stroke-width="3"></circle>
+        </svg>
+        <span class="font-display-lg text-2xl font-extrabold text-on-surface tracking-tight">25:00</span>
+      </div>
+      
+      <div class="flex items-center gap-4 z-10">
+        <button class="w-9 h-9 rounded-full bg-[#0e1417]/80 text-[#bbc9cf] hover:text-white border border-surface-variant/50 flex items-center justify-center hover:bg-surface-variant/40 transition-all active:scale-90">
+          <span class="material-symbols-outlined text-[18px]">skip_previous</span>
+        </button>
+        <button class="w-12 h-12 rounded-full bg-[#a4e6ff] text-[#003543] flex items-center justify-center hover:bg-[#b7eaff] shadow-[0_0_15px_rgba(164,230,255,0.4)] hover:shadow-[0_0_20px_rgba(164,230,255,0.6)] transition-all active:scale-95">
+          <span class="material-symbols-outlined text-[24px] font-bold" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+        </button>
+        <button class="w-9 h-9 rounded-full bg-[#0e1417]/80 text-[#bbc9cf] hover:text-white border border-surface-variant/50 flex items-center justify-center hover:bg-surface-variant/40 transition-all active:scale-90">
+          <span class="material-symbols-outlined text-[18px]">stop</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Heatmap / Contribution Graph (Spans 12 cols) -->
+    <div class="md:col-span-12 bg-[#161d1f] border border-surface-variant/40 rounded-2xl p-md flex flex-col shadow-lg">
+      <div class="flex justify-between items-center mb-6">
+        <h3 class="font-display-lg text-sm font-bold text-on-surface">Productivity Matrix</h3>
+        <div class="flex items-center gap-2 font-label-mono text-[9px] text-on-surface-variant/60 font-semibold">
+          <span>Less</span>
+          <div class="flex gap-1 select-none">
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/70"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]"></div>
+          </div>
+          <span>More</span>
+        </div>
+      </div>
+      
+      <!-- Simulated GitHub-style grid -->
+      <div class="flex gap-1.5 overflow-x-auto pb-2 kanban-scroll items-center">
+        <div class="flex gap-1">
+          <!-- Col 1 -->
+          <div class="flex flex-col gap-1">
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/70"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+          </div>
+          <!-- Col 2 -->
+          <div class="flex flex-col gap-1">
+            <div class="w-3 h-3 rounded-xs bg-[#ffdbca]"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/70"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+          </div>
+          <!-- Col 3 -->
+          <div class="flex flex-col gap-1 opacity-80">
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+          </div>
+          <!-- Col 4 -->
+          <div class="flex flex-col gap-1 opacity-80">
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/70"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#ffad82]"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+            <div class="w-3 h-3 rounded-xs bg-[#2f3639]/30"></div>
+          </div>
+        </div>
+        
+        <!-- Previous Data Simulated box -->
+        <div class="flex-1 min-w-[200px] h-[115px] border border-dashed border-surface-variant/40 rounded-xl flex items-center justify-center bg-[#0e1417]/20 select-none">
+          <span class="font-label-mono text-on-surface-variant/40 text-[10px] tracking-[0.25em] uppercase font-semibold">... PREVIOUS DATA ...</span>
+        </div>
+        
+        <!-- Current Week -->
+        <div class="flex flex-col gap-1">
+          <div class="w-3 h-3 rounded-xs bg-[#ffad82]/40"></div>
+          <div class="w-3 h-3 rounded-xs bg-[#ffad82]/70"></div>
+          <div class="w-3 h-3 rounded-xs bg-[#ffad82]"></div>
+          <div class="w-3 h-3 rounded-xs bg-[#2f3639]/40 border border-[#a4e6ff]/40 relative">
+            <span class="absolute -top-0.5 -right-0.5 w-1 h-1 rounded-full bg-[#a4e6ff] shadow-[0_0_4px_#a4e6ff]"></span>
+          </div>
+          <div class="w-3 h-3 rounded-xs bg-[#0e1417]/10 border border-surface-variant/30 border-dashed"></div>
+          <div class="w-3 h-3 rounded-xs bg-[#0e1417]/10 border border-surface-variant/30 border-dashed"></div>
+          <div class="w-3 h-3 rounded-xs bg-[#0e1417]/10 border border-surface-variant/30 border-dashed"></div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+</div>
