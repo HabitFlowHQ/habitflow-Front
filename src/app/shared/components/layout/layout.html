@@ -14,24 +14,24 @@
     class="fixed md:static left-0 top-0 h-full md:h-screen z-40 pt-12 pb-md px-base w-[240px] flex-col bg-surface-container-low dark:bg-surface-container-low border-r border-surface-variant shadow-xl md:shadow-none transition-all duration-300 md:flex hidden select-none overflow-hidden shrink-0 animate-fade-in">
     
     <!-- Brand Header -->
-    <div class="flex items-center gap-6 px-3 mb-12">
+    <div class="flex items-center gap-6 px-3 mb-16">
       <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/25 shrink-0 shadow-[0_0_20px_rgba(164,230,255,0.15)]">
         <span class="material-symbols-outlined text-primary font-bold text-[22px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
       </div>
-      <div class="flex flex-col gap-1.5">
-        <h1 class="font-headline-md text-[20px] font-bold text-on-surface tracking-tight leading-none mt-3 mb-1">Level Up</h1>
+      <div class="flex flex-col gap-4">
+        <h1 class="font-headline-md text-[20px] font-bold text-on-surface tracking-tight leading-none mt-3">Level Up</h1>
         <p class="font-label-mono text-[9px] text-primary/80 uppercase tracking-widest leading-none mb-4">Elite Productivity</p>
       </div>
     </div>
 
     <!-- Navigation Links -->
-    <div class="flex-1 overflow-y-auto flex flex-col gap-4 font-medium kanban-scroll pr-1">
-      <div *ngFor="let group of navGroups" class="flex flex-col gap-1">
+    <div class="flex-1 overflow-y-auto flex flex-col gap-8 font-medium kanban-scroll pr-1">
+      <div *ngFor="let group of navGroups" class="flex flex-col gap-3">
         <!-- Group Title -->
         <span class="px-3 py-1 text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">{{ group.title }}</span>
         
         <!-- Group Links -->
-        <div class="flex flex-col gap-0.5">
+        <div class="flex flex-col gap-3">
           <a 
             *ngFor="let link of group.links"
             [routerLink]="link.route"
@@ -47,7 +47,7 @@
     </div>
 
     <!-- Bottom Actions -->
-    <div class="mt-auto pt-4 border-t border-surface-variant/20 flex flex-col gap-1 font-medium">
+    <div class="mt-auto pt-4 border-t border-surface-variant/20 flex flex-col gap-3 font-medium">
       <span class="px-3 py-1 text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">System</span>
       <a 
         *ngFor="let link of bottomLinks"
