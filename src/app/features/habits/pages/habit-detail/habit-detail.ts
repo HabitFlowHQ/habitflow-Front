@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HabitService } from '../../../../core/services/habit.service';
@@ -20,7 +20,8 @@ export class HabitDetail implements OnInit {
   constructor(
     private habitService: HabitService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -31,11 +32,13 @@ export class HabitDetail implements OnInit {
         console.log('[HabitDetail] Route parameter "id" changed:', idParam);
         if (!idParam) {
           this.errorMessage = 'Habit ID not found in URL';
+          this.cdr.detectChanges();
           return;
         }
         const id = +idParam;
         if (isNaN(id)) {
           this.errorMessage = 'Invalid Habit ID provided';
+          this.cdr.detectChanges();
           return;
         }
         this.loadHabit(id);
@@ -43,6 +46,7 @@ export class HabitDetail implements OnInit {
       error: (err) => {
         console.error('[HabitDetail] Error reading route params:', err);
         this.errorMessage = 'Failed to parse route parameters';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -52,12 +56,14 @@ export class HabitDetail implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.habit = null;
+    this.cdr.detectChanges();
 
     this.habitService.getHabitById(id).subscribe({
       next: (data) => {
         console.log('[HabitDetail] Successfully loaded habit details:', data);
         this.habit     = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('[HabitDetail] API error occurred:', err);
@@ -65,6 +71,7 @@ export class HabitDetail implements OnInit {
           ? 'Habit not found' 
           : 'Failed to load habit (' + (err.message || 'connection error') + ')';
         this.isLoading    = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -84,6 +91,7 @@ export class HabitDetail implements OnInit {
       next: (msg) => {
         console.log(msg);
         this.loadHabit(this.habit!.id);
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err)
     });

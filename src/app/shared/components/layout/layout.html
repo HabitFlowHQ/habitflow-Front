@@ -11,35 +11,35 @@
   <aside 
     [class.hidden]="!isSidebarOpen()" 
     [class.flex]="isSidebarOpen()"
-    class="fixed md:static left-0 top-0 h-full md:h-screen z-40 pt-12 pb-md px-base w-[240px] flex-col bg-surface-container-low dark:bg-surface-container-low border-r border-surface-variant shadow-xl md:shadow-none transition-all duration-300 md:flex hidden select-none overflow-hidden shrink-0 animate-fade-in">
+    class="fixed md:static left-0 top-0 h-full md:h-screen z-40 pt-10 pb-6 px-4 w-[280px] flex-col bg-surface-container-low/50 backdrop-blur-xl border-r border-surface-variant shadow-2xl md:shadow-none transition-all duration-300 md:flex hidden select-none overflow-hidden shrink-0 animate-fade-in">
     
     <!-- Brand Header -->
-    <div class="flex items-center gap-6 px-3 mb-16">
-      <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/25 shrink-0 shadow-[0_0_20px_rgba(164,230,255,0.15)]">
-        <span class="material-symbols-outlined text-primary font-bold text-[22px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+    <div class="flex items-center gap-4 px-4 mb-10 mt-2">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30 shrink-0 shadow-[0_0_24px_rgba(164,230,255,0.15)]">
+        <span class="material-symbols-outlined text-primary font-bold text-[26px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
       </div>
-      <div class="flex flex-col gap-4">
-        <h1 class="font-headline-md text-[20px] font-bold text-on-surface tracking-tight leading-none mt-3">Level Up</h1>
-        <p class="font-label-mono text-[9px] text-primary/80 uppercase tracking-widest leading-none mb-4">Elite Productivity</p>
+      <div class="flex flex-col gap-1">
+        <h1 class="font-headline-md text-[22px] font-bold text-on-surface tracking-tight leading-none ">Level Up</h1>
+        <p class="font-label-mono text-[10px] text-primary/80 uppercase tracking-widest leading-none mt-0.5">Elite Productivity</p>
       </div>
     </div>
 
     <!-- Navigation Links -->
-    <div class="flex-1 overflow-y-auto flex flex-col gap-8 font-medium kanban-scroll pr-1">
-      <div *ngFor="let group of navGroups" class="flex flex-col gap-3">
+    <div class="flex-1 overflow-y-auto flex flex-col gap-9 font-medium kanban-scroll px-2">
+      <div *ngFor="let group of navGroups" class="flex flex-col gap-2">
         <!-- Group Title -->
-        <span class="px-3 py-1 text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">{{ group.title }}</span>
+        <span class="px-4   py-2 text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-[0.2em]">{{ group.title }}</span>
         
         <!-- Group Links -->
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1.5">
           <a 
             *ngFor="let link of group.links"
             [routerLink]="link.route"
             (click)="closeSidebarOnMobile()"
-            routerLinkActive="bg-secondary-container/15 text-secondary font-bold"
+            routerLinkActive="bg-primary/10 text-primary font-bold shadow-[inset_3px_0_0_0_currentColor]"
             [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' || link.route === '/' }"
-            class="flex items-center gap-3.5 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 transition-all duration-150 ease-in-out text-[14px]">
-            <span class="material-symbols-outlined text-[20px]">{{ link.icon }}</span>
+            class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-all duration-200 ease-in-out text-[15px] group">
+            <span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform duration-200">{{ link.icon }}</span>
             <span>{{ link.label }}</span>
           </a>
         </div>
@@ -47,36 +47,36 @@
     </div>
 
     <!-- Bottom Actions -->
-    <div class="mt-auto pt-4 border-t border-surface-variant/20 flex flex-col gap-3 font-medium">
-      <span class="px-3 py-1 text-[10px] font-bold text-on-surface-variant/40 uppercase tracking-widest">System</span>
+    <div class="mt-auto pt-6 pb-2 border-t border-surface-variant/20 flex flex-col gap-1.5 font-medium px-2">
+      <span class="px-4 py-1 text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-[0.2em] mb-1">System</span>
       <a 
         *ngFor="let link of bottomLinks"
         [routerLink]="link.route"
         (click)="closeSidebarOnMobile()"
-        routerLinkActive="bg-secondary-container/15 text-secondary font-bold"
-        class="flex items-center gap-3.5 px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/20 transition-all duration-150 ease-in-out text-[14px]">
-        <span class="material-symbols-outlined text-[20px]">{{ link.icon }}</span>
+        routerLinkActive="bg-primary/10 text-primary font-bold shadow-[inset_3px_0_0_0_currentColor]"
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-all duration-200 ease-in-out text-[15px] group">
+        <span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform duration-200">{{ link.icon }}</span>
         <span>{{ link.label }}</span>
       </a>
       <a 
         (click)="logout(); closeSidebarOnMobile()"
-        class="flex items-center gap-3.5 px-3 py-2 rounded-lg text-error/80 hover:text-error hover:bg-error/10 transition-all duration-150 ease-in-out cursor-pointer text-[14px]">
-        <span class="material-symbols-outlined text-[20px]">logout</span>
+        class="flex items-center gap-4 px-4 py-3 mt-2 rounded-xl text-error/80 hover:text-error hover:bg-error/10 transition-all duration-200 ease-in-out cursor-pointer text-[15px] group border border-transparent hover:border-error/20">
+        <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:-translate-x-1 transition-all duration-200">logout</span>
         <span>Log Out</span>
       </a>
     </div>
   </aside>
 
   <!-- Right Side Container (Header, Main Content & Footer) -->
-  <div class="flex-grow flex flex-col h-screen overflow-y-auto relative bg-background">
+  <div #scrollContainer class="flex-grow flex flex-col h-screen overflow-y-auto relative bg-background">
     
     <!-- TopAppBar -->
     <header class="fixed md:sticky top-0 left-0 md:left-auto right-0 md:right-auto z-30 flex items-center justify-center px-gutter h-[64px] bg-[#0e1417]/80 backdrop-blur-md border-b border-surface-variant/30 transition-all duration-300 w-full shrink-0">
       
-      <div class="w-full max-w-[1600px] flex items-center justify-between">
+      <div class="w-full max-w-[1600px] flex items-center justify-between gap-4">
         
         <!-- Sidebar Toggle & Brand -->
-        <div class="flex items-center gap-md">
+        <div class="flex items-center gap-md shrink-0 w-[40px] md:w-[100px]">
           <button 
             (click)="toggleSidebar()"
             class="p-2 rounded-full hover:bg-surface-variant/50 text-on-surface-variant hover:text-primary transition-all active:scale-90 md:hidden">
@@ -87,42 +87,52 @@
             <div class="w-8 h-8 rounded bg-primary flex items-center justify-center">
               <span class="material-symbols-outlined text-on-primary font-bold text-[18px]">bolt</span>
             </div>
-            <span class="font-headline-md text-[18px] font-bold text-on-surface tracking-tighter">Level Up</span>
+            <span class="font-headline-md text-[18px] font-bold text-on-surface tracking-tighter ">Level Up</span>
           </a>
         </div>
 
-        <!-- Search Bar & Actions -->
-        <div class="flex items-center gap-md">
-          <div class="relative hidden sm:flex items-center w-[260px] group bg-[#161d1f] border border-surface-variant/60 rounded-lg py-1 px-3">
-            <span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2 group-focus-within:text-primary transition-colors">search</span>
-            <input 
-              class="bg-transparent border-none text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-0 w-full pl-0 pr-10" 
-              placeholder="Search commands..." 
-              type="text" />
-            <div class="absolute right-2 flex items-center gap-0.5 bg-surface-variant/40 border border-surface-variant/60 rounded px-1.5 py-0.5 font-label-mono text-[9px] text-on-surface-variant select-none pointer-events-none">
-              <span class="mx-2">⌘</span><span class="mx-2">K</span>
+        <!-- Center Search Bar and Actions Container -->
+        <div class="flex-1 flex items-center justify-center pr-12 md:pr-0">
+          <div class="flex items-center gap-4 sm:gap-6 bg-surface-container-low/40 backdrop-blur-md border border-surface-variant/50 rounded-2xl py-1 px-2 sm:px-4 shadow-lg">
+            
+            <!-- Search Bar -->
+            <div class="relative hidden sm:flex items-center w-[220px] lg:w-[280px] group bg-[#161d1f] border border-surface-variant/60 rounded-xl py-1.5 px-3 transition-all focus-within:ring-1 focus-within:ring-primary/50">
+              <span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2 group-focus-within:text-primary transition-colors">search</span>
+              <input 
+                class="bg-transparent border-none text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-0 w-full pl-0 pr-10" 
+                placeholder="Search commands..." 
+                type="text" />
+              <div class="absolute right-2 flex items-center gap-0.5 bg-surface-variant/40 border border-surface-variant/60 rounded px-1.5 py-0.5 font-label-mono text-[9px] text-on-surface-variant select-none pointer-events-none">
+                <span class="mx-2">⌘</span><span class="mx-2">K</span>
+              </div>
+            </div>
+
+            <!-- Separator -->
+            <div class="hidden sm:block w-px h-5 bg-surface-variant/60"></div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-1 sm:gap-2">
+              <button class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-tertiary hover:bg-surface-variant/80 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-[20px]">local_fire_department</span>
+              </button>
+              <button class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-surface-variant/80 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-[20px]">military_tech</span>
+              </button>
+              <button class="relative w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-variant/80 transition-all active:scale-95">
+                <span class="material-symbols-outlined text-[20px]">notifications</span>
+                <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary border-2 border-surface"></span>
+              </button>
             </div>
           </div>
+        </div>
 
-          <div class="flex items-center gap-sm px-4">
-            <button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-tertiary hover:bg-surface-variant transition-colors active:opacity-80">
-              <span class="material-symbols-outlined text-[20px]">local_fire_department</span>
-            </button>
-            <button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-surface-variant transition-colors active:opacity-80">
-              <span class="material-symbols-outlined text-[20px]">military_tech</span>
-            </button>
-            <button class="relative w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-variant transition-colors active:opacity-80">
-              <span class="material-symbols-outlined text-[20px]">notifications</span>
-              <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary border-2 border-surface"></span>
-            </button>
-
-            <!-- User profile display -->
-            <div class="flex items-center gap-2 ml-sm pl-sm border-l border-surface-variant/30">
-              <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer font-bold text-primary font-stats-number text-sm ">
-                {{ userName.charAt(0).toUpperCase() }}
-              </div>
-              <span class="hidden lg:inline text-xs text-on-surface-variant font-medium tracking-tight truncate max-w-[80px] ">{{ userName }}</span>
+        <!-- Right User Profile -->
+        <div class="flex items-center justify-end shrink-0 w-[40px] md:w-[100px] ">
+          <div class="flex items-center gap-3 bg-surface-container-low/30 backdrop-blur-md border border-surface-variant/50 rounded-full py-1.5 px-2 md:pr-4 shadow-lg cursor-pointer hover:bg-surface-variant/50 transition-all group">
+            <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center font-bold text-primary font-stats-number text-sm shrink-0 group-hover:scale-105 transition-transform">
+              {{ userName.charAt(0).toUpperCase() }}
             </div>
+            <span class="hidden md:inline text-sm text-on-surface-variant font-medium tracking-tight truncate max-w-[90px] ">{{ userName }}</span>
           </div>
         </div>
 

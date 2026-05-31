@@ -1,0 +1,36 @@
+<div class="note-detail-page">
+ 
+  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+  <div *ngIf="isLoading" class="loading-indicator">Loading note details...</div>
+ 
+  <div *ngIf="note" class="detail-container">
+    <div class="detail-header">
+      <a class="btn-back" [routerLink]="['/notes']">← Back</a>
+      <div class="header-actions">
+        <button class="btn-pin" (click)="togglePin()">
+          {{ note.isPinned ? '📌 Pinned' : '📍 Pin Note' }}
+        </button>
+        <a class="btn-edit" [routerLink]="['/notes', note.id, 'edit']">Edit</a>
+        <button class="btn-danger" (click)="deleteNote()">Delete</button>
+      </div>
+    </div>
+ 
+    <div class="detail-info">
+      <h1 class="note-title">{{ note.title }}</h1>
+      
+      <div class="note-meta">
+        <span>Updated: {{ formatDate(note.updatedAt) }}</span>
+        <span *ngIf="note.createdAt !== note.updatedAt">• Created: {{ formatDate(note.createdAt) }}</span>
+      </div>
+ 
+      <div class="note-tags" *ngIf="note.tagList && note.tagList.length">
+        <span class="tag" *ngFor="let tag of note.tagList"># {{ tag }}</span>
+      </div>
+ 
+      <hr class="note-divider" />
+ 
+      <div class="note-content" [innerHTML]="formatContent(note.content)"></div>
+    </div>
+  </div>
+ 
+</div>

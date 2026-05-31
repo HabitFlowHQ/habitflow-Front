@@ -1,0 +1,86 @@
+<div class="note-list-page">
+ 
+  <!-- Header -->
+  <div class="page-header">
+    <h1>📝 My Notes</h1>
+    <a class="btn-primary" [routerLink]="['/notes/create']">+ New Note</a>
+  </div>
+ 
+  <!-- Search + Filters -->
+  <div class="note-filters">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Search notes..."
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="onSearch()"
+        (input)="onSearch()"
+      />
+      <button *ngIf="searchQuery" class="clear-btn" (click)="clearFilters()">✕</button>
+    </div>
+ 
+    <div class="tag-chips" *ngIf="allTags.length > 0">
+      <button
+        *ngFor="let tag of allTags"
+        class="tag-chip"
+        [class.active]="activeTag === tag"
+        (click)="filterByTag(tag)"
+      >
+        # {{ tag }}
+      </button>
+    </div>
+  </div>
+ 
+  <!-- States -->
+  <div *ngIf="isLoading"    class="loading-indicator">Loading notes...</div>
+  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+ 
+  <div *ngIf="!isLoading && notes.length === 0 && !errorMessage" class="empty-state">
+    <p>No notes yet. Write your first note!</p>
+    <a class="btn-primary" [routerLink]="['/notes/create']">+ Create Note</a>
+  </div>
+ 
+  <!-- Notes Grid -->
+  <div class="notes-grid" *ngIf="notes.length > 0">
+    <div
+      class="note-card"
+      *ngFor="let note of notes"
+      [class.pinned]="note.isPinned"
+    >
+ 
+      <!-- Card Top -->
+      <div class="note-card-top">
+        <a class="note-title" [routerLink]="['/notes', note.id]">
+          {{ note.title }}
+        </a>
+        <button
+          class="pin-btn"
+          (click)="togglePin(note)"
+          [title]="note.isPinned ? 'Unpin' : 'Pin'"
+        >
+          {{ note.isPinned ? '📌' : '📍' }}
+        </button>
+      </div>
+ 
+      <!-- Preview -->
+      <p class="note-preview">{{ preview(note.content) }}</p>
+ 
+      <!-- Tags -->
+      <div class="note-tags" *ngIf="note.tagList && note.tagList.length">
+        <span class="tag" *ngFor="let tag of note.tagList"># {{ tag }}</span>
+      </div>
+ 
+      <!-- Footer -->
+      <div class="note-card-footer">
+        <span class="note-date">{{ formatDate(note.updatedAt) }}</span>
+        <div class="note-actions">
+          <a class="btn-edit"   [routerLink]="['/notes', note.id, 'edit']">Edit</a>
+          <button class="btn-danger" (click)="deleteNote(note.id)">Delete</button>
+        </div>
+      </div>
+ 
+    </div>
+  </div>
+ 
+</div>

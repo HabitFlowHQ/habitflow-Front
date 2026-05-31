@@ -1,0 +1,30 @@
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+}
+ 
+.label-hint {
+  font-size: 11px;
+  text-transform: none;
+  color: var(--text-muted);
+  font-weight: normal;
+  letter-spacing: normal;
+  margin-left: 4px;
+}
+ 
+.checkbox-label {
+  font-size: 14px;
+  color: var(--text);
+  
+  input {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+}

@@ -1,5 +1,5 @@
 
-import { Component, OnInit }  from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef }  from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule }  from '@angular/forms';
 import { Router }       from '@angular/router';
@@ -37,7 +37,8 @@ export class CreateTask implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -54,16 +55,19 @@ export class CreateTask implements OnInit {
 
     if (!this.formData.title.trim()) {
       this.errorMessage = 'Task title is required';
+      this.cdr.detectChanges();
       return;
     }
 
     if (this.formData.estimatedMinutes <= 0) {
       this.errorMessage = 'Estimated time must be a positive number';
+      this.cdr.detectChanges();
       return;
     }
 
     this.isLoading    = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     this.taskService.createTask(this.formData).subscribe({
       next: (createdTask) => {
@@ -75,6 +79,7 @@ export class CreateTask implements OnInit {
         console.error(err);
         this.errorMessage = 'Failed to create task. Please try again.';
         this.isLoading    = false;
+        this.cdr.detectChanges();
       }
     });
   }

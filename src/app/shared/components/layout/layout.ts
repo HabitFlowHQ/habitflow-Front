@@ -1,8 +1,8 @@
-
-import { Component, signal, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, signal, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-layout',
@@ -17,6 +17,10 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './layout.scss',
 })
 export class Layout implements OnInit {
+
+  @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
+
+  private router = inject(Router);
 
   isSidebarOpen = signal(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
   userName = 'User';
@@ -45,7 +49,8 @@ export class Layout implements OnInit {
         { label: 'Habits',     route: '/habits',    icon: 'cached' },
         { label: 'Tasks',      route: '/tasks',     icon: 'check_box' },
         { label: 'Pomodoro',   route: '/pomodoro',  icon: 'timer' },
-        { label: 'Projects',   route: '/projects',  icon: 'account_tree' }
+        { label: 'Projects',   route: '/projects',  icon: 'account_tree' },
+        { label: 'Notes',      route: '/notes',     icon: 'edit_note' }
       ]
     },
     {
@@ -68,6 +73,15 @@ export class Layout implements OnInit {
 
   ngOnInit(): void {
     this.userName = this.authService.getUserName();
+ 
+    // Reset scroll on navigation
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      if (this.scrollContainer) {
+        this.scrollContainer.nativeElement.scrollTop = 0;
+      }
+    });
   }
 
   logout() {

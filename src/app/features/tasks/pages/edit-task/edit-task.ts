@@ -7,7 +7,7 @@
 //  - PUT /api/task/:id  (حفظ التعديلات)
 // ═══════════════════════════════════════════════════════════
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }       from '@angular/common';
 import { FormsModule }        from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -45,7 +45,8 @@ export class EditTask implements OnInit {
   constructor(
     private taskService: TaskService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -62,6 +63,8 @@ export class EditTask implements OnInit {
   }
 
   loadCurrentTask(id: number): void {
+    this.isLoadingTask = true;
+    this.cdr.detectChanges();
     this.taskService.getTaskById(id).subscribe({
       next: (task) => {
 
@@ -73,10 +76,12 @@ export class EditTask implements OnInit {
           estimatedMinutes: task.estimatedMinutes
         };
         this.isLoadingTask = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage  = ' task not found';
         this.isLoadingTask = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -85,11 +90,13 @@ export class EditTask implements OnInit {
   onSubmit(): void {
     if (!this.formData.title.trim()) {
       this.errorMessage = ' title is required';
+      this.cdr.detectChanges();
       return;
     }
 
     this.isSaving     = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     this.taskService.updateTask(this.taskId, this.formData).subscribe({
       next: () => {
@@ -98,6 +105,7 @@ export class EditTask implements OnInit {
       error: (err) => {
         this.errorMessage = err.error?.message ?? 'Failed to save. Please try again';
         this.isSaving = false;
+        this.cdr.detectChanges();
       }
     });
   }

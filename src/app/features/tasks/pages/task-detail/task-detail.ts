@@ -1,4 +1,4 @@
-import { Component, OnInit }  from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef }  from '@angular/core';
 import { CommonModule }        from '@angular/common';
 import { FormsModule }         from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -34,7 +34,8 @@ export class TaskDetail implements OnInit {
   constructor(
     private taskService: TaskService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -45,11 +46,13 @@ export class TaskDetail implements OnInit {
         console.log('[TaskDetail] Route parameter "id" changed:', idParam);
         if (!idParam) {
           this.errorMessage = 'task id not provided in URL';
+          this.cdr.detectChanges();
           return;
         }
         const id = +idParam;
         if (isNaN(id)) {
           this.errorMessage = 'Invalid task ID provided';
+          this.cdr.detectChanges();
           return;
         }
         this.loadTask(id);
@@ -57,6 +60,7 @@ export class TaskDetail implements OnInit {
       error: (err) => {
         console.error('[TaskDetail] Error reading route params:', err);
         this.errorMessage = 'Failed to parse route parameters';
+        this.cdr.detectChanges();
       }
     });
   }
@@ -67,12 +71,14 @@ export class TaskDetail implements OnInit {
     this.isLoading = true;
     this.errorMessage = '';
     this.task = null;
+    this.cdr.detectChanges();
 
     this.taskService.getTaskById(id).subscribe({
       next: (data: TaskDetails) => {
         console.log('[TaskDetail] Successfully loaded task details:', data);
         this.task      = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('[TaskDetail] API error occurred:', err);
@@ -80,6 +86,7 @@ export class TaskDetail implements OnInit {
           ? 'Task not found'
           : 'Failed to load task details (' + (err.message || 'connection error') + ')';
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -92,6 +99,7 @@ export class TaskDetail implements OnInit {
       next: (res) => {
         console.log(res.message);
         this.task!.status = TaskStatus.InProgress;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err)
     });
@@ -115,6 +123,7 @@ export class TaskDetail implements OnInit {
         this.task!.actualMinutes  = this.actualMinutes;
         this.task!.completedAt    = new Date().toISOString();
         this.showCompleteForm     = false;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error(err)
     });
