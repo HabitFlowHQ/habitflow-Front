@@ -1,0 +1,168 @@
+<div class="project-detail-page animate-fade-in" *ngIf="project">
+
+  <!-- ── Header Info ── -->
+  <div class="project-header" [style.--project-color]="project.color || '#a4e6ff'">
+    <div class="header-left">
+      <div class="title-row">
+        <span class="project-icon">{{ project.icon || '📁' }}</span>
+        <h1>{{ project.title }}</h1>
+      </div>
+      <p class="project-desc" *ngIf="project.description">{{ project.description }}</p>
+      
+      <div class="meta-row">
+        <span class="meta-item">📅 Due: <strong>{{ formatDate(project.dueDate) }}</strong></span>
+        <span class="meta-item">🕒 Created: {{ formatDate(project.createdAt) }}</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Toggle Complete -->
+      <button 
+        class="complete-toggle cursor-pointer"
+        [class.completed]="project.isCompleted"
+        (click)="toggleProjectComplete()">
+        {{ project.isCompleted ? '✓ Completed' : '○ Active' }}
+      </button>
+
+      <!-- Back link -->
+      <a class="back-link cursor-pointer" [routerLink]="['/projects']">← Back to Projects</a>
+    </div>
+  </div>
+
+  <!-- ── Progress stats bar ── -->
+  <div class="progress-section bg-surface-container-low border border-surface-variant/30 rounded-xl p-md flex items-center justify-between gap-md mb-md">
+    <div class="flex-1 flex flex-col gap-xs">
+      <div class="flex justify-between font-label-mono text-[10px] text-on-surface-variant/50 font-bold uppercase tracking-widest">
+        <span>Completion Progress</span>
+        <span [style.color]="progressColor">{{ project.progressPercent }}%</span>
+      </div>
+      <div class="progress-bar-track h-2 bg-[#0e1417] rounded-full overflow-hidden">
+        <div 
+          class="progress-bar-fill h-full rounded-full transition-all duration-300"
+          [style.width.%]="project.progressPercent"
+          [style.background]="progressColor"></div>
+      </div>
+      <span class="text-[12px] text-on-surface-variant/60 font-semibold">{{ project.completedTasks }} of {{ project.totalTasks }} tasks completed</span>
+    </div>
+
+    <!-- Quick Add Trigger -->
+    <button 
+      class="btn-primary cursor-pointer px-md py-sm rounded-lg"
+      (click)="showAddForm = !showAddForm">
+      + Add Task
+    </button>
+  </div>
+
+  <!-- ── Task Form ── -->
+  <div class="add-task-form bg-surface-container-low border border-surface-variant/30 rounded-xl p-md mb-md animate-fade-in-up" *ngIf="showAddForm">
+    <h3 class="font-bold mb-3 text-on-surface">Create Project Task</h3>
+    <div class="flex flex-col sm:flex-row gap-sm items-end">
+      <div class="flex-1 w-full">
+        <input 
+          type="text" 
+          placeholder="What needs to be done?" 
+          [(ngModel)]="newTaskTitle" 
+          (keyup.enter)="addTask()"
+          class="w-full bg-[#0e1417] border border-surface-variant/30 rounded-lg px-3 py-2 text-[13px] text-on-surface focus:outline-none focus:border-primary/50 transition-colors" />
+      </div>
+      
+      <div class="w-full sm:w-[150px]">
+        <select 
+          [(ngModel)]="newTaskStatus"
+          class="w-full bg-[#0e1417] border border-surface-variant/30 rounded-lg px-3 py-2 text-[13px] text-on-surface focus:outline-none focus:border-primary/50 transition-colors cursor-pointer">
+          <option value="Todo">To Do</option>
+          <option value="InProgress">In Progress</option>
+          <option value="Done">Done</option>
+        </select>
+      </div>
+
+      <div class="flex gap-xs w-full sm:w-auto">
+        <button 
+          [disabled]="addingTask || !newTaskTitle.trim()"
+          class="btn-primary cursor-pointer px-md py-sm rounded-lg flex-1 sm:flex-initial"
+          (click)="addTask()">
+          {{ addingTask ? 'Adding...' : 'Create' }}
+        </button>
+        <button 
+          class="px-md py-sm border border-surface-variant/30 rounded-lg text-on-surface-variant hover:bg-surface-variant/20 cursor-pointer flex-1 sm:flex-initial"
+          (click)="showAddForm = false">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Kanban Board ── -->
+  <div class="kanban-board grid grid-cols-1 md:grid-cols-3 gap-md items-start">
+    
+    <!-- Columns mapping -->
+    <div 
+      class="kanban-column bg-surface-container-low/40 border border-surface-variant/20 rounded-2xl p-md flex flex-col h-[650px] shadow-sm"
+      *ngFor="let col of columns"
+    >
+      <div class="column-header flex justify-between items-center mb-md pb-xs border-b border-surface-variant/15 shrink-0">
+        <div class="flex items-center gap-xs font-display-lg text-sm font-bold text-on-surface">
+          <span>{{ col.icon }}</span>
+          <span>{{ col.label }}</span>
+        </div>
+        <span class="task-count-badge bg-[#0e1417] border border-surface-variant/30 text-on-surface-variant text-[11px] font-bold px-2 py-0.5 rounded-full">
+          {{ getTasksByStatus(col.status).length }}
+        </span>
+      </div>
+
+      <!-- Scrollable Tasks Container -->
+      <div class="tasks-container flex-1 overflow-y-auto flex flex-col gap-sm pr-xs kanban-scroll">
+        
+        <div *ngIf="getTasksByStatus(col.status).length === 0" 
+             class="empty-column-placeholder flex-1 border border-dashed border-surface-variant/20 rounded-xl flex items-center justify-center text-on-surface-variant/40 text-[12px] p-lg text-center select-none min-h-[100px]">
+          No tasks in this stage
+        </div>
+
+        <div 
+          class="task-card bg-[#161d1f] border border-surface-variant/40 hover:border-primary/30 rounded-xl p-md shadow-sm flex flex-col gap-md transition-all group"
+          *ngFor="let task of getTasksByStatus(col.status)"
+        >
+          <div class="flex justify-between items-start gap-xs">
+            <h4 class="font-medium text-[13px] text-on-surface leading-snug break-words flex-1 group-hover:text-primary transition-colors">
+              {{ task.title }}
+            </h4>
+            <button 
+              class="delete-task-btn text-on-surface-variant/40 hover:text-error transition-colors cursor-pointer shrink-0 opacity-0 group-hover:opacity-100"
+              (click)="deleteTask(task.id)">
+              <span class="material-symbols-outlined text-[18px]">delete</span>
+            </button>
+          </div>
+
+          <!-- Board Actions: Move Card -->
+          <div class="card-actions flex justify-between items-center border-t border-surface-variant/15 pt-sm mt-xs">
+            <span class="text-[10px] text-on-surface-variant/40 font-label-mono">{{ task.createdAt | date:'shortTime' }}</span>
+            
+            <div class="navigation-controls flex gap-1">
+              <button 
+                *ngIf="col.status !== 'Todo'"
+                (click)="moveTask(task, col.status === 'Done' ? 'InProgress' : 'Todo')"
+                class="w-6 h-6 rounded bg-[#0e1417] hover:bg-surface-variant/20 border border-surface-variant/30 flex items-center justify-center text-[10px] cursor-pointer text-on-surface-variant active:scale-90"
+                title="Move left">
+                ◀
+              </button>
+              <button 
+                *ngIf="col.status !== 'Done'"
+                (click)="moveTask(task, col.status === 'Todo' ? 'InProgress' : 'Done')"
+                class="w-6 h-6 rounded bg-[#0e1417] hover:bg-surface-variant/20 border border-surface-variant/30 flex items-center justify-center text-[10px] cursor-pointer text-on-surface-variant active:scale-90"
+                title="Move right">
+                ▶
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Loading state -->
+<div *ngIf="isLoading" class="loading-indicator">Loading project details...</div>
+<div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>

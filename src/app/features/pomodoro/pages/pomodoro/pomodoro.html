@@ -1,0 +1,321 @@
+<!-- Ambient Glow Background -->
+<div class="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none">
+  <div class="absolute -top-[10%] -left-[10%] w-[700px] h-[700px] bg-primary/10 rounded-full blur-[150px] animate-pulse"></div>
+  <div class="absolute top-[40%] -right-[10%] w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[130px]"></div>
+</div>
+ 
+<div class="flex flex-col gap-lg relative z-10">
+ 
+  <!-- ======================================================= -->
+  <!-- Page Header                                             -->
+  <!-- ======================================================= -->
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-md shrink-0 mt-4">
+    <div>
+      <h2 class="font-display-lg text-2xl md:text-3xl font-extrabold text-on-surface tracking-tight">
+        Focus Protocol
+      </h2>
+      <p class="font-body-base text-[13px] text-on-surface-variant/60 mt-0.5">
+        Deep work sessions with Pomodoro technique.
+      </p>
+    </div>
+ 
+    <!-- Stats Pills -->
+    <div class="flex items-center gap-sm font-label-mono text-[10px] font-semibold tracking-wider">
+      <div class="flex items-center gap-xs px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+        <span class="material-symbols-outlined text-[14px]">timer</span>
+        <span>{{ stats?.todaySessions ?? 0 }} sessions today</span>
+      </div>
+      <div class="flex items-center gap-xs px-3 py-1.5 rounded-lg bg-tertiary/10 border border-tertiary/20 text-tertiary">
+        <span class="material-symbols-outlined text-[14px]">bolt</span>
+        <span>{{ stats?.totalXpEarned ?? 0 }} XP earned</span>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ======================================================= -->
+  <!-- Main Grid: Timer + Sidebar                              -->
+  <!-- ======================================================= -->
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-lg">
+ 
+    <!-- ===================================================== -->
+    <!-- LEFT: Timer Card                                      -->
+    <!-- ===================================================== -->
+    <div class="flex flex-col gap-md">
+ 
+      <!-- Timer Card -->
+      <div class="bg-surface-container-low border border-surface-variant/30 rounded-2xl p-lg flex flex-col items-center gap-lg relative overflow-hidden">
+ 
+        <!-- Glow behind ring -->
+        <div
+          class="absolute inset-0 rounded-2xl opacity-20 transition-all duration-700 pointer-events-none"
+          [style.background]="'radial-gradient(circle at 50% 40%, ' + ringColor + '33, transparent 70%)'">
+        </div>
+ 
+        <!-- Session Type Tabs -->
+        <div class="flex items-center gap-xs bg-[#161d1f] border border-surface-variant/30 rounded-xl p-1 font-label-mono text-[11px] font-bold z-10">
+          <button
+            (click)="changeSessionType('Work')"
+            [class.bg-surface-variant]="sessionType === 'Work'"
+            [class.text-primary]="sessionType === 'Work'"
+            [class.text-on-surface-variant]="sessionType !== 'Work'"
+            [disabled]="timerState === 'running'"
+            class="px-4 py-1.5 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            🍅 Work
+          </button>
+          <button
+            (click)="changeSessionType('ShortBreak')"
+            [class.bg-surface-variant]="sessionType === 'ShortBreak'"
+            [class.text-secondary]="sessionType === 'ShortBreak'"
+            [class.text-on-surface-variant]="sessionType !== 'ShortBreak'"
+            [disabled]="timerState === 'running'"
+            class="px-4 py-1.5 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            ☕ Short Break
+          </button>
+          <button
+            (click)="changeSessionType('LongBreak')"
+            [class.bg-surface-variant]="sessionType === 'LongBreak'"
+            [class.text-tertiary]="sessionType === 'LongBreak'"
+            [class.text-on-surface-variant]="sessionType !== 'LongBreak'"
+            [disabled]="timerState === 'running'"
+            class="px-4 py-1.5 rounded-lg transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+            🌙 Long Break
+          </button>
+        </div>
+ 
+        <!-- ================================================ -->
+        <!-- Timer Ring (SVG)                                 -->
+        <!-- ================================================ -->
+        <div class="relative flex items-center justify-center z-10">
+          <svg width="220" height="220" class="-rotate-90">
+            <!-- Background Ring -->
+            <circle
+              cx="110" cy="110" r="54"
+              fill="none"
+              stroke="rgba(255,255,255,0.06)"
+              stroke-width="10"
+            />
+            <!-- Progress Ring -->
+            <circle
+              cx="110" cy="110" r="54"
+              fill="none"
+              [attr.stroke]="ringColor"
+              stroke-width="10"
+              stroke-linecap="round"
+              [attr.stroke-dasharray]="CIRCLE_CIRCUMFERENCE"
+              [attr.stroke-dashoffset]="dashOffset()"
+              style="transition: stroke-dashoffset 0.9s ease, stroke 0.5s ease;"
+            />
+          </svg>
+ 
+          <!-- Timer Text في وسط الـ Ring -->
+          <div class="absolute inset-0 flex flex-col items-center justify-center rotate-0">
+            <!-- الوقت الكبير -->
+            <div class="font-stats-number text-5xl font-black text-on-surface tracking-tighter leading-none"
+                 [style.color]="timerState === 'running' ? ringColor : ''">
+              {{ pad(minutes()) }}:{{ pad(seconds()) }}
+            </div>
+            <!-- Status Label -->
+            <p class="font-label-mono text-[11px] text-on-surface-variant/60 mt-2 tracking-widest uppercase">
+              {{ statusLabel }}
+            </p>
+          </div>
+        </div>
+ 
+        <!-- ================================================ -->
+        <!-- Session Dots — عداد جلسات اليوم               -->
+        <!-- ================================================ -->
+        <div class="flex items-center gap-2 z-10">
+          <span *ngFor="let dot of [0,1,2,3]"
+            class="w-2.5 h-2.5 rounded-full transition-all duration-300"
+            [class.bg-primary]="dot < (completedToday % 4)"
+            [class.border]="dot >= (completedToday % 4)"
+            [class.border-surface-variant]="dot >= (completedToday % 4)">
+          </span>
+          <span class="font-label-mono text-[10px] text-on-surface-variant/40 ml-1 tracking-wider">
+            {{ completedToday }} sessions
+          </span>
+        </div>
+ 
+        <!-- ================================================ -->
+        <!-- Control Buttons                                  -->
+        <!-- ================================================ -->
+        <div class="flex items-center gap-md z-10">
+ 
+          <!-- Cancel Button — يظهر فقط عند وجود جلسة جارية أو متوقفة -->
+          <button
+            *ngIf="timerState !== 'idle'"
+            (click)="cancelTimer()"
+            class="w-12 h-12 rounded-full border border-error/30 text-error/60 hover:text-error hover:border-error hover:bg-error/10 flex items-center justify-center transition-all active:scale-90 cursor-pointer">
+            <span class="material-symbols-outlined text-[22px]">close</span>
+          </button>
+ 
+          <!-- START / RESUME Button -->
+          <button
+            *ngIf="timerState === 'idle' || timerState === 'paused'"
+            (click)="startTimer()"
+            class="w-20 h-20 rounded-full flex items-center justify-center font-bold text-[#003543] transition-all duration-200 active:scale-90 shadow-lg cursor-pointer"
+            [style.background]="ringColor"
+            [style.box-shadow]="'0 0 30px ' + ringColor + '60'">
+            <span class="material-symbols-outlined text-[32px] font-bold">
+              play_arrow
+            </span>
+          </button>
+ 
+          <!-- PAUSE Button -->
+          <button
+            *ngIf="timerState === 'running'"
+            (click)="pauseTimer()"
+            class="w-20 h-20 rounded-full bg-surface-variant/40 border border-surface-variant/60 hover:bg-surface-variant/60 flex items-center justify-center transition-all duration-200 active:scale-90 cursor-pointer">
+            <span class="material-symbols-outlined text-[32px] text-on-surface">pause</span>
+          </button>
+ 
+          <!-- Placeholder للـ symmetry -->
+          <div *ngIf="timerState === 'idle'" class="w-12 h-12"></div>
+ 
+        </div>
+ 
+        <!-- Task Link (يظهر فقط عند التشغيل) -->
+        <div *ngIf="timerState !== 'idle' && activeSession?.taskTitle"
+             class="flex items-center gap-xs px-3 py-1.5 rounded-lg bg-surface-variant/20 border border-surface-variant/30 font-body-sm text-[12px] text-on-surface-variant z-10">
+          <span class="material-symbols-outlined text-[14px]">check_box</span>
+          <span>{{ activeSession?.taskTitle }}</span>
+        </div>
+ 
+      </div>
+ 
+      <!-- ================================================== -->
+      <!-- Task Selector (يظهر فقط عند idle)                  -->
+      <!-- ================================================== -->
+      <div *ngIf="timerState === 'idle'"
+           class="bg-surface-container-low border border-surface-variant/30 rounded-xl p-md">
+ 
+        <h3 class="font-label-mono text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-3">
+          Link to Task (Optional)
+        </h3>
+ 
+        <select
+          [(ngModel)]="selectedTaskId"
+          class="w-full bg-[#161d1f] border border-surface-variant/40 rounded-lg px-3 py-2 text-[13px] text-on-surface focus:outline-none focus:border-primary/50 transition-colors cursor-pointer">
+          <option [ngValue]="null">— No Task —</option>
+          <option *ngFor="let task of tasks" [ngValue]="task.id">
+            {{ task.title }}
+          </option>
+        </select>
+ 
+      </div>
+ 
+    </div>
+ 
+    <!-- ===================================================== -->
+    <!-- RIGHT: Stats Sidebar                                  -->
+    <!-- ===================================================== -->
+    <div class="flex flex-col gap-md">
+ 
+      <!-- Today Stats -->
+      <div class="bg-surface-container-low border border-surface-variant/30 rounded-xl p-md">
+ 
+        <h3 class="font-label-mono text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-4">
+          Today's Report
+        </h3>
+ 
+        <!-- Loading -->
+        <div *ngIf="isLoadingStats" class="flex justify-center py-4">
+          <div class="w-6 h-6 rounded-full border-2 border-primary/20 border-t-primary animate-spin"></div>
+        </div>
+ 
+        <div *ngIf="!isLoadingStats && stats" class="flex flex-col gap-3">
+ 
+          <!-- Sessions Today -->
+          <div class="flex items-center justify-between py-2 border-b border-surface-variant/20">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[18px]">timer</span>
+              <span class="text-[13px] text-on-surface-variant">Sessions</span>
+            </div>
+            <span class="font-stats-number text-[20px] font-bold text-on-surface">
+              {{ stats.todaySessions }}
+            </span>
+          </div>
+ 
+          <!-- Minutes Today -->
+          <div class="flex items-center justify-between py-2 border-b border-surface-variant/20">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary text-[18px]">schedule</span>
+              <span class="text-[13px] text-on-surface-variant">Minutes</span>
+            </div>
+            <span class="font-stats-number text-[20px] font-bold text-on-surface">
+              {{ stats.todayMinutes }}
+            </span>
+          </div>
+ 
+          <!-- Total XP -->
+          <div class="flex items-center justify-between py-2">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-tertiary text-[18px]">bolt</span>
+              <span class="text-[13px] text-on-surface-variant">Total XP</span>
+            </div>
+            <span class="font-stats-number text-[20px] font-bold text-tertiary">
+              +{{ stats.totalXpEarned }}
+            </span>
+          </div>
+ 
+        </div>
+      </div>
+ 
+      <!-- Recent Sessions -->
+      <div class="bg-surface-container-low border border-surface-variant/30 rounded-xl p-md flex-1">
+ 
+        <h3 class="font-label-mono text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-widest mb-4">
+          Recent Sessions
+        </h3>
+ 
+        <!-- Empty -->
+        <div *ngIf="!stats?.recentSessions?.length"
+             class="flex flex-col items-center justify-center py-8 text-on-surface-variant/40">
+          <span class="material-symbols-outlined text-[36px] mb-2">timer_off</span>
+          <p class="text-[12px]">No sessions yet</p>
+        </div>
+ 
+        <!-- Session List -->
+        <div class="flex flex-col gap-2">
+          <div
+            *ngFor="let session of stats?.recentSessions"
+            class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface-variant/10 transition-colors">
+ 
+            <!-- Type Icon + Info -->
+            <div class="flex items-center gap-2">
+              <span class="text-lg">
+                {{ session.sessionType === 'Work' ? '🍅' : '☕' }}
+              </span>
+              <div class="flex flex-col">
+                <span class="text-[12px] font-medium text-on-surface">
+                  {{ session.durationMinutes }} min
+                </span>
+                <span class="text-[10px] text-on-surface-variant/50">
+                  {{ session.startTime | date:'hh:mm a' }}
+                </span>
+              </div>
+            </div>
+ 
+            <!-- XP + Status -->
+            <div class="flex items-center gap-2">
+              <!-- XP Badge -->
+              <span *ngIf="session.xpEarned > 0"
+                    class="font-label-mono text-[10px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full">
+                +{{ session.xpEarned }} XP
+              </span>
+              <!-- Completed / Cancelled -->
+              <span class="material-symbols-outlined text-[16px]"
+                    [class.text-secondary]="session.isCompleted"
+                    [class.text-error]="!session.isCompleted">
+                {{ session.isCompleted ? 'check_circle' : 'cancel' }}
+              </span>
+            </div>
+ 
+          </div>
+        </div>
+ 
+      </div>
+ 
+    </div>
+  </div>
+</div>

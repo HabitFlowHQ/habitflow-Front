@@ -1,0 +1,192 @@
+.project-list-page {
+  max-width: 1080px;
+  margin:    0 auto;
+}
+
+.projects-grid {
+  display:               grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap:                   18px;
+}
+
+/* ── Card ────────────────────────────────── */
+.project-card {
+  background:     #161d1f;
+  border:         1px solid rgba(255,255,255,0.06);
+  border-radius:  16px;
+  overflow:       hidden;
+  transition:     all 0.2s;
+  display:        flex;
+  flex-direction: column;
+
+  &:hover {
+    border-color: rgba(255,255,255,0.12);
+    box-shadow:   0 0 22px rgba(164,230,255,0.08);
+    transform:    translateY(-2px);
+  }
+
+  &.completed { opacity: 0.7; }
+  &.overdue   { border-color: rgba(239,68,68,0.35); }
+}
+
+.project-color-bar {
+  height:     4px;
+  background: var(--project-color);
+  flex-shrink: 0;
+}
+
+.project-card-body {
+  padding:        18px 20px;
+  display:        flex;
+  flex-direction: column;
+  gap:            12px;
+  flex:           1;
+}
+
+/* ── Header ──────────────────────────────── */
+.project-header {
+  display:     flex;
+  align-items: flex-start;
+  gap:         8px;
+  flex-wrap:   wrap;
+}
+
+.project-title-row {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  flex:        1;
+  min-width:   0;
+}
+
+.project-icon  { font-size: 20px; flex-shrink: 0; }
+
+.project-title {
+  font-size:     15.5px;
+  font-weight:   700;
+  color:         var(--on-surface);
+  text-decoration: none;
+  line-height:   1.3;
+  overflow:      hidden;
+  text-overflow: ellipsis;
+  white-space:   nowrap;
+  &:hover { color: var(--project-color, #a4e6ff); }
+}
+
+.completed-badge, .overdue-badge {
+  font-size:   11px;
+  font-weight: 700;
+  padding:     2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.completed-badge { background: rgba(110,231,183,0.1); color: #6ee7b7; }
+.overdue-badge   { background: rgba(255,180,171,0.1);  color: #ffb4ab;  }
+
+/* ── Description ─────────────────────────── */
+.project-desc {
+  font-size:   13px;
+  color:       var(--on-surface-variant);
+  opacity: 0.7;
+  line-height: 1.5;
+}
+
+/* ── Progress ────────────────────────────── */
+.progress-section {
+  display:        flex;
+  flex-direction: column;
+  gap:            5px;
+}
+
+.progress-top {
+  display:         flex;
+  justify-content: space-between;
+  align-items:     center;
+}
+
+.progress-label {
+  font-size:  11.5px;
+  font-weight: 600;
+  color:       var(--on-surface-variant);
+  opacity: 0.6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.progress-value {
+  font-size:   13px;
+  font-weight: 700;
+}
+
+.progress-bar-track {
+  height:        7px;
+  background:    #0e1417;
+  border-radius: 999px;
+  overflow:      hidden;
+}
+
+.progress-bar-fill {
+  height:        100%;
+  border-radius: 999px;
+  transition:    width 0.4s ease;
+  min-width:     3px;
+}
+
+.tasks-count {
+  font-size: 11.5px;
+  color:     var(--on-surface-variant);
+  opacity: 0.6;
+}
+
+/* ── Footer ──────────────────────────────── */
+.project-footer {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  gap:             8px;
+  padding-top:     12px;
+  border-top:      1px solid rgba(255,255,255,0.06);
+  margin-top:      auto;
+  flex-wrap:       wrap;
+}
+
+.due-date {
+  font-size: 12px;
+  color:     var(--on-surface-variant);
+  opacity: 0.6;
+}
+
+.project-actions {
+  display: flex;
+  gap:     6px;
+}
+
+.btn-edit {
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: 12px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  &:hover {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.15);
+  }
+}
+
+.btn-danger {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid rgba(255,180,171,0.2);
+  color: #ffb4ab;
+  font-size: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  &:hover {
+    background: rgba(255,180,171,0.05);
+    border-color: #ffb4ab;
+  }
+}

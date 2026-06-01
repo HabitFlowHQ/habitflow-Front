@@ -1,0 +1,81 @@
+<div class="project-list-page">
+
+  <div class="page-header">
+    <h1>🗂 Projects</h1>
+    <a class="btn-primary cursor-pointer" [routerLink]="['/projects/create']">+ New Project</a>
+  </div>
+
+  <div *ngIf="isLoading"    class="loading-indicator">Loading projects...</div>
+  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+
+  <div *ngIf="!isLoading && projects.length === 0 && !errorMessage" class="empty-state">
+    <p>No projects yet. Start organizing your work!</p>
+    <a class="btn-primary cursor-pointer" [routerLink]="['/projects/create']">+ Create Project</a>
+  </div>
+
+  <div class="projects-grid" *ngIf="projects.length > 0">
+    <div
+      class="project-card"
+      *ngFor="let project of projects"
+      [class.completed]="project.isCompleted"
+      [class.overdue]="isOverdue(project)"
+      [style.--project-color]="project.color || '#a4e6ff'"
+    >
+
+      <!-- Color bar top -->
+      <div class="project-color-bar"></div>
+
+      <div class="project-card-body">
+
+        <!-- Header -->
+        <div class="project-header">
+          <div class="project-title-row">
+            <span class="project-icon">{{ project.icon || '📁' }}</span>
+            <a class="project-title cursor-pointer" [routerLink]="['/projects', project.id]">
+              {{ project.title }}
+            </a>
+          </div>
+          <span class="completed-badge" *ngIf="project.isCompleted">✓ Done</span>
+          <span class="overdue-badge"   *ngIf="isOverdue(project)">⚠ Overdue</span>
+        </div>
+
+        <!-- Description -->
+        <p class="project-desc" *ngIf="project.description">
+          {{ project.description | slice:0:80 }}{{ project.description!.length > 80 ? '…' : '' }}
+        </p>
+
+        <!-- Progress -->
+        <div class="progress-section">
+          <div class="progress-top">
+            <span class="progress-label">Progress</span>
+            <span class="progress-value"
+              [style.color]="getProgressColor(project.progressPercent)">
+              {{ project.progressPercent }}%
+            </span>
+          </div>
+          <div class="progress-bar-track">
+            <div
+              class="progress-bar-fill"
+              [style.width.%]="project.progressPercent"
+              [style.background]="getProgressColor(project.progressPercent)"
+            ></div>
+          </div>
+          <span class="tasks-count">
+            {{ project.completedTasks }} / {{ project.totalTasks }} tasks
+          </span>
+        </div>
+
+        <!-- Footer -->
+        <div class="project-footer">
+          <span class="due-date">📅 {{ formatDate(project.dueDate) }}</span>
+          <div class="project-actions">
+            <a   class="btn-edit cursor-pointer"   [routerLink]="['/projects', project.id, 'edit']">Edit</a>
+            <button class="btn-danger cursor-pointer" (click)="delete(project.id)">Delete</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -48,6 +48,7 @@ export class Layout implements OnInit {
       links: [
         { label: 'Habits',     route: '/habits',    icon: 'cached' },
         { label: 'Tasks',      route: '/tasks',     icon: 'check_box' },
+        { label: 'Schedule',   route: '/schedule',  icon: 'calendar_today' },
         { label: 'Pomodoro',   route: '/pomodoro',  icon: 'timer' },
         { label: 'Projects',   route: '/projects',  icon: 'account_tree' },
         { label: 'Notes',      route: '/notes',     icon: 'edit_note' }

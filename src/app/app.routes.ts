@@ -15,6 +15,12 @@ import { NoteList }   from './features/notes/pages/note-list/note-list';
 import { CreateNote } from './features/notes/pages/create-note/create-note';
 import { NoteDetail } from './features/notes/pages/note-detail/note-detail';
 import { EditNote }   from './features/notes/pages/edit-note/edit-note';
+import { Pomodoro }   from './features/pomodoro/pages/pomodoro/pomodoro';
+import { Schedule }   from './features/schedule/pages/schedule/schedule';
+import { ProjectList }   from './features/projects/pages/project-list/project-list';
+import { ProjectDetail } from './features/projects/pages/project-detail/project-detail';
+import { CreateProject } from './features/projects/pages/create-project/create-project';
+import { EditProject }   from './features/projects/pages/edit-project/edit-project';
  
 import { Login }    from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
@@ -44,6 +50,12 @@ export const routes: Routes = [
       { path: 'notes/create',      component: CreateNote   },
       { path: 'notes/:id',         component: NoteDetail   },
       { path: 'notes/:id/edit',    component: EditNote     },
+      { path: 'pomodoro',          component: Pomodoro     },
+      { path: 'schedule',          component: Schedule     },
+      { path: 'projects',          component: ProjectList    },
+      { path: 'projects/create',   component: CreateProject  },
+      { path: 'projects/:id',      component: ProjectDetail  },
+      { path: 'projects/:id/edit', component: EditProject    },
     ]
   },
  

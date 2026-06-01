@@ -1,0 +1,178 @@
+<div class="schedule-page">
+
+  <!-- ── Header ── -->
+  <div class="schedule-header">
+    <div class="date-nav">
+      <button class="nav-btn" (click)="prevDay()" title="Previous day">‹</button>
+      <div class="date-info">
+        <h1>{{ displayDate }}</h1>
+        <span class="today-badge" *ngIf="isToday">Today</span>
+      </div>
+      <button class="nav-btn" (click)="nextDay()" title="Next day">›</button>
+    </div>
+
+    <button class="btn-secondary cursor-pointer" (click)="goToToday()" *ngIf="!isToday">
+      ↩ Today
+    </button>
+  </div>
+
+  <!-- ── States ── -->
+  <div *ngIf="isLoading"    class="loading-indicator">Loading schedule...</div>
+  <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
+
+  <ng-container *ngIf="schedule && !isLoading">
+
+    <!-- ── Summary Cards ── -->
+    <div class="summary-row">
+
+      <div class="summary-card habits-card">
+        <div class="summary-icon">🔥</div>
+        <div class="summary-info">
+          <span class="summary-label">Habits</span>
+          <span class="summary-count">
+            {{ schedule.completedHabits }} / {{ schedule.totalHabits }}
+          </span>
+        </div>
+        <div class="summary-ring">
+          <svg viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="3"/>
+            <circle cx="18" cy="18" r="14" fill="none"
+              stroke="var(--color-streak)"
+              stroke-width="3"
+              stroke-dasharray="100"
+              [attr.stroke-dashoffset]="100 - habitsProgress"
+              stroke-linecap="round"
+              transform="rotate(-90 18 18)"/>
+          </svg>
+          <span>{{ habitsProgress }}%</span>
+        </div>
+      </div>
+
+      <div class="summary-card tasks-card">
+        <div class="summary-icon">✅</div>
+        <div class="summary-info">
+          <span class="summary-label">Tasks</span>
+          <span class="summary-count">
+            {{ schedule.completedTasks }} / {{ schedule.totalTasks }}
+          </span>
+        </div>
+        <div class="summary-ring">
+          <svg viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" stroke-width="3"/>
+            <circle cx="18" cy="18" r="14" fill="none"
+              stroke="var(--accent)"
+              stroke-width="3"
+              stroke-dasharray="100"
+              [attr.stroke-dashoffset]="100 - tasksProgress"
+              stroke-linecap="round"
+              transform="rotate(-90 18 18)"/>
+          </svg>
+          <span>{{ tasksProgress }}%</span>
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ── Two Column Layout ── -->
+    <div class="schedule-body">
+
+      <!-- HABITS COLUMN -->
+      <section class="schedule-section">
+        <div class="section-header">
+          <h2>🔥 Habits</h2>
+          <a class="section-link cursor-pointer" [routerLink]="['/habits/create']">+ Add</a>
+        </div>
+
+        <div *ngIf="schedule.habits.length === 0" class="section-empty">
+          No habits yet. <a [routerLink]="['/habits/create']">Create one</a>
+        </div>
+
+        <div class="habits-list">
+          <div
+            class="habit-item"
+            *ngFor="let habit of schedule.habits"
+            [class.completed]="habit.isCompleted"
+            [style.--habit-color]="habit.color || 'var(--accent)'"
+          >
+            <div class="habit-left">
+              <div class="habit-color-bar"></div>
+              <span class="habit-icon">{{ habit.icon || '⭐' }}</span>
+              <div class="habit-info">
+                <span class="habit-name">{{ habit.title }}</span>
+                <span class="habit-meta">
+                  {{ habit.category }} ·
+                  <span class="streak">🔥 {{ habit.currentStreak }} days</span>
+                </span>
+              </div>
+            </div>
+
+            <div class="habit-right">
+              <span class="habit-count" *ngIf="!habit.isCompleted">
+                {{ habit.completedCount }}/{{ habit.targetCount }}
+              </span>
+              <button
+                class="complete-btn"
+                [class.done]="habit.isCompleted"
+                (click)="completeHabit(habit)"
+                [disabled]="habit.isCompleted"
+                [title]="habit.isCompleted ? 'Completed!' : 'Mark as done'"
+              >
+                {{ habit.isCompleted ? '✓' : '○' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- TASKS COLUMN -->
+      <section class="schedule-section">
+        <div class="section-header">
+          <h2>✅ Tasks</h2>
+          <a class="section-link cursor-pointer" [routerLink]="['/tasks/create']">+ Add</a>
+        </div>
+
+        <div *ngIf="schedule.tasks.length === 0" class="section-empty">
+          No tasks for today. <a [routerLink]="['/tasks/create']">Add one</a>
+        </div>
+
+        <div class="tasks-list">
+          <div
+            class="task-item"
+            *ngFor="let task of schedule.tasks"
+            [class.completed]="task.status === 'Completed'"
+            [class.overdue]="task.isOverdue"
+          >
+            <div class="task-left">
+              <span class="task-status-dot" [class]="getStatusClass(task.status)"></span>
+              <div class="task-info">
+                <a class="task-name" [routerLink]="['/tasks', task.id]">
+                  {{ task.title }}
+                </a>
+                <div class="task-meta">
+                  <span class="priority-badge" [class]="getPriorityClass(task.priority)">
+                    {{ task.priority }}
+                  </span>
+                  <span *ngIf="task.estimatedMinutes" class="task-time">
+                    ⏱ {{ formatMinutes(task.estimatedMinutes) }}
+                  </span>
+                  <span *ngIf="task.isOverdue" class="overdue-label">⚠ Overdue</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="task-right">
+              <span class="task-status-text animate-fade-in" [class]="getStatusClass(task.status)">
+                {{ task.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </ng-container>
+
+</div>

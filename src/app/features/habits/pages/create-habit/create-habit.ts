@@ -21,11 +21,24 @@ export class CreateHabit {
     frequencyType: 'Daily',
     targetCount: 1,
     color: '#a4e6ff',
-    icon: ''
+    icon: '📁'
   };
 
   isSubmitting = false;
   errorMessage = '';
+
+  readonly iconOptions = [
+    '📁', '🗂', '💻', '🎨', '✍️', '🏠', '🏋️', '🎵', '✈️', '🎓', '💼', '🚀', '🌟'
+  ];
+
+  readonly colorOptions = [
+    '#a4e6ff', // Ice Blue
+    '#6ee7b7', // Mint
+    '#ffad82', // Coral
+    '#c084fc', // Lavender
+    '#f472b6', // Pink
+    '#fbbf24', // Amber
+  ];
 
   constructor(
     private habitService: HabitService,

@@ -1,0 +1,20 @@
+// ============================================================
+// 📁 pomodoro.scss
+// 🎯 تنسيقات إضافية فوق Tailwind
+// ============================================================
+ 
+@keyframes ring-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+ 
+@keyframes complete-flash {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+ 
+:host {
+  display: block;
+  position: relative;
+}
