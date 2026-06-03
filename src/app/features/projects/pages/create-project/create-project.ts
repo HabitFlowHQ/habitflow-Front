@@ -2,6 +2,7 @@ import { Component, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ProjectService } from '../../../../core/services/project.service';
 import { CreateProjectDto } from '../../../../shared/models/project.model';
 
@@ -16,6 +17,7 @@ export class CreateProject {
 
   private projectService = inject(ProjectService);
   private router         = inject(Router);
+  private toastr         = inject(ToastrService);
   private cdr            = inject(ChangeDetectorRef);
 
   dto: CreateProjectDto = {
@@ -47,6 +49,7 @@ export class CreateProject {
   submit(): void {
     if (!this.dto.title.trim()) {
       this.errorMessage = 'Project title is required.';
+      this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
@@ -57,10 +60,14 @@ export class CreateProject {
     this.cdr.detectChanges();
 
     this.projectService.create(this.dto).subscribe({
-      next: () => this.router.navigate(['/projects']),
+      next: () => {
+        this.toastr.success('Project created successfully!', 'Success');
+        this.router.navigate(['/projects']);
+      },
       error: (err) => {
         console.error(err);
         this.errorMessage = 'Failed to create project.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isSubmitting = false;
         this.cdr.detectChanges();
       }

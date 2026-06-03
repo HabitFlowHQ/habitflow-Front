@@ -1,4 +1,3 @@
-
 import { Routes } from '@angular/router';
  
 import { Layout }     from './shared/components/layout/layout';
@@ -21,6 +20,7 @@ import { ProjectList }   from './features/projects/pages/project-list/project-li
 import { ProjectDetail } from './features/projects/pages/project-detail/project-detail';
 import { CreateProject } from './features/projects/pages/create-project/create-project';
 import { EditProject }   from './features/projects/pages/edit-project/edit-project';
+import { Reports }       from './features/reports/pages/reports/reports';
  
 import { Login }    from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
@@ -34,31 +34,42 @@ export const routes: Routes = [
   {
     path: '',
     component: Layout,
-    canActivate: [authGuard],
     children: [
       { path: '',                redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard',       component: Dashboard    },
-      { path: 'habits',          component: HabitList   },
-      { path: 'habits/create',   component: CreateHabit },
-      { path: 'habits/:id',      component: HabitDetail },
-      { path: 'habits/:id/edit', component: EditHabit   },
-      { path: 'tasks',           component: TaskList    },
-      { path: 'tasks/create',    component: CreateTask  },
-      { path: 'tasks/:id',       component: TaskDetail  },
-      { path: 'tasks/:id/edit',  component: EditTask    },
-      { path: 'notes',             component: NoteList     },
-      { path: 'notes/create',      component: CreateNote   },
-      { path: 'notes/:id',         component: NoteDetail   },
-      { path: 'notes/:id/edit',    component: EditNote     },
-      { path: 'pomodoro',          component: Pomodoro     },
-      { path: 'schedule',          component: Schedule     },
-      { path: 'projects',          component: ProjectList    },
-      { path: 'projects/create',   component: CreateProject  },
-      { path: 'projects/:id',      component: ProjectDetail  },
-      { path: 'projects/:id/edit', component: EditProject    },
+      
+      // Habits Protected
+      { path: 'habits',          component: HabitList, canActivate: [authGuard] },
+      { path: 'habits/create',   component: CreateHabit, canActivate: [authGuard] },
+      { path: 'habits/:id',      component: HabitDetail, canActivate: [authGuard] },
+      { path: 'habits/:id/edit', component: EditHabit, canActivate: [authGuard]   },
+      
+      // Tasks Protected
+      { path: 'tasks',           component: TaskList, canActivate: [authGuard] },
+      { path: 'tasks/create',    component: CreateTask, canActivate: [authGuard]  },
+      { path: 'tasks/:id',       component: TaskDetail, canActivate: [authGuard]  },
+      { path: 'tasks/:id/edit',  component: EditTask, canActivate: [authGuard]    },
+      
+      // Notes Protected
+      { path: 'notes',             component: NoteList, canActivate: [authGuard] },
+      { path: 'notes/create',      component: CreateNote, canActivate: [authGuard]   },
+      { path: 'notes/:id',         component: NoteDetail, canActivate: [authGuard]   },
+      { path: 'notes/:id/edit',    component: EditNote, canActivate: [authGuard]     },
+      
+      { path: 'pomodoro',          component: Pomodoro, canActivate: [authGuard] },
+      { path: 'schedule',          component: Schedule, canActivate: [authGuard] },
+      
+      // Projects Protected
+      { path: 'projects',          component: ProjectList, canActivate: [authGuard] },
+      { path: 'projects/create',   component: CreateProject, canActivate: [authGuard]  },
+      { path: 'projects/:id',      component: ProjectDetail, canActivate: [authGuard]  },
+      { path: 'projects/:id/edit', component: EditProject, canActivate: [authGuard]    },
+      
+      // Reports Protected
+      { path: 'reports',           component: Reports, canActivate: [authGuard] },
     ]
   },
  
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'dashboard' }
  
 ];

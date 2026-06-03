@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, signal, OnInit, ViewChild, ElementRef, inject, HostListener } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
@@ -24,6 +24,14 @@ export class Layout implements OnInit {
 
   isSidebarOpen = signal(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
   userName = 'User';
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    if (typeof window !== 'undefined') {
+      // If mobile, close sidebar by default, otherwise open it on desktop
+      this.isSidebarOpen.set(window.innerWidth >= 768);
+    }
+  }
 
   toggleSidebar() {
     this.isSidebarOpen.set(!this.isSidebarOpen());
@@ -51,7 +59,8 @@ export class Layout implements OnInit {
         { label: 'Schedule',   route: '/schedule',  icon: 'calendar_today' },
         { label: 'Pomodoro',   route: '/pomodoro',  icon: 'timer' },
         { label: 'Projects',   route: '/projects',  icon: 'account_tree' },
-        { label: 'Notes',      route: '/notes',     icon: 'edit_note' }
+        { label: 'Notes',      route: '/notes',     icon: 'edit_note' },
+        { label: 'Reports',    route: '/reports',   icon: 'bar_chart' }
       ]
     },
     {
@@ -72,9 +81,15 @@ export class Layout implements OnInit {
 
   constructor(private authService: AuthService) {}
 
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  getUserName(): string {
+    return this.isLoggedIn() ? this.authService.getUserName() : 'Guest Operator';
+  }
+
   ngOnInit(): void {
-    this.userName = this.authService.getUserName();
- 
     // Reset scroll on navigation
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)

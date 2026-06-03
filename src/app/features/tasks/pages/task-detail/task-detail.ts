@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef }  from '@angular/core';
 import { CommonModule }        from '@angular/common';
 import { FormsModule }         from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-
+import { ToastrService } from 'ngx-toastr';
 import { TaskService } from '../../../../core/services/task.service';
 import {
   TaskDetails,
@@ -35,6 +35,7 @@ export class TaskDetail implements OnInit {
     private taskService: TaskService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -46,12 +47,14 @@ export class TaskDetail implements OnInit {
         console.log('[TaskDetail] Route parameter "id" changed:', idParam);
         if (!idParam) {
           this.errorMessage = 'task id not provided in URL';
+          this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
           return;
         }
         const id = +idParam;
         if (isNaN(id)) {
           this.errorMessage = 'Invalid task ID provided';
+          this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
           return;
         }
@@ -60,11 +63,11 @@ export class TaskDetail implements OnInit {
       error: (err) => {
         console.error('[TaskDetail] Error reading route params:', err);
         this.errorMessage = 'Failed to parse route parameters';
+        this.toastr.error(this.errorMessage, 'Error');
         this.cdr.detectChanges();
       }
     });
   }
-
 
   loadTask(id: number): void {
     console.log(`[TaskDetail] Sending API request to load task ID: ${id}`);
@@ -85,12 +88,12 @@ export class TaskDetail implements OnInit {
         this.errorMessage = err.status === 404
           ? 'Task not found'
           : 'Failed to load task details (' + (err.message || 'connection error') + ')';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
     });
   }
-
 
   startTask(): void {
     if (!this.task) return;
@@ -99,18 +102,21 @@ export class TaskDetail implements OnInit {
       next: (res) => {
         console.log(res.message);
         this.task!.status = TaskStatus.InProgress;
+        this.toastr.success('Task started! Work hard!', 'Success');
         this.cdr.detectChanges();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Failed to start task.', 'Error');
+      }
     });
   }
-
 
   completeTask(): void {
     if (!this.task) return;
 
     if (this.actualMinutes <= 0) {
-      alert('Please enter a valid number of minutes spent on the task');
+      this.toastr.warning('Please enter a valid number of minutes spent on the task', 'Warning');
       return;
     }
 
@@ -123,21 +129,32 @@ export class TaskDetail implements OnInit {
         this.task!.actualMinutes  = this.actualMinutes;
         this.task!.completedAt    = new Date().toISOString();
         this.showCompleteForm     = false;
+        this.toastr.success('Task completed successfully! XP gained!', 'Success');
+        this.router.navigate(['/tasks']);
         this.cdr.detectChanges();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Failed to complete task.', 'Error');
+      }
     });
   }
 
   deleteTask(): void {
     if (!this.task) return;
-    if (!confirm('Are you sure you want to delete this task?')) return;
 
     this.taskService.deleteTask(this.task.id).subscribe({
-      next: () => this.router.navigate(['/tasks']),
-      error: (err) => console.error(err)
+      next: () => {
+        this.toastr.success('Task deleted successfully', 'Success');
+        this.router.navigate(['/tasks']);
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Failed to delete task.', 'Error');
+      }
     });
   }
+
   getActionLabel(actionType: number): string {
     switch (actionType) {
       case this.TaskActionType.Created:   return '✅ Created';
@@ -147,7 +164,4 @@ export class TaskDetail implements OnInit {
       default: return 'Unknown';
     }
   }
-
-
-
 }

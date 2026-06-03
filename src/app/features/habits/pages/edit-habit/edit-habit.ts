@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { HabitService } from '../../../../core/services/habit.service';
 import { UpdateHabitDto } from '../../../../shared/models/habit.model';
 
@@ -20,10 +21,10 @@ export class EditHabit implements OnInit {
     title: '',
     description: '',
     category: '',
-    frequencyType: 'Daily',
-    targetCount: 1,
     color: '#a4e6ff',
-    icon: ''
+    icon: '',
+    endDate: '',
+    createdAt: ''
   };
 
   isLoading    = false;
@@ -34,19 +35,11 @@ export class EditHabit implements OnInit {
     '📁', '🗂', '💻', '🎨', '✍️', '🏠', '🏋️', '🎵', '✈️', '🎓', '💼', '🚀', '🌟'
   ];
 
-  readonly colorOptions = [
-    '#a4e6ff', // Ice Blue
-    '#6ee7b7', // Mint
-    '#ffad82', // Coral
-    '#c084fc', // Lavender
-    '#f472b6', // Pink
-    '#fbbf24', // Amber
-  ];
-
   constructor(
     private habitService: HabitService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -54,6 +47,7 @@ export class EditHabit implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
       this.errorMessage = 'Habit ID not found in URL';
+      this.toastr.error(this.errorMessage, 'Error');
       this.cdr.detectChanges();
       return;
     }
@@ -70,16 +64,17 @@ export class EditHabit implements OnInit {
           title:         habit.title,
           description:   habit.description,
           category:      habit.category,
-          frequencyType: habit.frequencyType,
-          targetCount:   habit.targetCount,
           color:         habit.color && habit.color.startsWith('#') ? habit.color : '#a4e6ff',
-          icon:          habit.icon
+          icon:          habit.icon,
+          endDate:       habit.endDate ? habit.endDate.substring(0, 10) : '',
+          createdAt:     habit.createdAt ? habit.createdAt.substring(0, 10) : ''
         };
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
         this.errorMessage = 'Failed to load habit for editing.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
         console.error(err);
@@ -90,6 +85,14 @@ export class EditHabit implements OnInit {
   submit(): void {
     if (!this.dto.title.trim() || !this.dto.category.trim()) {
       this.errorMessage = 'Title and Category are required.';
+      this.toastr.warning(this.errorMessage, 'Warning');
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!this.dto.endDate) {
+      this.errorMessage = 'End date is required.';
+      this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
@@ -99,10 +102,14 @@ export class EditHabit implements OnInit {
     this.cdr.detectChanges();
 
     this.habitService.updateHabit(this.habitId, this.dto).subscribe({
-      next: () => this.router.navigate(['/habits', this.habitId]),
+      next: () => {
+        this.toastr.success('Habit updated successfully!', 'Success');
+        this.router.navigate(['/habits', this.habitId]);
+      },
       error: (err) => {
         console.error(err);
         this.errorMessage = 'Failed to update habit.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isSubmitting = false;
         this.cdr.detectChanges();
       }

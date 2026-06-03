@@ -16,7 +16,7 @@ import { LoginDto }    from '../../../../shared/models/auth.model';
 export class Login {
 
   formData: LoginDto = {
-    email:    '',
+    usernameOrEmail: '',
     password: ''
   };
 
@@ -30,7 +30,7 @@ export class Login {
 
   onSubmit(): void {
 
-    if (!this.formData.email.trim() || !this.formData.password.trim()) {
+    if (!this.formData.usernameOrEmail.trim() || !this.formData.password.trim()) {
       this.errorMessage = 'Please fill in all fields';
       return;
     }
@@ -46,7 +46,7 @@ export class Login {
 
       error: (err) => {
         if (err.status === 401) {
-          this.errorMessage = 'Invalid email or password';
+          this.errorMessage = 'Invalid username/email or password';
         } else {
           this.errorMessage = 'Something went wrong. Please try again.';
         }

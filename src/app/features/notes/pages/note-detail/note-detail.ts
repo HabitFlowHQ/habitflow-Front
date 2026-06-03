@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }               from '@angular/common';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { ToastrService }              from 'ngx-toastr';
 import { NoteService }                from '../../../../core/services/note.service';
 import { Note }                       from '../../../../shared/models/note.model';
  
@@ -16,6 +17,7 @@ export class NoteDetail implements OnInit {
   private noteService = inject(NoteService);
   private router      = inject(Router);
   private route       = inject(ActivatedRoute);
+  private toastr      = inject(ToastrService);
   private cdr         = inject(ChangeDetectorRef);
  
   note:         Note | null = null;
@@ -33,6 +35,7 @@ export class NoteDetail implements OnInit {
           this.loadNote(this.noteId);
         } else {
           this.errorMessage = 'Note ID is missing in URL';
+          this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
         }
       }
@@ -45,23 +48,36 @@ export class NoteDetail implements OnInit {
     this.cdr.detectChanges();
     this.noteService.getNoteById(id).subscribe({
       next:  (data) => { this.note = data; this.isLoading = false; this.cdr.detectChanges(); },
-      error: ()     => { this.errorMessage = 'Note not found.'; this.isLoading = false; this.cdr.detectChanges(); }
+      error: ()     => { this.errorMessage = 'Note not found.'; this.toastr.error(this.errorMessage, 'Error'); this.isLoading = false; this.cdr.detectChanges(); }
     });
   }
  
   togglePin(): void {
     if (!this.note) return;
     this.noteService.togglePin(this.note.id).subscribe({
-      next: (updated) => { if (this.note) this.note.isPinned = updated.isPinned; this.cdr.detectChanges(); }
+      next: (updated) => { 
+        if (this.note) {
+          this.note.isPinned = updated.isPinned;
+          this.toastr.success(updated.isPinned ? 'Note pinned' : 'Note unpinned', 'Success');
+        } 
+        this.cdr.detectChanges(); 
+      },
+      error: () => this.toastr.error('Failed to toggle pin state.', 'Error')
     });
   }
  
   deleteNote(): void {
     if (this.noteId === null) return;
-    if (!confirm('Delete this note permanently?')) return;
     this.noteService.deleteNote(this.noteId).subscribe({
-      next:  () => this.router.navigate(['/notes']),
-      error: () => { this.errorMessage = 'Failed to delete note.'; this.cdr.detectChanges(); }
+      next:  () => {
+        this.toastr.success('Note deleted successfully!', 'Success');
+        this.router.navigate(['/notes']);
+      },
+      error: () => { 
+        this.errorMessage = 'Failed to delete note.'; 
+        this.toastr.error(this.errorMessage, 'Error');
+        this.cdr.detectChanges(); 
+      }
     });
   }
  

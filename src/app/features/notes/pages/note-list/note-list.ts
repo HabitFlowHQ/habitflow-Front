@@ -4,6 +4,7 @@ import { RouterLink }                from '@angular/router';
 import { FormsModule }               from '@angular/forms';
 import { NoteService }               from '../../../../core/services/note.service';
 import { Note }                      from '../../../../shared/models/note.model';
+import { ToastrService }             from 'ngx-toastr';
  
 @Component({
   selector:    'app-note-list',
@@ -16,6 +17,7 @@ export class NoteList implements OnInit {
  
   private noteService = inject(NoteService);
   private cdr         = inject(ChangeDetectorRef);
+  private toastr      = inject(ToastrService);
  
   notes:        Note[]  = [];
   isLoading           = false;
@@ -23,11 +25,7 @@ export class NoteList implements OnInit {
   searchQuery         = '';
   activeTag           = '';
  
-  // كل الـ Tags الموجودة في الـ notes الحالية
-  get allTags(): string[] {
-    const tags = this.notes.flatMap(n => n.tagList ?? []);
-    return [...new Set(tags)];
-  }
+  allTags:      string[] = [];
  
   ngOnInit(): void {
     this.loadNotes();
@@ -39,9 +37,31 @@ export class NoteList implements OnInit {
     this.cdr.detectChanges();
  
     this.noteService.getAllNotes(this.searchQuery, this.activeTag).subscribe({
-      next:  (data) => { this.notes = data; this.isLoading = false; this.cdr.detectChanges(); },
-      error: ()     => { this.errorMessage = 'Failed to load notes.'; this.isLoading = false; this.cdr.detectChanges(); }
+      next:  (data) => { 
+        this.notes = data; 
+        this.extractAllTags();
+        this.isLoading = false; 
+        this.cdr.detectChanges(); 
+      },
+      error: ()     => { 
+        this.errorMessage = 'Failed to load notes.'; 
+        this.toastr.error(this.errorMessage, 'Error');
+        this.isLoading = false; 
+        this.cdr.detectChanges(); 
+      }
     });
+  }
+ 
+  extractAllTags(): void {
+    const s = new Set<string>();
+    this.notes.forEach(n => {
+      if (n.tagList) {
+        n.tagList.forEach(t => {
+          if (t) s.add(t);
+        });
+      }
+    });
+    this.allTags = Array.from(s);
   }
  
   onSearch(): void {
@@ -72,14 +92,15 @@ export class NoteList implements OnInit {
   }
  
   deleteNote(id: number): void {
-    if (!confirm('Delete this note?')) return;
     this.noteService.deleteNote(id).subscribe({
       next:  () => {
         this.notes = this.notes.filter(n => n.id !== id);
+        this.toastr.success('Note deleted successfully!', 'Success');
         this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Failed to delete note.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.cdr.detectChanges();
       }
     });

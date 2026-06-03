@@ -1,11 +1,9 @@
-/* ===================================================
-   LevelUP — Global Styles
-   =================================================== */
 
-/* Google Fonts */
+
+@import 'ngx-toastr/toastr';
+
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap');
 
-/* ── CSS Variables ──────────────────────────────── */
 :root {
   --bg:          #0e1417;
   --bg-surface:  #161d1f;

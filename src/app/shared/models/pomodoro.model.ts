@@ -1,8 +1,5 @@
-// ============================================================
-// 📁 src/app/shared/models/pomodoro.model.ts
-// ============================================================
-// 🎯 يتطابق مع Backend DTOs بالضبط
- 
+
+
 export interface PomodoroSession {
   id: number;
   sessionType: string;        // 'Work' | 'ShortBreak' | 'LongBreak'
@@ -14,17 +11,17 @@ export interface PomodoroSession {
   taskItemId: number | null;
   taskTitle: string | null;
 }
- 
+
 export interface StartPomodoroDto {
   sessionType: string;
   durationMinutes: number;
   taskItemId?: number;        // اختياري
 }
- 
+
 export interface CompleteSessionDto {
   isCompleted: boolean;       // true = اكتملت | false = ألغيت
 }
- 
+
 export interface PomodoroStats {
   totalCompletedSessions: number;
   totalMinutesWorked: number;

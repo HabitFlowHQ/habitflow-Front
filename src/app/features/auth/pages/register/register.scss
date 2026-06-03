@@ -1,0 +1,43 @@
+.auth-main-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #0b0f17;
+  color: #dde3e7;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Geist', sans-serif;
+}
+
+.tactical-grid {
+  background-image: 
+    linear-gradient(to right, rgba(164, 230, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(164, 230, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.glass-panel {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glow-cyan {
+  filter: drop-shadow(0 0 15px rgba(0, 209, 255, 0.2));
+}
+
+.scan-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00d1ff, transparent);
+  position: absolute;
+  top: 0;
+  left: 0;
+  animation: scan 4s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes scan {
+  0% { top: 0%; }
+  100% { top: 100%; }
+}

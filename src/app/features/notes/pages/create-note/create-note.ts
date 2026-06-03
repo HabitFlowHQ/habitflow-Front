@@ -2,6 +2,7 @@ import { Component, inject, ChangeDetectorRef }  from '@angular/core';
 import { CommonModule }        from '@angular/common';
 import { FormsModule }         from '@angular/forms';
 import { Router, RouterLink }  from '@angular/router';
+import { ToastrService }       from 'ngx-toastr';
 import { NoteService }         from '../../../../core/services/note.service';
  
 @Component({
@@ -15,6 +16,7 @@ export class CreateNote {
  
   private noteService = inject(NoteService);
   private router      = inject(Router);
+  private toastr      = inject(ToastrService);
   private cdr         = inject(ChangeDetectorRef);
  
   form = {
@@ -30,20 +32,23 @@ export class CreateNote {
   onSubmit(): void {
     if (!this.form.title.trim() || !this.form.content.trim()) {
       this.errorMessage = 'Title and content are required.';
+      this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
  
-    this.isLoading    = true;
+  	this.isLoading    = true;
     this.errorMessage = '';
     this.cdr.detectChanges();
  
     this.noteService.createNote(this.form).subscribe({
       next:  (note) => {
+        this.toastr.success('Note created successfully!', 'Success');
         this.router.navigate(['/notes', note.id]);
       },
       error: ()     => {
         this.errorMessage = 'Failed to create note. Please try again.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
       }

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }               from '@angular/common';
 import { FormsModule }                from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { ToastrService }              from 'ngx-toastr';
 import { ProjectService }             from '../../../../core/services/project.service';
 import { ProjectDetail as ModelProjectDetail, ProjectTask } from '../../../../shared/models/project.model';
 
@@ -19,6 +20,7 @@ export class ProjectDetail implements OnInit {
   private projectService = inject(ProjectService);
   private router         = inject(Router);
   private route          = inject(ActivatedRoute);
+  private toastr         = inject(ToastrService);
   private cdr            = inject(ChangeDetectorRef);
 
   project:      ModelProjectDetail | null = null;
@@ -66,6 +68,7 @@ export class ProjectDetail implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Failed to load project details.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -77,8 +80,10 @@ export class ProjectDetail implements OnInit {
     this.projectService.toggleComplete(this.project.id).subscribe({
       next: (updated) => {
         this.project!.isCompleted = updated.isCompleted;
+        this.toastr.success(updated.isCompleted ? 'Project completed! +50 XP' : 'Project marked as incomplete', 'Success');
         this.cdr.detectChanges();
-      }
+      },
+      error: () => this.toastr.error('Failed to update project status.', 'Error')
     });
   }
 
@@ -98,9 +103,11 @@ export class ProjectDetail implements OnInit {
         this.newTaskTitle = '';
         this.showAddForm = false;
         this.addingTask = false;
+        this.toastr.success('Task added to project Kanban board!', 'Success');
         this.cdr.detectChanges();
       },
       error: () => {
+        this.toastr.error('Failed to add task.', 'Error');
         this.addingTask = false;
         this.cdr.detectChanges();
       }
@@ -114,20 +121,24 @@ export class ProjectDetail implements OnInit {
       next: (updated) => {
         task.status = updated.status;
         this.recalcProgress();
+        this.toastr.success(`Task moved to ${nextStatus}`, 'Success');
         this.cdr.detectChanges();
-      }
+      },
+      error: () => this.toastr.error('Failed to move task.', 'Error')
     });
   }
 
   deleteTask(taskId: number): void {
-    if (!confirm('Are you sure you want to delete this task?') || !this.project) return;
+    if (!this.project) return;
 
     this.projectService.deleteTask(this.project.id, taskId).subscribe({
       next: () => {
         this.project!.tasks = this.project!.tasks.filter(t => t.id !== taskId);
         this.recalcProgress();
+        this.toastr.success('Task deleted successfully', 'Success');
         this.cdr.detectChanges();
-      }
+      },
+      error: () => this.toastr.error('Failed to delete task.', 'Error')
     });
   }
 

@@ -50,24 +50,14 @@
             </div>
           </div>
           <div class="group">
-            <label class="text-label-mono font-label-mono text-on-surface-variant block mb-base uppercase tracking-wider" for="frequency">Frequency Protocol</label>
+            <label class="text-label-mono font-label-mono text-on-surface-variant block mb-base uppercase tracking-wider" for="createdAt">Start Date *</label>
             <div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-sm transition-all focus-within:border-primary focus-within:shadow-[0_0_15px_rgba(164,230,255,0.2)]">
-                <select id="frequency" [(ngModel)]="dto.frequencyType" name="frequencyType" class="w-full bg-transparent border-none focus:ring-0 text-body-base text-on-surface appearance-none outline-none">
-                    <option class="bg-surface-container text-on-surface" value="Daily">Daily</option>
-                    <option class="bg-surface-container text-on-surface" value="Weekly">Weekly</option>
-                </select>
+                <input class="w-full bg-transparent border-none focus:ring-0 text-body-base text-on-surface outline-none" id="createdAt" type="date" [(ngModel)]="dto.createdAt" name="createdAt" required />
             </div>
           </div>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
-            <div class="group">
-                <label class="text-label-mono font-label-mono text-on-surface-variant block mb-base uppercase tracking-wider" for="targetCount">Target Quota</label>
-                <div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-sm flex items-center gap-sm transition-all focus-within:border-primary focus-within:shadow-[0_0_15px_rgba(164,230,255,0.2)]">
-                  <input class="w-full bg-transparent border-none focus:ring-0 text-on-surface outline-none" id="targetCount" type="number" [(ngModel)]="dto.targetCount" name="targetCount" min="1" placeholder="1"/>
-                  <span class="text-on-surface-variant font-label-mono pr-sm">COUNT</span>
-                </div>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
             <div class="group">
                 <label class="text-label-mono font-label-mono text-on-surface-variant block mb-base uppercase tracking-wider" for="icon">Icon (emoji)</label>
                 <div class="flex flex-col gap-sm">
@@ -88,19 +78,10 @@
                 </div>
             </div>
             <div class="group">
-                <label class="text-label-mono font-label-mono text-on-surface-variant block mb-base uppercase tracking-wider">Color Theme</label>
-                <div class="flex items-center gap-sm h-12">
-                  <button 
-                    type="button"
-                    *ngFor="let color of colorOptions" 
-                    class="w-8 h-8 rounded-full border-2 transition-all cursor-pointer hover:scale-110 active:scale-95"
-                    [style.background-color]="color"
-                    [class.border-white]="dto.color === color"
-                    [class.border-transparent]="dto.color !== color"
-                    (click)="dto.color = color">
-                  </button>
-                  <input class="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 outline-none ml-auto" id="color" type="color" [(ngModel)]="dto.color" name="color" />
-                </div>
+              <label class="text-label-mono font-label-mono text-on-surface-variant block mb-base uppercase tracking-wider" for="endDate">End Date *</label>
+              <div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-sm transition-all focus-within:border-primary focus-within:shadow-[0_0_15px_rgba(164,230,255,0.2)]">
+                  <input class="w-full bg-transparent border-none focus:ring-0 text-body-base text-on-surface outline-none" id="endDate" type="date" [(ngModel)]="dto.endDate" name="endDate" required />
+              </div>
             </div>
         </div>
       </div>

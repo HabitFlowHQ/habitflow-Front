@@ -1,17 +1,9 @@
-// ═══════════════════════════════════════════════════════════
-//  الملف: src/app/features/tasks/pages/edit-task/edit-task.ts
-//
-//  صفحة تعديل مهمة موجودة
-//  تستخدم:
-//  - GET /api/task/:id  (تحميل البيانات الحالية في الـ form)
-//  - PUT /api/task/:id  (حفظ التعديلات)
-// ═══════════════════════════════════════════════════════════
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }       from '@angular/common';
 import { FormsModule }        from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { ToastrService } from 'ngx-toastr';
 import { TaskService }  from '../../../../core/services/task.service';
 import { UpdateTaskDto, TaskPriority } from '../../../../shared/models/task.model';
 
@@ -25,7 +17,6 @@ import { UpdateTaskDto, TaskPriority } from '../../../../shared/models/task.mode
 export class EditTask implements OnInit {
 
   taskId: number = 0;
-
 
   formData: UpdateTaskDto = {
     title: '',
@@ -46,6 +37,7 @@ export class EditTask implements OnInit {
     private taskService: TaskService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -67,7 +59,6 @@ export class EditTask implements OnInit {
     this.cdr.detectChanges();
     this.taskService.getTaskById(id).subscribe({
       next: (task) => {
-
         this.formData = {
           title: task.title,
           description: task.description ?? '',
@@ -79,17 +70,18 @@ export class EditTask implements OnInit {
         this.cdr.detectChanges();
       },
       error: () => {
-        this.errorMessage  = ' task not found';
+        this.errorMessage  = 'task not found';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoadingTask = false;
         this.cdr.detectChanges();
       }
     });
   }
 
-
   onSubmit(): void {
     if (!this.formData.title.trim()) {
-      this.errorMessage = ' title is required';
+      this.errorMessage = 'title is required';
+      this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
@@ -100,10 +92,12 @@ export class EditTask implements OnInit {
 
     this.taskService.updateTask(this.taskId, this.formData).subscribe({
       next: () => {
+        this.toastr.success('Task updated successfully!', 'Success');
         this.router.navigate(['/tasks', this.taskId]);
       },
       error: (err) => {
         this.errorMessage = err.error?.message ?? 'Failed to save. Please try again';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isSaving = false;
         this.cdr.detectChanges();
       }

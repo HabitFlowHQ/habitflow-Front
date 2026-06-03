@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }               from '@angular/common';
 import { FormsModule }                from '@angular/forms';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
+import { ToastrService }              from 'ngx-toastr';
 import { NoteService }                from '../../../../core/services/note.service';
  
 @Component({
@@ -16,6 +17,7 @@ export class EditNote implements OnInit {
   private noteService = inject(NoteService);
   private router      = inject(Router);
   private route       = inject(ActivatedRoute);
+  private toastr      = inject(ToastrService);
   private cdr         = inject(ChangeDetectorRef);
  
   noteId       = 0;
@@ -50,6 +52,7 @@ export class EditNote implements OnInit {
       },
       error: () => {
         this.errorMessage = 'Note not found.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
       }
@@ -59,6 +62,7 @@ export class EditNote implements OnInit {
   onSubmit(): void {
     if (!this.form.title.trim() || !this.form.content.trim()) {
       this.errorMessage = 'Title and content are required.';
+      this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
@@ -69,10 +73,12 @@ export class EditNote implements OnInit {
  
     this.noteService.updateNote(this.noteId, this.form).subscribe({
       next:  () => {
+        this.toastr.success('Note updated successfully!', 'Success');
         this.router.navigate(['/notes', this.noteId]);
       },
       error: () => {
         this.errorMessage = 'Failed to update note.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
       }

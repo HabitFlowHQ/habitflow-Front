@@ -5,6 +5,7 @@ import { HabitService } from '../../../../core/services/habit.service';
 import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-habit-list',
@@ -21,12 +22,32 @@ export class HabitList implements OnInit, OnDestroy {
   searchQuery: string = '';
 
   get filteredHabits(): Habit[] {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const list = this.habits.filter(h => {
+      if (!h.createdAt) return true;
+      
+      const start = new Date(h.createdAt);
+      start.setHours(0, 0, 0, 0);
+
+      const end = h.endDate ? new Date(h.endDate) : null;
+      if (end) {
+        end.setHours(0, 0, 0, 0);
+      }
+
+      const started = start.getTime() <= today.getTime();
+      const notEnded = !end || end.getTime() >= today.getTime();
+
+      return started && notEnded;
+    });
+
     if (!this.searchQuery.trim()) {
-      return this.habits;
+      return list;
     }
     const q = this.searchQuery.toLowerCase();
-    return this.habits.filter(h => 
-      h.title.toLowerCase().includes(q) || 
+    return list.filter(h =>
+      h.title.toLowerCase().includes(q) ||
       (h.description && h.description.toLowerCase().includes(q)) ||
       h.category.toLowerCase().includes(q)
     );
@@ -36,6 +57,7 @@ export class HabitList implements OnInit, OnDestroy {
 
   constructor(
     private habitService: HabitService,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -60,6 +82,7 @@ export class HabitList implements OnInit, OnDestroy {
       error: (error: any) => {
         console.error('Error fetching habits:', error);
         this.errorMessage = 'Failed to load habits.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -70,27 +93,29 @@ export class HabitList implements OnInit, OnDestroy {
     this.habitService.completeHabit(id).subscribe({
       next: (message: string) => {
         console.log(message);
+        this.toastr.success('Habit completed! +10 XP', 'Success');
         this.loadHabits();
       },
       error: (error: any) => {
         console.error('Error completing habit:', error);
-        this.errorMessage = 'Failed to complete habit.';
+        const errMsg = error.error || 'Failed to complete habit.';
+        this.toastr.warning(errMsg, 'Warning');
         this.cdr.detectChanges();
       }
     });
   }
 
   deleteHabit(id: number): void {
-    if (!confirm('Are you sure you want to delete this habit?')) return;
-
     this.habitService.deleteHabit(id).subscribe({
       next: () => {
+        this.toastr.success('Habit deleted successfully', 'Success');
         this.habits = this.habits.filter(habit => habit.id !== id);
         this.cdr.detectChanges();
       },
       error: (error: any) => {
         console.error('Error deleting habit:', error);
         this.errorMessage = 'Failed to delete habit.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.cdr.detectChanges();
       }
     });

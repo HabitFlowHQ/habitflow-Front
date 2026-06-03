@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { ProjectService } from '../../../../core/services/project.service';
 import { UpdateProjectDto } from '../../../../shared/models/project.model';
 
@@ -17,6 +18,7 @@ export class EditProject implements OnInit {
   private projectService = inject(ProjectService);
   private route          = inject(ActivatedRoute);
   private router         = inject(Router);
+  private toastr         = inject(ToastrService);
   private cdr            = inject(ChangeDetectorRef);
 
   projectId!: number;
@@ -52,6 +54,7 @@ export class EditProject implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (!idParam) {
       this.errorMessage = 'Project ID not found in URL';
+      this.toastr.error(this.errorMessage, 'Error');
       this.cdr.detectChanges();
       return;
     }
@@ -79,6 +82,7 @@ export class EditProject implements OnInit {
       },
       error: (err) => {
         this.errorMessage = 'Failed to load project for editing.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
         console.error(err);
@@ -89,6 +93,7 @@ export class EditProject implements OnInit {
   submit(): void {
     if (!this.dto.title.trim()) {
       this.errorMessage = 'Project title is required.';
+      this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
@@ -99,10 +104,14 @@ export class EditProject implements OnInit {
     this.cdr.detectChanges();
 
     this.projectService.update(this.projectId, this.dto).subscribe({
-      next: () => this.router.navigate(['/projects', this.projectId]),
+      next: () => {
+        this.toastr.success('Project updated successfully!', 'Success');
+        this.router.navigate(['/projects', this.projectId]);
+      },
       error: (err) => {
         console.error(err);
         this.errorMessage = 'Failed to update project.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isSubmitting = false;
         this.cdr.detectChanges();
       }

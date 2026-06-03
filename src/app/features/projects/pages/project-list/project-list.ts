@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule }              from '@angular/common';
 import { RouterLink }                from '@angular/router';
+import { ToastrService }             from 'ngx-toastr';
 import { ProjectService }            from '../../../../core/services/project.service';
 import { Project }                   from '../../../../shared/models/project.model';
 
@@ -14,6 +15,7 @@ import { Project }                   from '../../../../shared/models/project.mod
 export class ProjectList implements OnInit {
 
   private projectService = inject(ProjectService);
+  private toastr         = inject(ToastrService);
   private cdr            = inject(ChangeDetectorRef);
 
   projects:    Project[] = [];
@@ -33,6 +35,7 @@ export class ProjectList implements OnInit {
       },
       error: ()     => {
         this.errorMessage = 'Failed to load projects.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading = false;
         this.cdr.detectChanges();
       }
@@ -40,14 +43,15 @@ export class ProjectList implements OnInit {
   }
 
   delete(id: number): void {
-    if (!confirm('Delete this project and all its tasks?')) return;
     this.projectService.delete(id).subscribe({
       next:  () => {
+        this.toastr.success('Project and tasks deleted successfully!', 'Success');
         this.projects = this.projects.filter(p => p.id !== id);
         this.cdr.detectChanges();
       },
       error: () => {
         this.errorMessage = 'Failed to delete project.';
+        this.toastr.error(this.errorMessage, 'Error');
         this.cdr.detectChanges();
       }
     });

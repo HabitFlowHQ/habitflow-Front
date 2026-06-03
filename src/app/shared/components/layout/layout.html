@@ -9,37 +9,37 @@
 
   <!-- SideNavBar -->
   <aside 
-    [class.hidden]="!isSidebarOpen()" 
-    [class.flex]="isSidebarOpen()"
-    class="fixed md:static left-0 top-0 h-full md:h-screen z-40 pt-10 pb-6 px-4 w-[280px] flex-col bg-surface-container-low/50 backdrop-blur-xl border-r border-surface-variant shadow-2xl md:shadow-none transition-all duration-300 md:flex hidden select-none overflow-hidden shrink-0 animate-fade-in">
+    [class.translate-x-0]="isSidebarOpen()"
+    [class.-translate-x-full]="!isSidebarOpen()"
+    class="fixed md:static left-0 top-0 h-full md:h-screen z-40 pt-10 pb-6 px-2.5 w-[200px] flex flex-col bg-surface-container-low/50 backdrop-blur-xl border-r border-surface-variant shadow-2xl md:shadow-none transition-transform duration-300 ease-in-out md:translate-x-0 select-none overflow-hidden shrink-0">
     
     <!-- Brand Header -->
-    <div class="flex items-center gap-4 px-4 mb-10 mt-2">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30 shrink-0 shadow-[0_0_24px_rgba(164,230,255,0.15)]">
-        <span class="material-symbols-outlined text-primary font-bold text-[26px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+    <div class="flex items-center gap-2 px-2 mb-10 mt-2">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/30 shrink-0 shadow-[0_0_24px_rgba(164,230,255,0.15)]">
+        <span class="material-symbols-outlined text-primary font-bold text-[22px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
       </div>
-      <div class="flex flex-col gap-1">
-        <h1 class="font-headline-md text-[22px] font-bold text-on-surface tracking-tight leading-none ">Level Up</h1>
-        <p class="font-label-mono text-[10px] text-primary/80 uppercase tracking-widest leading-none mt-0.5">Elite Productivity</p>
+      <div class="flex flex-col gap-0.5">
+        <h1 class="font-headline-md text-[18px] font-bold text-on-surface tracking-tight leading-none ">Level Up</h1>
+        <p class="font-label-mono text-[9px] text-primary/80 uppercase tracking-widest leading-none mt-0.5">Elite Productivity</p>
       </div>
     </div>
 
     <!-- Navigation Links -->
-    <div class="flex-1 overflow-y-auto flex flex-col gap-9 font-medium kanban-scroll px-2">
-      <div *ngFor="let group of navGroups" class="flex flex-col gap-2">
+    <div class="flex-1 overflow-y-auto flex flex-col gap-6 font-medium kanban-scroll px-1.5">
+      <div *ngFor="let group of navGroups" class="flex flex-col gap-1.5">
         <!-- Group Title -->
-        <span class="px-4   py-2 text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-[0.2em]">{{ group.title }}</span>
+        <span class="px-3 py-1.5 text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-[0.2em]">{{ group.title }}</span>
         
         <!-- Group Links -->
-        <div class="flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1">
           <a 
             *ngFor="let link of group.links"
             [routerLink]="link.route"
             (click)="closeSidebarOnMobile()"
             routerLinkActive="bg-primary/10 text-primary font-bold shadow-[inset_3px_0_0_0_currentColor]"
             [routerLinkActiveOptions]="{ exact: link.route === '/dashboard' || link.route === '/' }"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-all duration-200 ease-in-out text-[15px] group">
-            <span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform duration-200">{{ link.icon }}</span>
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-all duration-200 ease-in-out text-[14px] group">
+            <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">{{ link.icon }}</span>
             <span>{{ link.label }}</span>
           </a>
         </div>
@@ -47,22 +47,34 @@
     </div>
 
     <!-- Bottom Actions -->
-    <div class="mt-auto pt-6 pb-2 border-t border-surface-variant/20 flex flex-col gap-1.5 font-medium px-2">
-      <span class="px-4 py-1 text-[11px] font-bold text-on-surface-variant/50 uppercase tracking-[0.2em] mb-1">System</span>
+    <div class="mt-auto pt-4 pb-2 border-t border-surface-variant/20 flex flex-col gap-1 font-medium px-1.5">
+      <span class="px-3 py-1 text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-[0.2em] mb-1">System</span>
       <a 
         *ngFor="let link of bottomLinks"
         [routerLink]="link.route"
         (click)="closeSidebarOnMobile()"
         routerLinkActive="bg-primary/10 text-primary font-bold shadow-[inset_3px_0_0_0_currentColor]"
-        class="flex items-center gap-4 px-4 py-3 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-all duration-200 ease-in-out text-[15px] group">
-        <span class="material-symbols-outlined text-[22px] group-hover:scale-110 transition-transform duration-200">{{ link.icon }}</span>
+        class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/40 transition-all duration-200 ease-in-out text-[14px] group">
+        <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-transform duration-200">{{ link.icon }}</span>
         <span>{{ link.label }}</span>
       </a>
+      <!-- If Logged In -->
       <a 
+        *ngIf="isLoggedIn()"
         (click)="logout(); closeSidebarOnMobile()"
-        class="flex items-center gap-4 px-4 py-3 mt-2 rounded-xl text-error/80 hover:text-error hover:bg-error/10 transition-all duration-200 ease-in-out cursor-pointer text-[15px] group border border-transparent hover:border-error/20">
-        <span class="material-symbols-outlined text-[22px] group-hover:scale-110 group-hover:-translate-x-1 transition-all duration-200">logout</span>
+        class="flex items-center gap-3 px-3 py-2.5 mt-2 rounded-xl text-error/80 hover:text-error hover:bg-error/10 transition-all duration-200 ease-in-out cursor-pointer text-[14px] group border border-transparent hover:border-error/20">
+        <span class="material-symbols-outlined text-[20px] group-hover:scale-110 group-hover:-translate-x-1 transition-all duration-200">logout</span>
         <span>Log Out</span>
+      </a>
+
+      <!-- If Guest -->
+      <a 
+        *ngIf="!isLoggedIn()"
+        routerLink="/login"
+        (click)="closeSidebarOnMobile()"
+        class="flex items-center gap-3 px-3 py-2.5 mt-2 rounded-xl text-primary hover:text-primary hover:bg-primary/10 transition-all duration-200 ease-in-out cursor-pointer text-[14px] group border border-transparent hover:border-primary/20">
+        <span class="material-symbols-outlined text-[20px] group-hover:scale-110 transition-all duration-200">login</span>
+        <span>Operator Login</span>
       </a>
     </div>
   </aside>
@@ -91,49 +103,35 @@
           </a>
         </div>
 
-        <!-- Center Search Bar and Actions Container -->
-        <div class="flex-1 flex items-center justify-center pr-12 md:pr-0">
-          <div class="flex items-center gap-4 sm:gap-6 bg-surface-container-low/40 backdrop-blur-md border border-surface-variant/50 rounded-2xl py-1 px-2 sm:px-4 shadow-lg">
-            
-            <!-- Search Bar -->
-            <div class="relative hidden sm:flex items-center w-[220px] lg:w-[280px] group bg-[#161d1f] border border-surface-variant/60 rounded-xl py-1.5 px-3 transition-all focus-within:ring-1 focus-within:ring-primary/50">
-              <span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2 group-focus-within:text-primary transition-colors">search</span>
-              <input 
-                class="bg-transparent border-none text-body-sm font-body-sm text-on-surface placeholder:text-on-surface-variant/60 focus:outline-none focus:ring-0 w-full pl-0 pr-10" 
-                placeholder="Search commands..." 
-                type="text" />
-              <div class="absolute right-2 flex items-center gap-0.5 bg-surface-variant/40 border border-surface-variant/60 rounded px-1.5 py-0.5 font-label-mono text-[9px] text-on-surface-variant select-none pointer-events-none">
-                <span class="mx-2">⌘</span><span class="mx-2">K</span>
-              </div>
-            </div>
-
-            <!-- Separator -->
-            <div class="hidden sm:block w-px h-5 bg-surface-variant/60"></div>
-
-            <!-- Actions -->
-            <div class="flex items-center gap-1 sm:gap-2">
-              <button class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-tertiary hover:bg-surface-variant/80 transition-all active:scale-95">
-                <span class="material-symbols-outlined text-[20px]">local_fire_department</span>
-              </button>
-              <button class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-surface-variant/80 transition-all active:scale-95">
-                <span class="material-symbols-outlined text-[20px]">military_tech</span>
-              </button>
-              <button class="relative w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-variant/80 transition-all active:scale-95">
-                <span class="material-symbols-outlined text-[20px]">notifications</span>
-                <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary border-2 border-surface"></span>
-              </button>
-            </div>
-          </div>
+        <!-- Center Actions Container (Search Bar removed, only icons remain) -->
+        <div class="flex items-center gap-1 sm:gap-2">
+          <button class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-tertiary hover:bg-surface-variant/80 transition-all active:scale-95">
+            <span class="material-symbols-outlined text-[20px]">local_fire_department</span>
+          </button>
+          <button class="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-secondary hover:bg-surface-variant/80 transition-all active:scale-95">
+            <span class="material-symbols-outlined text-[20px]">military_tech</span>
+          </button>
+          <button class="relative w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-variant/80 transition-all active:scale-95">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary border-2 border-surface"></span>
+          </button>
         </div>
 
         <!-- Right User Profile -->
-        <div class="flex items-center justify-end shrink-0 w-[40px] md:w-[100px] ">
-          <div class="flex items-center gap-3 bg-surface-container-low/30 backdrop-blur-md border border-surface-variant/50 rounded-full py-1.5 px-2 md:pr-4 shadow-lg cursor-pointer hover:bg-surface-variant/50 transition-all group">
+        <div class="flex items-center  justify-between shrink-0 w-[40px] md:w-[120px] ">
+          <div *ngIf="isLoggedIn()" class="flex items-center gap-3 bg-surface-container-low/30 backdrop-blur-md border border-surface-variant/50 rounded-full py-1.5 px-2 md:pr-4 shadow-lg cursor-pointer hover:bg-surface-variant/50 transition-all group">
             <div class="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 overflow-hidden flex items-center justify-center font-bold text-primary font-stats-number text-sm shrink-0 group-hover:scale-105 transition-transform">
-              {{ userName.charAt(0).toUpperCase() }}
+              {{ getUserName().charAt(0).toUpperCase() }}
             </div>
-            <span class="hidden md:inline text-sm text-on-surface-variant font-medium tracking-tight truncate max-w-[90px] ">{{ userName }}</span>
+            <span class="hidden md:inline text-sm text-on-surface-variant font-medium tracking-tight truncate max-w-[90px]  ">{{ getUserName() }}</span>
           </div>
+
+          <button 
+            *ngIf="!isLoggedIn()"
+            routerLink="/login"
+            class="bg-primary/10 border border-primary/30 text-primary font-mono text-[10px] px-4 py-2 rounded-full hover:bg-primary/20 transition-all active:scale-95 duration-100 uppercase tracking-widest font-bold">
+            Sign In
+          </button>
         </div>
 
       </div>
@@ -141,7 +139,7 @@
 
     <!-- Main Canvas Content -->
     <main class="flex-grow w-full bg-background pt-[64px] md:pt-0 flex flex-col">
-      <div class="p-4 md:p-md lg:p-lg w-full max-w-[1600px] mx-auto flex flex-col gap-md flex-grow">
+      <div class="p-5 md:pt-8 md:pb-8 md:pl-10 md:pr-10 lg:pt-10 lg:pb-10 lg:pl-12 lg:pr-12 w-full max-w-[1455px] mx-auto flex flex-col gap-md flex-grow">
         <router-outlet></router-outlet>
       </div>
 

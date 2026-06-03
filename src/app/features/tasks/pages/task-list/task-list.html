@@ -14,25 +14,6 @@
     </div>
     
     <div class="flex flex-wrap items-center gap-sm font-label-mono text-[10px] font-semibold tracking-wider">
-      <!-- Filter Capsule -->
-      <div class="flex items-center bg-[#161d1f] border border-surface-variant/40 rounded-lg p-1 h-[38px] select-none text-on-surface-variant/60">
-        <button class="px-3 py-1 rounded bg-[#2f3639]/50 text-on-surface shadow-xs">Today</button>
-        <button class="px-3 py-1 rounded hover:text-on-surface transition-colors">Week</button>
-        <button class="px-3 py-1 rounded text-error/80 hover:text-error transition-colors flex items-center gap-1 bg-error/5 border border-error/10 ml-0.5">
-          Overdue <span class="bg-error text-on-error text-[8px] font-extrabold w-4.5 h-4.5 rounded-full flex items-center justify-center shrink-0 ml-0.5">{{ overdueTasksCount || 2 }}</span>
-        </button>
-      </div>
-
-      <!-- View Toggle -->
-      <div class="flex items-center bg-[#161d1f] border border-surface-variant/40 rounded-lg p-1 h-[38px] text-on-surface-variant/50 select-none">
-        <button class="w-7 h-7 flex items-center justify-center rounded bg-surface-variant/20 text-[#a4e6ff]">
-          <span class="material-symbols-outlined text-[18px]">table_rows</span>
-        </button>
-        <button class="w-7 h-7 flex items-center justify-center rounded hover:text-on-surface transition-colors">
-          <span class="material-symbols-outlined text-[18px]">grid_view</span>
-        </button>
-      </div>
-
       <!-- Deploy Task Button -->
       <a 
         [routerLink]="['/tasks/create']"

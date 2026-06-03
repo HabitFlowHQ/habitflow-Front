@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { HabitService } from '../../../../core/services/habit.service';
 import { Habit } from '../../../../shared/models/habit.model';
 
@@ -15,12 +16,14 @@ export class HabitDetail implements OnInit {
 
   habit: Habit | null = null;
   isLoading = false;
+  isCompleting = false;
   errorMessage = '';
 
   constructor(
     private habitService: HabitService,
     private route: ActivatedRoute,
     private router: Router,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -32,12 +35,14 @@ export class HabitDetail implements OnInit {
         console.log('[HabitDetail] Route parameter "id" changed:', idParam);
         if (!idParam) {
           this.errorMessage = 'Habit ID not found in URL';
+          this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
           return;
         }
         const id = +idParam;
         if (isNaN(id)) {
           this.errorMessage = 'Invalid Habit ID provided';
+          this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
           return;
         }
@@ -46,6 +51,7 @@ export class HabitDetail implements OnInit {
       error: (err) => {
         console.error('[HabitDetail] Error reading route params:', err);
         this.errorMessage = 'Failed to parse route parameters';
+        this.toastr.error(this.errorMessage, 'Error');
         this.cdr.detectChanges();
       }
     });
@@ -70,6 +76,7 @@ export class HabitDetail implements OnInit {
         this.errorMessage = err.status === 404 
           ? 'Habit not found' 
           : 'Failed to load habit (' + (err.message || 'connection error') + ')';
+        this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
       }
@@ -78,22 +85,42 @@ export class HabitDetail implements OnInit {
 
   deleteHabit(): void {
     if (!this.habit) return;
-    if (!confirm('Are you sure you want to delete this habit?')) return;
     this.habitService.deleteHabit(this.habit.id).subscribe({
-      next: () => this.router.navigate(['/habits']),
-      error: (err) => console.error(err)
+      next: () => {
+        this.toastr.success('Habit deleted successfully', 'Success');
+        this.router.navigate(['/habits']);
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Failed to delete habit.', 'Error');
+      }
     });
   }
 
   completeHabit(): void {
-    if (!this.habit) return;
+    if (!this.habit || this.habit.completedToday || this.isCompleting) return;
+    this.isCompleting = true;
+    this.cdr.detectChanges();
     this.habitService.completeHabit(this.habit.id).subscribe({
       next: (msg) => {
         console.log(msg);
-        this.loadHabit(this.habit!.id);
-        this.cdr.detectChanges();
+        this.toastr.success('Habit completed! +10 XP', 'Success');
+        this.router.navigate(['/habits']);
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error(err);
+        const errMsg = err.error || 'Failed to complete habit.';
+        this.toastr.warning(errMsg, 'Warning');
+        this.isCompleting = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  formatDate(d: string | null): string {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric'
     });
   }
 }
