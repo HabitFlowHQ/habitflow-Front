@@ -471,3 +471,140 @@ ul { list-style: none; }
   max-width: 1100px;
   margin: 0 auto;
 }
+
+/* ── Global Print Overrides ── */
+@media print {
+  /* 1. Collapse and hide layout controls */
+  aside, header, footer, .no-print {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+    visibility: hidden !important;
+  }
+  
+  /* 2. Reset html, body, and min-h-screen container */
+  html, body, .min-h-screen {
+    color-scheme: light !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* 3. Disable scroll locks and flexbox constraints on all layout containers */
+  div#scrollContainer, 
+  .flex-grow,
+  .h-screen,
+  main,
+  main > div {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+  }
+
+  /* 4. Force color adjustments so background fills and progress tracks render */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 5. Force all text inside reports to print in solid black for high contrast */
+  .reports-page, .reports-page * {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+
+  /* 6. Explicitly override dark card backgrounds to light/white theme for print */
+  .reports-page {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+  }
+
+  .section-card {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+  }
+
+  .summary-stat-card,
+  .sub-stat-box,
+  .achievements-box,
+  .insight-card,
+  .recommendations-box-list,
+  .timeline-container,
+  .table-container {
+    background-color: #f9fafb !important;
+    background: #f9fafb !important;
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+  }
+
+  /* Table styling */
+  table {
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  table th {
+    background-color: #f3f4f6 !important;
+    background: #f3f4f6 !important;
+    color: #111827 !important;
+    border-bottom: 2px solid #d1d5db !important;
+  }
+
+  table td {
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #374151 !important;
+  }
+
+  /* Timeline styling */
+  .timeline-day-box {
+    border-left: 2px solid #e5e7eb !important;
+  }
+
+  .timeline-day-box .timeline-date {
+    color: #4f46e5 !important;
+  }
+
+  .timeline-day-box .timeline-date::before {
+    background: #4f46e5 !important;
+  }
+
+  /* Progress track backgrounds */
+  .progress-track-small {
+    background-color: #e5e7eb !important;
+    background: #e5e7eb !important;
+  }
+
+  /* Circular radial score display */
+  .score-display-radial {
+    background: #f9fafb !important;
+    background-color: #f9fafb !important;
+    border: 2px dashed #d1d5db !important;
+  }
+  
+  .score-display-radial .score-number {
+    color: #111827 !important;
+  }
+
+  .score-display-radial .score-label {
+    color: #374151 !important;
+  }
+
+  /* Specific color adjustments for status indications on print */
+  .success, .badge-success, .text-success { color: #065f46 !important; }
+  .warning, .badge-warning, .text-warning { color: #92400e !important; }
+  .danger, .badge-danger, .text-danger { color: #991b1b !important; }
+}

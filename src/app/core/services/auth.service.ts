@@ -4,6 +4,7 @@ import { Router }        from '@angular/router';
 import { Observable }    from 'rxjs';
 import { tap }           from 'rxjs/operators';
 import { LoginDto, RegisterDto, AuthResponse } from '../../shared/models/auth.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -12,12 +13,22 @@ export class AuthService {
 
   constructor(
     private http:   HttpClient,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
 
   register(dto: RegisterDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, dto);
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, dto).pipe(
+      tap((response: AuthResponse) => {
+        if (response.token) {
+          localStorage.setItem('token',    response.token);
+          localStorage.setItem('userName', response.userName);
+          localStorage.setItem('email',    response.email);
+          localStorage.setItem('isPremium', String(response.isPremium ?? false));
+        }
+      })
+    );
   }
 
 
@@ -29,6 +40,7 @@ export class AuthService {
           localStorage.setItem('token',    response.token);
           localStorage.setItem('userName', response.userName);
           localStorage.setItem('email',    response.email);
+          localStorage.setItem('isPremium', String(response.isPremium ?? false));
         }
       })
     );
@@ -39,12 +51,19 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
     localStorage.removeItem('email');
+    localStorage.removeItem('isPremium');
+    this.toastr.success('You have been logged out successfully', 'Success');
     this.router.navigate(['/login']);
   }
 
 
   isLoggedIn(): boolean {
     return !! localStorage.getItem('token');
+  }
+
+
+  isPremium(): boolean {
+    return localStorage.getItem('isPremium') === 'true';
   }
 
 
@@ -59,3 +78,4 @@ export class AuthService {
 
 
 }
+

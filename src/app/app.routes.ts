@@ -25,6 +25,9 @@ import { Reports }       from './features/reports/pages/reports/reports';
 import { Login }    from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
 import { authGuard } from './core/guards/auth.guard';
+import { premiumGuard } from './core/guards/premium.guard';
+import { CheckoutComponent } from './features/subscription/pages/checkout/checkout';
+import { SettingsComponent } from './features/settings/pages/settings/settings';
  
 export const routes: Routes = [
  
@@ -51,22 +54,28 @@ export const routes: Routes = [
       { path: 'tasks/:id/edit',  component: EditTask, canActivate: [authGuard]    },
       
       // Notes Protected
-      { path: 'notes',             component: NoteList, canActivate: [authGuard] },
-      { path: 'notes/create',      component: CreateNote, canActivate: [authGuard]   },
-      { path: 'notes/:id',         component: NoteDetail, canActivate: [authGuard]   },
-      { path: 'notes/:id/edit',    component: EditNote, canActivate: [authGuard]     },
+      { path: 'notes',             component: NoteList, canActivate: [authGuard, premiumGuard] },
+      { path: 'notes/create',      component: CreateNote, canActivate: [authGuard, premiumGuard]   },
+      { path: 'notes/:id',         component: NoteDetail, canActivate: [authGuard, premiumGuard]   },
+      { path: 'notes/:id/edit',    component: EditNote, canActivate: [authGuard, premiumGuard]     },
       
       { path: 'pomodoro',          component: Pomodoro, canActivate: [authGuard] },
       { path: 'schedule',          component: Schedule, canActivate: [authGuard] },
       
       // Projects Protected
-      { path: 'projects',          component: ProjectList, canActivate: [authGuard] },
-      { path: 'projects/create',   component: CreateProject, canActivate: [authGuard]  },
-      { path: 'projects/:id',      component: ProjectDetail, canActivate: [authGuard]  },
-      { path: 'projects/:id/edit', component: EditProject, canActivate: [authGuard]    },
+      { path: 'projects',          component: ProjectList, canActivate: [authGuard, premiumGuard] },
+      { path: 'projects/create',   component: CreateProject, canActivate: [authGuard, premiumGuard]  },
+      { path: 'projects/:id',      component: ProjectDetail, canActivate: [authGuard, premiumGuard]  },
+      { path: 'projects/:id/edit', component: EditProject, canActivate: [authGuard, premiumGuard]    },
       
       // Reports Protected
-      { path: 'reports',           component: Reports, canActivate: [authGuard] },
+      { path: 'reports',           component: Reports, canActivate: [authGuard, premiumGuard] },
+
+      // Checkout
+      { path: 'checkout',          component: CheckoutComponent, canActivate: [authGuard] },
+
+      // Settings
+      { path: 'settings',          component: SettingsComponent, canActivate: [authGuard] },
     ]
   },
  

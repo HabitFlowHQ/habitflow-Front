@@ -18,6 +18,7 @@ import { Task, TaskStatus, TaskPriority } from '../../../../shared/models/task.m
   templateUrl: './task-list.html',
   styleUrls: ['./task-list.scss']
 })
+
 export class TaskList implements OnInit, OnDestroy {
 
   tasks: Task[]      = [];
@@ -25,17 +26,19 @@ export class TaskList implements OnInit, OnDestroy {
   errorMessage: string = '';
   searchQuery: string = '';
 
-  private tasksSub?: Subscription;
+  private tasksSub?: Subscription; //we store the subscription  as varbier to unsubscribe on destroy
 
   TaskStatus   = TaskStatus;
   TaskPriority = TaskPriority;
 
   getTodayLocalStr(): string {
+
     const d = new Date();
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+
   }
 
   get filteredTasks(): Task[] {
@@ -51,11 +54,13 @@ export class TaskList implements OnInit, OnDestroy {
     if (!this.searchQuery.trim()) {
       return list;
     }
+
     const q = this.searchQuery.toLowerCase();
-    return list.filter(t => 
-      t.title.toLowerCase().includes(q) || 
+    return list.filter(t =>
+      t.title.toLowerCase().includes(q) ||
       (t.description && t.description.toLowerCase().includes(q))
     );
+
   }
 
   get pendingTasks(): Task[] {
@@ -89,44 +94,58 @@ export class TaskList implements OnInit, OnDestroy {
     this.errorMessage = '';
 
     this.tasksSub = this.taskService.getAllTasks().subscribe({
+
       next: (data: Task[]) => {
         this.tasks     = data;
         this.isLoading = false;
         this.cdr.detectChanges();
+
       },
+
       error: (error: any) => {
+
         console.error(error);
         this.errorMessage = 'api error: ' + (error?.message || 'Unknown error');
         this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
+
       }
     });
   }
 
   deleteTask(id: number): void {
+
     this.taskService.deleteTask(id).subscribe({
+
       next: () => {
         this.toastr.success('Task deleted successfully', 'Success');
         this.tasks = this.tasks.filter(t => t.id !== id);
         this.cdr.detectChanges();
       },
+
+
       error: (error: any) => {
         console.error('error in deletion:', error);
         this.toastr.error('Failed to delete task.', 'Error');
       }
     });
+
   }
 
   startTask(id: number): void {
+
     this.taskService.startTask(id).subscribe({
+
       next: (res: { message: string }) => {
         console.log(res.message);
         this.toastr.success('Task started! Go get it!', 'Success');
         const task = this.tasks.find(t => t.id === id);
         if (task) task.status = TaskStatus.InProgress;
         this.cdr.detectChanges();
+
       },
+
       error: (error: any) => {
         console.error('error in starting task:', error);
         this.toastr.error('Failed to start task.', 'Error');

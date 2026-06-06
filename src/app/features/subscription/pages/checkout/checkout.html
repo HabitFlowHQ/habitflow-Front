@@ -1,0 +1,212 @@
+<div class="max-w-7xl mx-auto py-6" dir="rtl">
+  <div class="mb-lg text-right">
+    <h2 class="font-display-lg text-display-lg-mobile md:text-display-lg mb-xs text-primary font-bold">Choose Plan</h2>
+    <p class="text-on-surface-variant font-body-base text-body-base">Unleash your full potential with our advanced productivity system.</p>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-lg mt-8">
+    <!-- Plan Selection Area -->
+    <div class="lg:col-span-7 space-y-md">
+      <div class="grid grid-cols-1 gap-md">
+        
+        <!-- Plan Card: Monthly -->
+        <div 
+          (click)="selectPlan('monthly')"
+          [class.neon-border-active]="selectedPlan === 'monthly'"
+          [class.border-outline-variant/20]="selectedPlan !== 'monthly'"
+          class="cursor-pointer glass rounded-xl p-md flex justify-between items-center border hover:border-primary/40 transition-all duration-300">
+          <div class="flex items-center gap-md">
+            <div 
+              [class.border-primary-container]="selectedPlan === 'monthly'"
+              [class.border-outline]="selectedPlan !== 'monthly'"
+              class="w-6 h-6 rounded-full border-2 flex items-center justify-center">
+              <div 
+                [class.opacity-100]="selectedPlan === 'monthly'"
+                [class.opacity-0]="selectedPlan !== 'monthly'"
+                class="w-3 h-3 rounded-full bg-primary-container transition-opacity"></div>
+            </div>
+            <div>
+              <h3 class="font-headline-md text-headline-md font-bold">Monthly</h3>
+              <p class="text-on-surface-variant font-body-sm text-body-sm">Full access to all tools</p>
+            </div>
+          </div>
+          <div class="text-left">
+            <span class="font-stats-number text-stats-number text-primary font-bold">$20</span>
+            <br>
+            <span class="text-on-surface-variant font-label-mono text-label-mono">month</span>
+          </div>
+        </div>
+
+        <!-- Plan Card: 3-Month Tactical -->
+        <div 
+          (click)="selectPlan('tactical')"
+          [class.neon-border-active]="selectedPlan === 'tactical'"
+          [class.border-outline-variant/20]="selectedPlan !== 'tactical'"
+          class="cursor-pointer glass rounded-xl p-md flex justify-between items-center border hover:border-primary/40 transition-all duration-300">
+          <div class="flex items-center gap-md">
+            <div 
+              [class.border-primary-container]="selectedPlan === 'tactical'"
+              [class.border-outline]="selectedPlan !== 'tactical'"
+              class="w-6 h-6 rounded-full border-2 flex items-center justify-center">
+              <div 
+                [class.opacity-100]="selectedPlan === 'tactical'"
+                [class.opacity-0]="selectedPlan !== 'tactical'"
+                class="w-3 h-3 rounded-full bg-primary-container transition-opacity"></div>
+            </div>
+            <div>
+              <div class="flex items-center gap-xs">
+                <h3 class="font-headline-md text-headline-md font-bold">Tactical (3 months)</h3>
+                <span class="bg-secondary-container/20 text-secondary px-2 py-0.5 rounded text-[10px] font-bold">Save 17%</span>
+              </div>
+              <p class="text-on-surface-variant font-body-sm text-body-sm">For committed professionals</p>
+            </div>
+          </div>
+          <div class="text-left font-mono">
+            <span class="font-stats-number text-stats-number text-primary font-bold">$50</span>
+            <div class="text-on-surface-variant font-label-mono text-label-mono">$16.67 / month</div>
+          </div>
+        </div>
+
+        <!-- Plan Card: Annual Elite -->
+        <div 
+          (click)="selectPlan('annual')"
+          [class.neon-border-active]="selectedPlan === 'annual'"
+          [class.border-outline-variant/20]="selectedPlan !== 'annual'"
+          class="cursor-pointer glass rounded-xl p-md flex justify-between items-center relative overflow-hidden transition-all duration-300 border">
+          <div class="absolute top-0 left-0 bg-primary-container text-on-primary-container px-md py-xs font-label-mono text-label-mono rounded-br-xl font-bold">Best Value</div>
+          <div class="flex items-center gap-md">
+            <div 
+              [class.border-primary-container]="selectedPlan === 'annual'"
+              [class.border-outline]="selectedPlan !== 'annual'"
+              class="w-6 h-6 rounded-full border-2 flex items-center justify-center">
+              <div 
+                [class.opacity-100]="selectedPlan === 'annual'"
+                [class.opacity-0]="selectedPlan !== 'annual'"
+                class="w-3 h-3 rounded-full bg-primary-container transition-opacity"></div>
+            </div>
+            <div>
+              <h3 class="font-headline-md text-headline-md text-primary font-bold">Elite Annual</h3>
+              <p class="text-on-surface-variant font-body-sm text-body-sm">Complete control and unlimited productivity</p>
+            </div>
+          </div>
+          <div class="text-left font-mono">
+            <span class="font-stats-number text-stats-number text-primary font-bold">$180</span>
+            <div class="text-on-surface-variant font-label-mono text-label-mono">$15 / month</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Trust Badges -->
+      <div class="grid grid-cols-3 gap-sm mt-lg">
+        <div class="glass p-sm rounded-lg flex flex-col items-center text-center gap-xs">
+          <span class="material-symbols-outlined text-primary text-3xl">lock</span>
+          <span class="font-label-mono text-label-mono text-xs">AES-256 Encryption</span>
+        </div>
+        <div class="glass p-sm rounded-lg flex flex-col items-center text-center gap-xs">
+          <span class="material-symbols-outlined text-primary text-3xl">verified</span>
+          <span class="font-label-mono text-label-mono text-xs">Verified by Stripe</span>
+        </div>
+        <div class="glass p-sm rounded-lg flex flex-col items-center text-center gap-xs">
+          <span class="material-symbols-outlined text-primary text-3xl">event_repeat</span>
+          <span class="font-label-mono text-label-mono text-xs">Cancel Anytime</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Checkout / Form Area -->
+    <div class="lg:col-span-5">
+      <form (submit)="onSubmit()" class="glass rounded-xl p-lg glow-primary border border-outline-variant/30 flex flex-col gap-md">
+        <h4 class="font-headline-md text-headline-md border-b border-outline-variant/10 pb-md text-on-background font-semibold">Secure Payment</h4>
+        
+        <div class="space-y-sm">
+          <div class="space-y-xs">
+            <label class="font-label-mono text-label-mono text-on-surface-variant block">Cardholder Name</label>
+            <input 
+              type="text" 
+              name="cardholderName" 
+              [(ngModel)]="cardholderName" 
+              class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg p-sm text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all" 
+              placeholder="الاسم كما هو مكتوب على البطاقة" 
+              required
+            />
+          </div>
+          
+          <div class="space-y-xs">
+            <label class="font-label-mono text-label-mono text-on-surface-variant block">Card Number</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                name="cardNumber" 
+                [(ngModel)]="cardNumber" 
+                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg p-sm pr-12 text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all" 
+                placeholder="0000 0000 0000 0000" 
+                required
+              />
+              <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant">credit_card</span>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-sm">
+            <div class="space-y-xs">
+              <label class="font-label-mono text-label-mono text-on-surface-variant block">Expiration Date</label>
+              <input 
+                type="text" 
+                name="expiration" 
+                [(ngModel)]="expiration" 
+                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg p-sm text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all" 
+                placeholder="MM/YY" 
+                required
+              />
+            </div>
+            
+            <div class="space-y-xs">
+              <label class="font-label-mono text-label-mono text-on-surface-variant block">CVC</label>
+              <input 
+                type="text" 
+                name="cvc" 
+                [(ngModel)]="cvc" 
+                class="w-full bg-surface-container-low border border-outline-variant/30 rounded-lg p-sm text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all" 
+                placeholder="123" 
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="mt-sm pt-md border-t border-outline-variant/10 space-y-sm">
+          <div class="flex justify-between font-body-base">
+            <span class="text-on-surface-variant">Selected Plan:</span>
+            <span class="font-bold text-on-surface">{{ planName }}</span>
+          </div>
+          <div class="flex justify-between font-body-base">
+            <span class="text-on-surface-variant">Tax (5%):</span>
+            <span class="font-bold text-on-surface">${{ planTax | number:'1.2-2' }}</span>
+          </div>
+          <div class="flex justify-between text-primary text-xl font-bold mt-sm">
+            <span>Total:</span>
+            <span class="font-stats-number text-primary">${{ planTotal | number:'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          [disabled]="isLoading" 
+          class="w-full bg-primary-container text-on-primary-container py-md rounded-lg font-bold text-[18px] flex items-center justify-center gap-sm hover:scale-[0.98] transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="!isLoading">Pay Now</span>
+          <span *ngIf="isLoading" class="flex items-center gap-2">
+            <span>Processing...</span>
+            <span class="material-symbols-outlined animate-spin">sync</span>
+          </span>
+          <span *ngIf="!isLoading" class="material-symbols-outlined">rocket_launch</span>
+        </button>
+
+        <p class="text-center text-on-surface-variant font-label-mono text-[10px] uppercase tracking-widest mt-2">
+          Your account will be activated immediately after the payment is successful
+        </p>
+      </form>
+    </div>
+  </div>
+</div>

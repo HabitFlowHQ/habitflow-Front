@@ -29,9 +29,9 @@ export class HabitDetail implements OnInit {
 
   ngOnInit(): void {
     console.log('[HabitDetail] Component OnInit initialized');
-    this.route.paramMap.subscribe({
+    this.route.paramMap.subscribe({ //URL parameters are observable, so we subscribe to changes
       next: (params) => {
-        const idParam = params.get('id');
+        const idParam = params.get('id'); // take the "id" parameter from the URL
         console.log('[HabitDetail] Route parameter "id" changed:', idParam);
         if (!idParam) {
           this.errorMessage = 'Habit ID not found in URL';
@@ -39,8 +39,8 @@ export class HabitDetail implements OnInit {
           this.cdr.detectChanges();
           return;
         }
-        const id = +idParam;
-        if (isNaN(id)) {
+        const id = +idParam; // convert the id to a number
+        if (isNaN(id)) { //isNan : is Not a Number
           this.errorMessage = 'Invalid Habit ID provided';
           this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
@@ -64,7 +64,7 @@ export class HabitDetail implements OnInit {
     this.habit = null;
     this.cdr.detectChanges();
 
-    this.habitService.getHabitById(id).subscribe({
+    this.habitService.getHabitById(id).subscribe({ //call api
       next: (data) => {
         console.log('[HabitDetail] Successfully loaded habit details:', data);
         this.habit     = data;
@@ -73,8 +73,8 @@ export class HabitDetail implements OnInit {
       },
       error: (err) => {
         console.error('[HabitDetail] API error occurred:', err);
-        this.errorMessage = err.status === 404 
-          ? 'Habit not found' 
+        this.errorMessage = err.status === 404
+          ? 'Habit not found'
           : 'Failed to load habit (' + (err.message || 'connection error') + ')';
         this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
@@ -85,7 +85,7 @@ export class HabitDetail implements OnInit {
 
   deleteHabit(): void {
     if (!this.habit) return;
-    this.habitService.deleteHabit(this.habit.id).subscribe({
+    this.habitService.deleteHabit(this.habit.id).subscribe({ //call api
       next: () => {
         this.toastr.success('Habit deleted successfully', 'Success');
         this.router.navigate(['/habits']);
@@ -117,10 +117,11 @@ export class HabitDetail implements OnInit {
     });
   }
 
-  formatDate(d: string | null): string {
+  formatDate(d: string | null): string { // helper to format date strings for display  2026-06-05 → 05 Jun 2026
     if (!d) return '—';
     return new Date(d).toLocaleDateString('en-GB', {
       day: '2-digit', month: 'short', year: 'numeric'
     });
   }
+
 }

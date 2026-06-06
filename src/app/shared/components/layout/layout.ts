@@ -76,7 +76,7 @@ export class Layout implements OnInit {
 
   bottomLinks = [
     { label: 'Settings',     route: '/settings',     icon: 'settings' },
-    { label: 'Subscription', route: '/subscription', icon: 'workspace_premium' }
+    { label: 'Subscription', route: '/checkout',     icon: 'workspace_premium' }
   ];
 
   constructor(private authService: AuthService) {}
@@ -101,8 +101,6 @@ export class Layout implements OnInit {
   }
 
   logout() {
-    if (confirm('Are you sure you want to log out?')) {
-      this.authService.logout();
-    }
+    this.authService.logout();
   }
 }

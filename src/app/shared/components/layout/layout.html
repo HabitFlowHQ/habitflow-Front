@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-background text-on-background font-body-base antialiased flex flex-row selection:bg-primary-container selection:text-on-primary-container relative overflow-hidden">
+<div class="min-h-screen bg-background text-on-background font-body-base antialiased flex flex-row md:gap-6 selection:bg-primary-container selection:text-on-primary-container relative overflow-hidden">
 
   <!-- Mobile Backdrop Overlay -->
   <div 
@@ -139,9 +139,12 @@
 
     <!-- Main Canvas Content -->
     <main class="flex-grow w-full bg-background pt-[64px] md:pt-0 flex flex-col">
-      <div class="p-5 md:pt-8 md:pb-8 md:pl-10 md:pr-10 lg:pt-10 lg:pb-10 lg:pl-12 lg:pr-12 w-full max-w-[1455px] mx-auto flex flex-col gap-md flex-grow">
+      <div class="p-5 md:pt-8 md:pb-8 md:pl-16 md:pr-10 lg:pt-10 lg:pb-10 lg:pl-20 lg:pr-12 w-full max-w-[1455px] mx-auto flex flex-col gap-md flex-grow">
         <router-outlet></router-outlet>
       </div>
+
+      <!-- Spacer to create gap between page content and footer -->
+      <div class="h-xl"></div>
 
       <!-- Footer -->
       <footer class="w-full py-md border-t border-surface-variant/20 flex flex-col sm:flex-row items-center justify-between px-gutter font-label-mono text-[10px] text-on-surface-variant/50 gap-sm bg-surface-container-low/10 mt-auto">

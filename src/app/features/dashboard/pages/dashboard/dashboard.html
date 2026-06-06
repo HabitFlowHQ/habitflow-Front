@@ -191,7 +191,7 @@
         </div>
       </div>
 
-      <div class="flex-1 overflow-y-auto flex flex-col gap-2.5 pr-1" *ngIf="priorityQueue().length > 0">
+      <div class="flex-1 overflow-y-auto flex flex-col gap-2.5 pr-1 kanban-scroll" *ngIf="priorityQueue().length > 0">
         <div
           *ngFor="let task of priorityQueue()"
           [routerLink]="['/tasks', task.id]"
@@ -233,7 +233,7 @@
         </div>
       </div>
 
-      <div class="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-1" *ngIf="activeHabits().length > 0">
+      <div class="flex-1 flex flex-col gap-2.5 overflow-y-auto pr-1 kanban-scroll" *ngIf="activeHabits().length > 0">
         <div
           *ngFor="let habit of activeHabits()"
           [routerLink]="['/habits', habit.id]"
@@ -273,7 +273,7 @@
         </p>
       </div>
 
-      <div class="flex-1 flex flex-col gap-2 overflow-y-auto pr-1" *ngIf="recentXP().length > 0">
+      <div class="flex-1 flex flex-col gap-2 overflow-y-auto pr-1 kanban-scroll" *ngIf="recentXP().length > 0">
         <div *ngFor="let tx of recentXP()"
           class="flex items-center justify-between p-2 rounded-lg bg-[#0e1417]/40 border border-surface-variant/30">
           <div class="flex items-center gap-2">

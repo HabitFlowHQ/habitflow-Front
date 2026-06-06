@@ -14,6 +14,7 @@ import { UpdateTaskDto, TaskPriority } from '../../../../shared/models/task.mode
   templateUrl: './edit-task.html',
   styleUrl: './edit-task.scss'
 })
+
 export class EditTask implements OnInit {
 
   taskId: number = 0;
@@ -58,6 +59,7 @@ export class EditTask implements OnInit {
     this.isLoadingTask = true;
     this.cdr.detectChanges();
     this.taskService.getTaskById(id).subscribe({
+
       next: (task) => {
         this.formData = {
           title: task.title,
@@ -66,8 +68,10 @@ export class EditTask implements OnInit {
           dueDate: task.dueDate ?? '',
           estimatedMinutes: task.estimatedMinutes
         };
+
         this.isLoadingTask = false;
         this.cdr.detectChanges();
+
       },
       error: () => {
         this.errorMessage  = 'task not found';
@@ -80,9 +84,11 @@ export class EditTask implements OnInit {
 
   onSubmit(): void {
     if (!this.formData.title.trim()) {
+
       this.errorMessage = 'title is required';
       this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
+
       return;
     }
 
@@ -92,19 +98,25 @@ export class EditTask implements OnInit {
 
     this.taskService.updateTask(this.taskId, this.formData).subscribe({
       next: () => {
+
         this.toastr.success('Task updated successfully!', 'Success');
         this.router.navigate(['/tasks', this.taskId]);
+
       },
       error: (err) => {
+
         this.errorMessage = err.error?.message ?? 'Failed to save. Please try again';
         this.toastr.error(this.errorMessage, 'Error');
         this.isSaving = false;
         this.cdr.detectChanges();
+
       }
     });
   }
 
   onCancel(): void {
+
     this.router.navigate(['/tasks', this.taskId]);
+    
   }
 }

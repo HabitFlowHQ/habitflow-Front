@@ -18,6 +18,7 @@ import {
   templateUrl: './task-detail.html',
   styleUrl: './task-detail.scss'
 })
+
 export class TaskDetail implements OnInit {
 
   task: TaskDetails | null = null;
@@ -41,6 +42,7 @@ export class TaskDetail implements OnInit {
 
   ngOnInit(): void {
     console.log('[TaskDetail] Component OnInit initialized');
+
     this.route.paramMap.subscribe({
       next: (params) => {
         const idParam = params.get('id');
@@ -51,14 +53,18 @@ export class TaskDetail implements OnInit {
           this.cdr.detectChanges();
           return;
         }
+
         const id = +idParam;
+
         if (isNaN(id)) {
           this.errorMessage = 'Invalid task ID provided';
           this.toastr.error(this.errorMessage, 'Error');
           this.cdr.detectChanges();
           return;
         }
+
         this.loadTask(id);
+
       },
       error: (err) => {
         console.error('[TaskDetail] Error reading route params:', err);
@@ -66,6 +72,7 @@ export class TaskDetail implements OnInit {
         this.toastr.error(this.errorMessage, 'Error');
         this.cdr.detectChanges();
       }
+
     });
   }
 
@@ -77,13 +84,17 @@ export class TaskDetail implements OnInit {
     this.cdr.detectChanges();
 
     this.taskService.getTaskById(id).subscribe({
+
       next: (data: TaskDetails) => {
         console.log('[TaskDetail] Successfully loaded task details:', data);
         this.task      = data;
         this.isLoading = false;
         this.cdr.detectChanges();
+
       },
+
       error: (err) => {
+
         console.error('[TaskDetail] API error occurred:', err);
         this.errorMessage = err.status === 404
           ? 'Task not found'
@@ -91,6 +102,7 @@ export class TaskDetail implements OnInit {
         this.toastr.error(this.errorMessage, 'Error');
         this.isLoading = false;
         this.cdr.detectChanges();
+        
       }
     });
   }

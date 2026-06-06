@@ -1,10 +1,10 @@
-// Matches HabitResponseDto from Backend
+// Matches HabitResponseDto
 export interface Habit {
   id: number;
-  title: string;          
+  title: string;
   description?: string;
   category: string;
-  frequencyType: string;  
+  frequencyType: string;
   targetCount: number;
   currentStreak: number;
   longestStreak: number;

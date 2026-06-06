@@ -1,0 +1,18 @@
+.glass {
+  backdrop-filter: blur(12px);
+  background: rgba(26, 33, 35, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glow-primary {
+  box-shadow: 0 0 20px rgba(0, 209, 255, 0.15);
+}
+
+.neon-border-active {
+  border: 1px solid #00d1ff !important;
+  box-shadow: 0 0 10px rgba(0, 209, 255, 0.2);
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

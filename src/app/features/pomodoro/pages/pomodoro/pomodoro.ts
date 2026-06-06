@@ -1,9 +1,4 @@
-// ============================================================
-// 📁 src/app/features/pomodoro/pages/pomodoro/pomodoro.ts
-// ============================================================
-// 🎯 الهدف: صفحة Pomodoro Timer الكاملة
-// ============================================================
- 
+
 import {
   Component, OnInit, OnDestroy, signal,
   computed, ChangeDetectorRef
@@ -12,11 +7,12 @@ import { CommonModule }      from '@angular/common';
 import { FormsModule }       from '@angular/forms';
 import { PomodoroService }   from '../../../../core/services/pomodoro.service';
 import { TaskService }       from '../../../../core/services/task.service';
+import { ToastrService }       from 'ngx-toastr';
 import {
   PomodoroSession,
   PomodoroStats
 } from '../../../../shared/models/pomodoro.model';
-import { Task } from '../../../../shared/models/task.model';
+import { Task, TaskStatus } from '../../../../shared/models/task.model';
  
 // أنواع الجلسات
 type SessionType = 'Work' | 'ShortBreak' | 'LongBreak';
@@ -92,6 +88,7 @@ export class Pomodoro implements OnInit, OnDestroy {
   constructor(
     private pomodoroService: PomodoroService,
     private taskService: TaskService,
+    private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
  
@@ -195,6 +192,7 @@ export class Pomodoro implements OnInit, OnDestroy {
     if (this.timerState !== 'running') return;
     this.timerState = 'paused';
     this.stopInterval();
+    this.toastr.info('Pomodoro timer paused.', 'Paused');
     this.cdr.detectChanges();
   }
  
@@ -216,6 +214,7 @@ export class Pomodoro implements OnInit, OnDestroy {
     }).subscribe({
       next: () => {
         this.resetTimer();
+        this.toastr.warning('Pomodoro session stopped.', 'Stopped');
         this.loadStats(); // حدّث الإحصائيات
         this.cdr.detectChanges();
       },
@@ -247,7 +246,7 @@ export class Pomodoro implements OnInit, OnDestroy {
         this.completedToday++;
  
         if (session.xpEarned > 0) {
-          alert(`🎉 Session completed! You earned ${session.xpEarned} XP!`);
+          this.toastr.success(`🎉 Session completed! You earned ${session.xpEarned} XP!`, 'Success');
         }
  
         this.activeSession = null;
@@ -319,7 +318,7 @@ export class Pomodoro implements OnInit, OnDestroy {
   loadTasks(): void {
     this.taskService.getAllTasks().subscribe({
       next:  (tasks) => {
-        this.tasks = tasks;
+        this.tasks = tasks.filter(t => t.status === TaskStatus.InProgress);
         this.cdr.detectChanges();
       },
       error: ()      => {

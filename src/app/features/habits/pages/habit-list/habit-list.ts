@@ -16,36 +16,42 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class HabitList implements OnInit, OnDestroy {
 
-  habits: Habit[] = [];
+  habits: Habit[] = []; // muiltype of Habit[]
   isLoading: boolean = false;
   errorMessage: string = '';
   searchQuery: string = '';
 
-  get filteredHabits(): Habit[] {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  get filteredHabits(): Habit[] { //get : we can use this function as a property in html, it will return the filtered habits based on search query and active status
+ //using get : this.filteredHabits  || *ngFor="let habit of filteredHabits"
 
-    const list = this.habits.filter(h => {
-      if (!h.createdAt) return true;
-      
-      const start = new Date(h.createdAt);
+    const today = new Date(); //current date now
+    today.setHours(0, 0, 0, 0); //2026-06-05 00:00:00
+
+    const list = this.habits.filter( //filter : taker arrey and return new array
+      h => {
+
+      if (!h.createdAt) return true; //if no CreatedAt return true, we consider it active by default
+
+      const start = new Date(h.createdAt); //habit start date
       start.setHours(0, 0, 0, 0);
 
-      const end = h.endDate ? new Date(h.endDate) : null;
+      //Ternary Operator : condition ? value1 : value2
+      const end = h.endDate ? new Date(h.endDate) : null; //habit end date
+
       if (end) {
         end.setHours(0, 0, 0, 0);
       }
 
-      const started = start.getTime() <= today.getTime();
+      const started = start.getTime() <= today.getTime();  //getTime() date to timestpamp, check if habit has started 2026-06-01=>1780252800000
       const notEnded = !end || end.getTime() >= today.getTime();
 
-      return started && notEnded;
+      return started && notEnded; //return active habits only (started but not ended) true && true = true | true && false = false
     });
 
     if (!this.searchQuery.trim()) {
       return list;
     }
-    const q = this.searchQuery.toLowerCase();
+    const q = this.searchQuery.toLowerCase(); //search query
     return list.filter(h =>
       h.title.toLowerCase().includes(q) ||
       (h.description && h.description.toLowerCase().includes(q)) ||
@@ -65,7 +71,7 @@ export class HabitList implements OnInit, OnDestroy {
     this.loadHabits();
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy(): void { //when out of this page, unsubscribe to avoid memory leaks
     this.habitsSubscription?.unsubscribe();
   }
 
@@ -73,7 +79,7 @@ export class HabitList implements OnInit, OnDestroy {
     this.isLoading = true;
     this.errorMessage = '';
 
-    this.habitsSubscription = this.habitService.getHabits().subscribe({
+    this.habitsSubscription = this.habitService.getHabits().subscribe({ //cal api
       next: (data: Habit[]) => {
         this.habits = data;
         this.isLoading = false;

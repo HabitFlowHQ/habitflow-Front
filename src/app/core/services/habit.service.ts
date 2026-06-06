@@ -4,17 +4,17 @@ import { Observable } from 'rxjs';
 import { Habit, CreateHabitDto, UpdateHabitDto } from '../../shared/models/habit.model';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', //Golbal service available throughout the app
 })
 export class HabitService {
 
   private readonly apiUrl = 'http://localhost:5066/api/habit';
 
-  constructor(private http: HttpClient) {}
-
+  constructor(private http: HttpClient) {} //httpclient to make api calls
+//Observable : wating for response from api and handle it asynchronously
   getHabits(): Observable<Habit[]> {
     return this.http.get<Habit[]>(this.apiUrl);
-  }
+  }//[] because we expect an array of habits
 
   getHabitById(id: number): Observable<Habit> {
     return this.http.get<Habit>(`${this.apiUrl}/${id}`);

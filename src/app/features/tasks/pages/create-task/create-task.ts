@@ -17,6 +17,7 @@ import { CreateTaskDto, TaskPriority } from '../../../../shared/models/task.mode
   templateUrl: './create-task.html',
   styleUrl: './create-task.scss'
 })
+
 export class CreateTask implements OnInit {
 
   formData: CreateTaskDto = {
@@ -50,17 +51,20 @@ export class CreateTask implements OnInit {
   }
 
   onSubmit(): void {
+
     if (!this.formData.title.trim()) {
       this.errorMessage = 'Task title is required';
       this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
+
     }
 
     if (this.formData.estimatedMinutes <= 0) {
       this.errorMessage = 'Estimated time must be a positive number';
       this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
+
       return;
     }
 
@@ -89,10 +93,17 @@ export class CreateTask implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        this.errorMessage = 'Failed to create task. Please try again.';
+        const errorMsg = err.error || 'Failed to create task. Please try again';
+        this.errorMessage = typeof errorMsg === 'string' ? errorMsg : (errorMsg.message || 'Failed to create task. Please try again');
         this.toastr.error(this.errorMessage, 'Error');
         this.isLoading    = false;
         this.cdr.detectChanges();
+
+        if (this.errorMessage.includes('Upgrade to Premium')) {
+          
+          this.router.navigate(['/checkout']);
+
+        }
       }
     });
   }

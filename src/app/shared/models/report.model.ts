@@ -22,6 +22,15 @@ export interface HabitSummary {
   color:          string | null;
   currentStreak:  number;
   completionRate: number;
+  frequencyType:  string;
+  completionsCount: number;
+  missedCount:    number;
+}
+
+export interface HabitLog {
+  habitName:   string;
+  date:        string;
+  isCompleted: boolean;
 }
 
 export interface TaskSummary {
@@ -30,6 +39,19 @@ export interface TaskSummary {
   priority:    string;
   status:      string;
   completedAt: string | null;
+  dueDate:     string | null;
+}
+
+export interface ProjectSummary {
+  id:             number;
+  title:          string;
+  icon:           string | null;
+  color:          string | null;
+  isCompleted:    boolean;
+  totalTasks:     number;
+  completedTasks: number;
+  createdAt:      string;
+  dueDate:        string | null;
 }
 
 export interface WeeklyReport {
@@ -50,6 +72,10 @@ export interface WeeklyReport {
   tasksOverdue:       number;
   taskCompletionRate: number;
   recentTasks:        TaskSummary[];
+  completedTasksList:  TaskSummary[];
+  incompleteTasksList: TaskSummary[];
+  activeProjectsList:  ProjectSummary[];
+  habitLogs:           HabitLog[];
   avgDailyScore:      number;
   weekGrade:          string;
   dailyScores:        DailyScore[];
@@ -71,9 +97,13 @@ export interface MonthlyReport {
   bestStreak:          number;
   activeHabits:        number;
   topHabits:           HabitSummary[];
+  habitLogs:           HabitLog[];
   tasksCompleted:      number;
   tasksOverdue:        number;
   taskCompletionRate:  number;
+  completedTasksList:  TaskSummary[];
+  incompleteTasksList: TaskSummary[];
+  activeProjectsList:  ProjectSummary[];
   avgMonthlyScore:     number;
   monthGrade:          string;
   dailyScores:         DailyScore[];

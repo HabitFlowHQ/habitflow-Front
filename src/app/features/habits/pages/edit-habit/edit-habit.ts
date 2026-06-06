@@ -13,6 +13,7 @@ import { UpdateHabitDto } from '../../../../shared/models/habit.model';
   templateUrl: './edit-habit.html',
   styleUrl: './edit-habit.scss',
 })
+
 export class EditHabit implements OnInit {
 
   habitId!: number;
@@ -37,21 +38,21 @@ export class EditHabit implements OnInit {
 
   constructor(
     private habitService: HabitService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute, // For accessing route parameters
     private router: Router,
     private toastr: ToastrService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    const idParam = this.route.snapshot.paramMap.get('id');
+    const idParam = this.route.snapshot.paramMap.get('id'); // get id
     if (!idParam) {
       this.errorMessage = 'Habit ID not found in URL';
       this.toastr.error(this.errorMessage, 'Error');
-      this.cdr.detectChanges();
+      this.cdr.detectChanges(); //update view
       return;
     }
-    this.habitId = +idParam;
+    this.habitId = +idParam; //+: convert to number
     this.loadHabit();
   }
 
@@ -59,23 +60,24 @@ export class EditHabit implements OnInit {
     this.isLoading = true;
     this.cdr.detectChanges();
     this.habitService.getHabitById(this.habitId).subscribe({
-      next: (habit) => {
+      next: (habit) => { //success
         this.dto = {
           title:         habit.title,
           description:   habit.description,
           category:      habit.category,
           color:         habit.color && habit.color.startsWith('#') ? habit.color : '#a4e6ff',
           icon:          habit.icon,
-          endDate:       habit.endDate ? habit.endDate.substring(0, 10) : '',
-          createdAt:     habit.createdAt ? habit.createdAt.substring(0, 10) : ''
+          endDate:       habit.endDate ? habit.endDate.substring(0, 10) : '', // take 10 chars for yyyy-mm-dd format
+          createdAt:     habit.createdAt ? habit.createdAt.substring(0, 10) : '' // : ""  if empty put ""
         };
         this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        this.errorMessage = 'Failed to load habit for editing.';
+
+      error: (err) => {//error
+        this.errorMessage='Failed to load habit for editing.';
         this.toastr.error(this.errorMessage, 'Error');
-        this.isLoading    = false;
+        this.isLoading= false;
         this.cdr.detectChanges();
         console.error(err);
       }
@@ -83,15 +85,16 @@ export class EditHabit implements OnInit {
   }
 
   submit(): void {
+
     if (!this.dto.title.trim() || !this.dto.category.trim()) {
-      this.errorMessage = 'Title and Category are required.';
+      this.errorMessage = 'Title and Category are required';
       this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;
     }
 
     if (!this.dto.endDate) {
-      this.errorMessage = 'End date is required.';
+      this.errorMessage = 'End date is required';
       this.toastr.warning(this.errorMessage, 'Warning');
       this.cdr.detectChanges();
       return;

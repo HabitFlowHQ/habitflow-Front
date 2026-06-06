@@ -11,7 +11,8 @@ import { Task, TaskStatus, TaskPriority } from '../../../../shared/models/task.m
   styleUrl: './task-card.scss',
 })
 export class TaskCard {
-  @Input() task!: Task;
+  @Input() task!: Task; //get  data from the parent component
+  //! tell compiler that this property will be initialized later
 
   @Output() onStart  = new EventEmitter<number>();
   @Output() onDelete = new EventEmitter<number>();

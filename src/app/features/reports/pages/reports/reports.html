@@ -8,7 +8,7 @@
         <span class="font-label-mono text-[9px] text-[#ddb7ff] tracking-[0.25em] uppercase font-semibold">Performance Metrics</span>
       </div>
       <h1>📊 Personal Reports</h1>
-      <p class="header-sub">Track your progress week by week and month by month</p>
+      <p class="header-sub">Track your progress, habits, tasks, and projects dynamically</p>
     </div>
     <div class="header-actions">
       <!-- Tab Toggle -->
@@ -18,13 +18,13 @@
       </div>
       <!-- Print Button -->
       <button class="btn-print" (click)="printReport()">
-        🖨️ Export PDF
+        🖨️ Export PDF Report
       </button>
     </div>
   </div>
 
   <!-- ── States ── -->
-  <div *ngIf="isLoading"    class="loading-indicator">Loading report...</div>
+  <div *ngIf="isLoading"    class="loading-indicator">Loading report data...</div>
   <div *ngIf="errorMessage" class="error-message">⚠️ {{ errorMessage }}</div>
 
   <!-- ═══════════════════════════════════════════ -->
@@ -34,171 +34,442 @@
 
     <!-- Print Header (visible only when printing) -->
     <div class="print-header print-only">
-      <h1>⚡ LevelUP — Weekly Report</h1>
-      <p>{{ weekly.weekLabel }} · Generated: {{ weekly.generatedAt | date:'medium' }}</p>
+      <h1>⚡ LevelUP — Weekly Performance Report</h1>
+      <p class="print-period">Period: {{ weekly.weekLabel }} ({{ weekly.weekStart | date:'mediumDate' }} - {{ weekly.weekEnd | date:'mediumDate' }})</p>
+      <p class="print-meta">User: {{ weekly.userName }} · Generated: {{ weekly.generatedAt | date:'medium' }}</p>
     </div>
 
-    <!-- ── Summary Row ── -->
-    <div class="summary-row">
-
-      <div class="summary-card grade-card" [style.--grade-color]="gradeColor(weekly.weekGrade)">
-        <div class="grade-circle">{{ weekly.weekGrade }}</div>
-        <div>
-          <p class="summary-label">WEEK GRADE</p>
-          <p class="summary-value">{{ weekly.avgDailyScore }}% avg</p>
+    <!-- SECTION 1: Executive Summary -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span class="icon">📋</span> 1. Executive Summary
+      </h2>
+      <div class="summary-grid">
+        <div class="summary-stat-card">
+          <span class="stat-icon">🔥</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ weekly.totalHabits }}</span>
+            <span class="stat-lbl">Habits Tracked</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">📈</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ weekly.habitCompletionRate }}%</span>
+            <span class="stat-lbl">Habit Completion</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">📝</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ weekly.totalTasks }}</span>
+            <span class="stat-lbl">Tasks Created</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">✅</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ weekly.tasksCompleted }}</span>
+            <span class="stat-lbl">Tasks Completed</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">⏳</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ weekly.tasksPending }}</span>
+            <span class="stat-lbl">Incomplete Tasks</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">📁</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ weekly.activeProjectsList.length }}</span>
+            <span class="stat-lbl">Active Projects</span>
+          </div>
         </div>
       </div>
 
-      <div class="summary-card">
-        <span class="summary-icon">⚡</span>
-        <div>
-          <p class="summary-label">XP THIS WEEK</p>
-          <p class="summary-value xp-value">+{{ weekly.weekXP | number }}</p>
+      <div class="achievements-box">
+        <div class="ach-column">
+          <h4>🏆 Key Achievements</h4>
+          <ul>
+            <li>Earned +{{ weekly.weekXP | number }} XP during this week.</li>
+            <li>Maintained a best streak of {{ weekly.bestStreak }} days.</li>
+            <li *ngIf="weekly.habitCompletionRate >= 70">High consistency with a {{ weekly.habitCompletionRate }}% habit completion rate.</li>
+            <li *ngIf="weekly.tasksCompleted > 0">Successfully completed {{ weekly.tasksCompleted }} work tasks.</li>
+          </ul>
+        </div>
+        <div class="ach-column">
+          <h4>⚠️ Areas for Improvement</h4>
+          <ul>
+            <li *ngIf="weekly.tasksOverdue > 0">{{ weekly.tasksOverdue }} tasks are overdue. Prioritize completing them.</li>
+            <li *ngIf="weekly.habitCompletionRate < 70">Habit completion is at {{ weekly.habitCompletionRate }}%. Aim to log habits regularly.</li>
+            <li *ngIf="weekly.activeProjectsList.length > 0 && weekly.tasksCompleted === 0">No project progress updates this week. Take action on your active projects.</li>
+            <li *ngIf="weekly.tasksOverdue === 0 && weekly.habitCompletionRate >= 70">No critical issues! Keep up the excellent work.</li>
+          </ul>
         </div>
       </div>
-
-      <div class="summary-card">
-        <span class="summary-icon">🔥</span>
-        <div>
-          <p class="summary-label">BEST STREAK</p>
-          <p class="summary-value">{{ weekly.bestStreak }} days</p>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <span class="summary-icon">✅</span>
-        <div>
-          <p class="summary-label">TASKS DONE</p>
-          <p class="summary-value">{{ weekly.tasksCompleted }}/{{ weekly.totalTasks }}</p>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <span class="summary-icon">🏆</span>
-        <div>
-          <p class="summary-label">LEVEL</p>
-          <p class="summary-value">{{ weekly.currentLevel }} · {{ weekly.levelTitle }}</p>
-        </div>
-      </div>
-
     </div>
 
-    <!-- ── Two Column ── -->
-    <div class="report-grid">
+    <!-- SECTION 2: Habits Analysis -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">⚡</span> 2. Habits Analysis
+      </h2>
+      
+      <!-- Habit Statistics -->
+      <div class="sub-stats-grid">
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Total Active Habits</span>
+          <span class="sub-val">{{ weekly.totalHabits }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Avg Completion Rate</span>
+          <span class="sub-val success">{{ weekly.habitCompletionRate }}%</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Most Consistent Habit</span>
+          <span class="sub-val">{{ getBestHabit(weekly) }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Least Consistent Habit</span>
+          <span class="sub-val danger">{{ getWorstHabit(weekly) }}</span>
+        </div>
+      </div>
 
-      <!-- XP Chart -->
-      <div class="report-card">
-        <h3>⚡ Daily XP — {{ weekly.weekLabel }}</h3>
-        <div class="bar-chart">
-          <div class="bar-item" *ngFor="let d of weekly.dailyXP">
-            <div class="bar-track">
-              <div class="bar-fill xp-bar"
-                [style.height.%]="barWidth(d.xp, maxXP(weekly.dailyXP))">
-              </div>
+      <!-- Habits Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Habit Name</th>
+              <th>Frequency</th>
+              <th>Successful</th>
+              <th>Missed</th>
+              <th>Completion Rate</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of weekly.topHabits">
+              <td class="bold"><span class="table-icon">{{ h.icon || '⭐' }}</span> {{ h.title }}</td>
+              <td>{{ h.frequencyType || 'Daily' }}</td>
+              <td class="success bold">{{ h.completionsCount }}</td>
+              <td class="danger bold">{{ h.missedCount }}</td>
+              <td>
+                <div class="progress-bar-cell">
+                  <div class="progress-track-small">
+                    <div class="progress-fill-small" [style.width.%]="h.completionRate" [style.background]="h.color || '#a4e6ff'"></div>
+                  </div>
+                  <span class="pct-lbl">{{ h.completionRate }}%</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="h.completionRate >= 90" [class.badge-warning]="h.completionRate >= 70 && h.completionRate < 90" [class.badge-danger]="h.completionRate < 70">
+                  {{ h.completionRate >= 90 ? 'Excellent' : h.completionRate >= 70 ? 'Good' : 'Needs Improvement' }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="weekly.topHabits.length === 0">
+              <td colspan="6" class="text-center text-muted">No habits logged during this period.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Habit Timeline -->
+      <div class="timeline-container">
+        <h3>📅 Habit Logs Timeline</h3>
+        <div class="timeline-day-box" *ngFor="let dayGroup of getGroupedHabits(weekly)">
+          <div class="timeline-date">{{ dayGroup.date | date:'EEEE, MMMM d, yyyy' }}</div>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let log of dayGroup.logs">
+              <span class="status-marker" [class.done]="log.isCompleted">{{ log.isCompleted ? '✅' : '❌' }}</span>
+              <span class="item-title">{{ log.habitName }}</span>
             </div>
-            <span class="bar-label">{{ d.day }}</span>
-            <span class="bar-value">{{ d.xp }}</span>
           </div>
+        </div>
+        <div *ngIf="getGroupedHabits(weekly).length === 0" class="text-center text-muted py-sm">
+          No habit timeline logs recorded for this period.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: Tasks Analysis -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">✅</span> 3. Tasks Analysis
+      </h2>
+
+      <!-- Task Statistics -->
+      <div class="sub-stats-grid">
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Total Tasks</span>
+          <span class="sub-val">{{ weekly.totalTasks }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Completed Tasks</span>
+          <span class="sub-val success">{{ weekly.tasksCompleted }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Incomplete Tasks</span>
+          <span class="sub-val warning">{{ weekly.tasksPending }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Completion Rate</span>
+          <span class="sub-val success">{{ weekly.taskCompletionRate }}%</span>
         </div>
       </div>
 
-      <!-- Score Chart -->
-      <div class="report-card">
-        <h3>📈 Daily Score</h3>
-        <div class="bar-chart">
-          <div class="bar-item" *ngFor="let d of weekly.dailyScores">
-            <div class="bar-track">
-              <div class="bar-fill score-bar"
-                [style.height.%]="d.score">
-              </div>
+      <!-- Completed Tasks -->
+      <div class="task-subsection">
+        <h3 class="subsection-title">✓ Completed Tasks</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Task Title</th>
+                <th>Due Date</th>
+                <th>Completion Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of weekly.completedTasksList">
+                <td class="bold">{{ t.title }}</td>
+                <td>{{ t.dueDate ? (t.dueDate | date:'shortDate') : '—' }}</td>
+                <td>{{ t.completedAt ? (t.completedAt | date:'shortDate') : '—' }}</td>
+                <td>
+                  <span class="badge" [class.badge-danger]="t.priority === 'High'" [class.badge-warning]="t.priority === 'Medium'" [class.badge-info]="t.priority === 'Low'">
+                    {{ t.priority }}
+                  </span>
+                </td>
+                <td><span class="badge badge-success">Completed</span></td>
+              </tr>
+              <tr *ngIf="weekly.completedTasksList.length === 0">
+                <td colspan="5" class="text-center text-muted">No completed tasks this week.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Incomplete Tasks -->
+      <div class="task-subsection mt-md">
+        <h3 class="subsection-title">○ Incomplete Tasks</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Task Title</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of weekly.incompleteTasksList">
+                <td class="bold">{{ t.title }}</td>
+                <td>{{ t.dueDate ? (t.dueDate | date:'shortDate') : '—' }}</td>
+                <td>
+                  <span class="badge" [class.badge-danger]="t.priority === 'High'" [class.badge-warning]="t.priority === 'Medium'" [class.badge-info]="t.priority === 'Low'">
+                    {{ t.priority }}
+                  </span>
+                </td>
+                <td><span class="badge badge-warning">Incomplete</span></td>
+              </tr>
+              <tr *ngIf="weekly.incompleteTasksList.length === 0">
+                <td colspan="4" class="text-center text-muted">No incomplete tasks this week.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Task Timeline -->
+      <div class="timeline-container mt-md">
+        <h3>📅 Tasks Timeline</h3>
+        <div class="timeline-day-box" *ngFor="let dayGroup of getGroupedTasks(weekly)">
+          <div class="timeline-date">{{ dayGroup.date === 'No Date' ? 'No Date Scheduled' : (dayGroup.date | date:'EEEE, MMMM d, yyyy') }}</div>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let t of dayGroup.tasks">
+              <span class="status-marker" [class.done]="t.status === 'Completed'">{{ t.status === 'Completed' ? '✅' : '○' }}</span>
+              <span class="item-title">{{ t.title }}</span>
+              <span class="item-meta">({{ t.priority }} Priority)</span>
             </div>
-            <span class="bar-label">{{ d.day }}</span>
-            <span class="bar-value">{{ d.score }}</span>
           </div>
+        </div>
+        <div *ngIf="getGroupedTasks(weekly).length === 0" class="text-center text-muted py-sm">
+          No tasks scheduled or logged during this period.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Projects Analysis -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">📁</span> 4. Projects Analysis
+      </h2>
+
+      <!-- Project Statistics -->
+      <div class="sub-stats-grid">
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Total Projects</span>
+          <span class="sub-val">{{ weekly.activeProjectsList.length }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Completed Projects</span>
+          <span class="sub-val success">
+            {{ weekly.activeProjectsList.filter(p => p.isCompleted).length }}
+          </span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Ongoing Projects</span>
+          <span class="sub-val warning">
+            {{ weekly.activeProjectsList.filter(p => !p.isCompleted).length }}
+          </span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Avg Progress</span>
+          <span class="sub-val success">
+            {{ getFinalScore(weekly) }}%
+          </span>
         </div>
       </div>
 
-      <!-- Habits -->
-      <div class="report-card">
-        <h3>🔥 Habits This Week</h3>
-        <div class="stat-row">
-          <div class="stat-box">
-            <span class="stat-num">{{ weekly.habitsCompleted }}</span>
-            <span class="stat-lbl">Completed</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num success">{{ weekly.habitCompletionRate }}%</span>
-            <span class="stat-lbl">Rate</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num">{{ weekly.totalHabits }}</span>
-            <span class="stat-lbl">Active</span>
-          </div>
-        </div>
+      <!-- Projects Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Start Date</th>
+              <th>Due Date</th>
+              <th>Progress</th>
+              <th>Milestones (Tasks)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of weekly.activeProjectsList">
+              <td class="bold"><span class="table-icon">{{ p.icon || '📁' }}</span> {{ p.title }}</td>
+              <td>{{ p.createdAt | date:'shortDate' }}</td>
+              <td>{{ p.dueDate ? (p.dueDate | date:'shortDate') : '—' }}</td>
+              <td>
+                <div class="progress-bar-cell">
+                  <div class="progress-track-small">
+                    <div class="progress-fill-small" 
+                         [style.width.%]="getProjectProgress(p)" 
+                         [style.background]="p.color || '#6366f1'">
+                    </div>
+                  </div>
+                  <span class="pct-lbl">{{ getProjectProgress(p) }}%</span>
+                </div>
+              </td>
+              <td class="bold">
+                {{ p.completedTasks }} completed / {{ p.totalTasks - p.completedTasks }} remaining
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="p.isCompleted" [class.badge-warning]="!p.isCompleted">
+                  {{ p.isCompleted ? 'Completed' : 'In Progress' }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="weekly.activeProjectsList.length === 0">
+              <td colspan="6" class="text-center text-muted">No projects logged during this period.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        <div class="habit-list" *ngIf="weekly.topHabits.length > 0">
-          <p class="list-title">Top Habits</p>
-          <div class="habit-row" *ngFor="let h of weekly.topHabits">
-            <span class="habit-icon">{{ h.icon || '⭐' }}</span>
-            <div class="habit-info">
-              <span class="habit-name">{{ h.title }}</span>
-              <div class="habit-bar-track">
-                <div class="habit-bar-fill" [style.width.%]="h.completionRate"
-                  [style.background]="h.color || 'var(--accent)'"></div>
-              </div>
+      <!-- Project Timeline -->
+      <div class="timeline-container mt-md">
+        <h3>📅 Projects Timeline</h3>
+        <div class="timeline-day-box" *ngFor="let dayGroup of getGroupedProjects(weekly)">
+          <div class="timeline-date">{{ dayGroup.date | date:'EEEE, MMMM d, yyyy' }}</div>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let p of dayGroup.projects">
+              <span class="status-marker done">📁</span>
+              <span class="item-title">{{ p.title }} Progress: {{ getProjectProgress(p) }}%</span>
             </div>
-            <span class="habit-streak">🔥{{ h.currentStreak }}</span>
           </div>
+        </div>
+        <div *ngIf="getGroupedProjects(weekly).length === 0" class="text-center text-muted py-sm">
+          No project starts or updates recorded for this period.
         </div>
       </div>
+    </div>
 
-      <!-- Tasks -->
-      <div class="report-card">
-        <h3>✅ Tasks This Week</h3>
-        <div class="stat-row">
-          <div class="stat-box">
-            <span class="stat-num success">{{ weekly.tasksCompleted }}</span>
-            <span class="stat-lbl">Done</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num warn">{{ weekly.tasksPending }}</span>
-            <span class="stat-lbl">Pending</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num danger">{{ weekly.tasksOverdue }}</span>
-            <span class="stat-lbl">Overdue</span>
-          </div>
+    <!-- SECTION 5: Productivity Insights -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">💡</span> 5. Productivity Insights
+      </h2>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-head">📅 Most Productive Day</div>
+          <div class="insight-val">{{ getMostProductiveDay(weekly) }}</div>
         </div>
-
-        <!-- Task completion bar -->
-        <div class="progress-section">
-          <div class="progress-top-row">
-            <span>Task Completion</span>
-            <span class="progress-pct">{{ weekly.taskCompletionRate }}%</span>
-          </div>
-          <div class="progress-track">
-            <div class="progress-fill" [style.width.%]="weekly.taskCompletionRate"></div>
-          </div>
+        <div class="insight-card">
+          <div class="insight-head">📅 Least Productive Day</div>
+          <div class="insight-val">{{ getLeastProductiveDay(weekly) }}</div>
         </div>
-
-        <div class="task-list" *ngIf="weekly.recentTasks.length > 0">
-          <p class="list-title">Recent Tasks</p>
-          <div class="task-row" *ngFor="let t of weekly.recentTasks">
-            <span class="task-status" [class.done]="t.status === 'Completed'">
-              {{ t.status === 'Completed' ? '✓' : '○' }}
-            </span>
-            <span class="task-name">{{ t.title }}</span>
-            <span class="task-priority" [class.high]="t.priority === 'High'"
-              [class.medium]="t.priority === 'Medium'">{{ t.priority }}</span>
-          </div>
+        <div class="insight-card">
+          <div class="insight-head">🔥 Best-Performing Habit</div>
+          <div class="insight-val">{{ getBestHabit(weekly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">⏳ Most Delayed Task</div>
+          <div class="insight-val">{{ getMostDelayedTask(weekly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">⚡ Fastest Completed Task</div>
+          <div class="insight-val">{{ getFastestCompletedTask(weekly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">📈 Project with Highest Progress</div>
+          <div class="insight-val">{{ getHighestProgressProject(weekly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">⚠️ Project Requiring Attention</div>
+          <div class="insight-val">{{ getProjectRequiringAttention(weekly) }}</div>
         </div>
       </div>
+    </div>
 
+    <!-- SECTION 6: Recommendations -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span class="icon">💡</span> 6. Recommendations
+      </h2>
+      <div class="recommendations-box-list">
+        <div class="recommendation-item" *ngFor="let rec of getRecommendations(weekly)">
+          <span class="rec-bullet">⚡</span>
+          <p class="rec-text">{{ rec }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 7: Final Score -->
+    <div class="section-card text-center final-score-card">
+      <h2 class="section-title text-center">
+        <span class="icon">🏆</span> 7. Productivity Score
+      </h2>
+      
+      <div class="score-display-radial">
+        <div class="score-number">{{ getFinalScore(weekly) }}/100</div>
+        <div class="score-label">Performance Level: {{ getPerformanceLevel(getFinalScore(weekly)) }}</div>
+      </div>
+      
+      <p class="score-desc">
+        Calculated dynamically based on Habit completion (40%), Task completion (40%), and Project progress milestones (20%).
+      </p>
     </div>
 
     <!-- Print Footer -->
     <div class="print-footer print-only">
-      <p>LevelUP · Personal Report · {{ weekly.userName }} · {{ weekly.generatedAt | date:'mediumDate' }}</p>
+      <p>LevelUP productivity assessment report. Generated automatically on {{ weekly.generatedAt | date:'mediumDate' }}.</p>
     </div>
 
   </div>
@@ -209,156 +480,442 @@
   <div *ngIf="activeTab === 'monthly' && monthly && !isLoading" class="report-content">
 
     <div class="print-header print-only">
-      <h1>⚡ LevelUP — Monthly Report</h1>
-      <p>{{ monthly.monthLabel }} · Generated: {{ monthly.generatedAt | date:'medium' }}</p>
+      <h1>⚡ LevelUP — Monthly Performance Report</h1>
+      <p class="print-period">Period: {{ monthly.monthLabel }} ({{ monthly.monthStart | date:'mediumDate' }} - {{ monthly.monthEnd | date:'mediumDate' }})</p>
+      <p class="print-meta">User: {{ monthly.userName }} · Generated: {{ monthly.generatedAt | date:'medium' }}</p>
     </div>
 
-    <!-- Summary -->
-    <div class="summary-row">
-
-      <div class="summary-card grade-card" [style.--grade-color]="gradeColor(monthly.monthGrade)">
-        <div class="grade-circle">{{ monthly.monthGrade }}</div>
-        <div>
-          <p class="summary-label">MONTH GRADE</p>
-          <p class="summary-value">{{ monthly.avgMonthlyScore }}% avg</p>
+    <!-- SECTION 1: Executive Summary -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span class="icon">📋</span> 1. Executive Summary
+      </h2>
+      <div class="summary-grid">
+        <div class="summary-stat-card">
+          <span class="stat-icon">🔥</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ monthly.activeHabits }}</span>
+            <span class="stat-lbl">Active Habits</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">📈</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ monthly.habitCompletionRate }}%</span>
+            <span class="stat-lbl">Habit Completion</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">✅</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ monthly.tasksCompleted }}</span>
+            <span class="stat-lbl">Tasks Completed</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">⏳</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ monthly.incompleteTasksList.length }}</span>
+            <span class="stat-lbl">Incomplete Tasks</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">📝</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ monthly.notesCreated }}</span>
+            <span class="stat-lbl">Notes Created</span>
+          </div>
+        </div>
+        <div class="summary-stat-card">
+          <span class="stat-icon">📁</span>
+          <div class="stat-body">
+            <span class="stat-val">{{ monthly.activeProjectsList.length }}</span>
+            <span class="stat-lbl">Active Projects</span>
+          </div>
         </div>
       </div>
 
-      <div class="summary-card">
-        <span class="summary-icon">⚡</span>
-        <div>
-          <p class="summary-label">XP THIS MONTH</p>
-          <p class="summary-value xp-value">+{{ monthly.monthXP | number }}</p>
+      <div class="achievements-box">
+        <div class="ach-column">
+          <h4>🏆 Key Achievements</h4>
+          <ul>
+            <li>Earned +{{ monthly.monthXP | number }} XP during this month.</li>
+            <li>Maintained a best streak of {{ monthly.bestStreak }} days.</li>
+            <li *ngIf="monthly.habitCompletionRate >= 70">Maintained high consistency with a {{ monthly.habitCompletionRate }}% habit completion rate.</li>
+            <li *ngIf="monthly.projectsCompleted > 0">Successfully completed {{ monthly.projectsCompleted }} projects.</li>
+          </ul>
+        </div>
+        <div class="ach-column">
+          <h4>⚠️ Areas for Improvement</h4>
+          <ul>
+            <li *ngIf="monthly.tasksOverdue > 0">{{ monthly.tasksOverdue }} tasks remained overdue. Prioritize completing them.</li>
+            <li *ngIf="monthly.habitCompletionRate < 70">Habit completion is low ({{ monthly.habitCompletionRate }}%). Try standardizing schedules.</li>
+            <li *ngIf="monthly.activeProjectsList.length > 0 && monthly.tasksCompleted === 0">Ongoing projects did not register task updates. Focus on milestones.</li>
+            <li *ngIf="monthly.tasksOverdue === 0 && monthly.habitCompletionRate >= 70">Keep up the wonderful pace! Ready for higher difficulty goals.</li>
+          </ul>
         </div>
       </div>
-
-      <div class="summary-card">
-        <span class="summary-icon">🔥</span>
-        <div>
-          <p class="summary-label">BEST STREAK</p>
-          <p class="summary-value">{{ monthly.bestStreak }} days</p>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <span class="summary-icon">✅</span>
-        <div>
-          <p class="summary-label">TASKS DONE</p>
-          <p class="summary-value">{{ monthly.tasksCompleted }}</p>
-        </div>
-      </div>
-
-      <div class="summary-card">
-        <span class="summary-icon">📝</span>
-        <div>
-          <p class="summary-label">NOTES + PROJECTS</p>
-          <p class="summary-value">{{ monthly.notesCreated }} / {{ monthly.projectsCompleted }}</p>
-        </div>
-      </div>
-
     </div>
 
-    <div class="report-grid">
+    <!-- SECTION 2: Habits Analysis -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">⚡</span> 2. Habits Analysis
+      </h2>
+      
+      <!-- Habit Statistics -->
+      <div class="sub-stats-grid">
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Total Active Habits</span>
+          <span class="sub-val">{{ monthly.activeHabits }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Avg Completion Rate</span>
+          <span class="sub-val success">{{ monthly.habitCompletionRate }}%</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Most Consistent Habit</span>
+          <span class="sub-val">{{ getBestHabit(monthly) }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Least Consistent Habit</span>
+          <span class="sub-val danger">{{ getWorstHabit(monthly) }}</span>
+        </div>
+      </div>
 
-      <!-- Weekly XP bars -->
-      <div class="report-card">
-        <h3>⚡ Weekly XP — {{ monthly.monthLabel }}</h3>
-        <div class="bar-chart">
-          <div class="bar-item" *ngFor="let w of monthly.weeklyXP">
-            <div class="bar-track">
-              <div class="bar-fill xp-bar"
-                [style.height.%]="barWidth(w.xp, maxXP(monthly.weeklyXP))">
-              </div>
+      <!-- Habits Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Habit Name</th>
+              <th>Frequency</th>
+              <th>Successful</th>
+              <th>Missed</th>
+              <th>Completion Rate</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of monthly.topHabits">
+              <td class="bold"><span class="table-icon">{{ h.icon || '⭐' }}</span> {{ h.title }}</td>
+              <td>{{ h.frequencyType || 'Daily' }}</td>
+              <td class="success bold">{{ h.completionsCount }}</td>
+              <td class="danger bold">{{ h.missedCount }}</td>
+              <td>
+                <div class="progress-bar-cell">
+                  <div class="progress-track-small">
+                    <div class="progress-fill-small" [style.width.%]="h.completionRate" [style.background]="h.color || '#a4e6ff'"></div>
+                  </div>
+                  <span class="pct-lbl">{{ h.completionRate }}%</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="h.completionRate >= 90" [class.badge-warning]="h.completionRate >= 70 && h.completionRate < 90" [class.badge-danger]="h.completionRate < 70">
+                  {{ h.completionRate >= 90 ? 'Excellent' : h.completionRate >= 70 ? 'Good' : 'Needs Improvement' }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="monthly.topHabits.length === 0">
+              <td colspan="6" class="text-center text-muted">No habits logged during this period.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Habit Timeline -->
+      <div class="timeline-container">
+        <h3>📅 Habit Logs Timeline</h3>
+        <div class="timeline-day-box" *ngFor="let dayGroup of getGroupedHabits(monthly)">
+          <div class="timeline-date">{{ dayGroup.date | date:'EEEE, MMMM d, yyyy' }}</div>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let log of dayGroup.logs">
+              <span class="status-marker" [class.done]="log.isCompleted">{{ log.isCompleted ? '✅' : '❌' }}</span>
+              <span class="item-title">{{ log.habitName }}</span>
             </div>
-            <span class="bar-label">{{ w.weekLabel }}</span>
-            <span class="bar-value">{{ w.xp }}</span>
           </div>
+        </div>
+        <div *ngIf="getGroupedHabits(monthly).length === 0" class="text-center text-muted py-sm">
+          No habit timeline logs recorded for this period.
         </div>
       </div>
-
-      <!-- Score trend -->
-      <div class="report-card">
-        <h3>📈 Score Trend</h3>
-        <div class="score-trend">
-          <div class="score-dot-row" *ngFor="let s of monthly.dailyScores">
-            <span class="score-day">{{ s.day }}</span>
-            <div class="score-bar-track">
-              <div class="score-bar-fill" [style.width.%]="s.score"
-                [style.background]="gradeColor(s.score >= 85 ? 'S' : s.score >= 70 ? 'A' : s.score >= 50 ? 'B' : s.score >= 30 ? 'C' : 'D')">
-              </div>
-            </div>
-            <span class="score-val">{{ s.score }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Level Progress -->
-      <div class="report-card">
-        <h3>🏆 Level Progress</h3>
-        <div class="level-display">
-          <div class="level-badge">{{ monthly.currentLevel }}</div>
-          <div class="level-info">
-            <p class="level-title">{{ monthly.levelTitle }}</p>
-            <p class="level-xp">{{ monthly.xpGainedThisMonth | number }} XP gained this month</p>
-            <p class="level-total">Total: {{ monthly.totalXP | number }} XP</p>
-          </div>
-        </div>
-
-        <!-- Top Habits -->
-        <div class="habit-list" *ngIf="monthly.topHabits.length > 0">
-          <p class="list-title">Top Habits</p>
-          <div class="habit-row" *ngFor="let h of monthly.topHabits">
-            <span class="habit-icon">{{ h.icon || '⭐' }}</span>
-            <div class="habit-info">
-              <span class="habit-name">{{ h.title }}</span>
-              <div class="habit-bar-track">
-                <div class="habit-bar-fill" [style.width.%]="h.completionRate"
-                  [style.background]="h.color || 'var(--accent)'"></div>
-              </div>
-            </div>
-            <span class="habit-rate">{{ h.completionRate }}%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tasks Summary -->
-      <div class="report-card">
-        <h3>✅ Tasks Summary</h3>
-        <div class="stat-row">
-          <div class="stat-box">
-            <span class="stat-num success">{{ monthly.tasksCompleted }}</span>
-            <span class="stat-lbl">Completed</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num danger">{{ monthly.tasksOverdue }}</span>
-            <span class="stat-lbl">Overdue</span>
-          </div>
-          <div class="stat-box">
-            <span class="stat-num">{{ monthly.taskCompletionRate }}%</span>
-            <span class="stat-lbl">Rate</span>
-          </div>
-        </div>
-        <div class="progress-section">
-          <div class="progress-track">
-            <div class="progress-fill" [style.width.%]="monthly.taskCompletionRate"></div>
-          </div>
-        </div>
-        <div class="notes-projects">
-          <div class="np-item">
-            <span>📝 Notes Created</span>
-            <strong>{{ monthly.notesCreated }}</strong>
-          </div>
-          <div class="np-item">
-            <span>🗂 Projects Completed</span>
-            <strong>{{ monthly.projectsCompleted }}</strong>
-          </div>
-        </div>
-      </div>
-
     </div>
 
+    <!-- SECTION 3: Tasks Analysis -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">✅</span> 3. Tasks Analysis
+      </h2>
+
+      <!-- Task Statistics -->
+      <div class="sub-stats-grid">
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Total Tasks</span>
+          <span class="sub-val">{{ monthly.tasksCompleted + monthly.incompleteTasksList.length }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Completed Tasks</span>
+          <span class="sub-val success">{{ monthly.tasksCompleted }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Incomplete Tasks</span>
+          <span class="sub-val warning">{{ monthly.incompleteTasksList.length }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Completion Rate</span>
+          <span class="sub-val success">{{ monthly.taskCompletionRate }}%</span>
+        </div>
+      </div>
+
+      <!-- Completed Tasks -->
+      <div class="task-subsection">
+        <h3 class="subsection-title">✓ Completed Tasks</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Task Title</th>
+                <th>Due Date</th>
+                <th>Completion Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of monthly.completedTasksList">
+                <td class="bold">{{ t.title }}</td>
+                <td>{{ t.dueDate ? (t.dueDate | date:'shortDate') : '—' }}</td>
+                <td>{{ t.completedAt ? (t.completedAt | date:'shortDate') : '—' }}</td>
+                <td>
+                  <span class="badge" [class.badge-danger]="t.priority === 'High'" [class.badge-warning]="t.priority === 'Medium'" [class.badge-info]="t.priority === 'Low'">
+                    {{ t.priority }}
+                  </span>
+                </td>
+                <td><span class="badge badge-success">Completed</span></td>
+              </tr>
+              <tr *ngIf="monthly.completedTasksList.length === 0">
+                <td colspan="5" class="text-center text-muted">No completed tasks this month.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Incomplete Tasks -->
+      <div class="task-subsection mt-md">
+        <h3 class="subsection-title">○ Incomplete Tasks</h3>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Task Title</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let t of monthly.incompleteTasksList">
+                <td class="bold">{{ t.title }}</td>
+                <td>{{ t.dueDate ? (t.dueDate | date:'shortDate') : '—' }}</td>
+                <td>
+                  <span class="badge" [class.badge-danger]="t.priority === 'High'" [class.badge-warning]="t.priority === 'Medium'" [class.badge-info]="t.priority === 'Low'">
+                    {{ t.priority }}
+                  </span>
+                </td>
+                <td><span class="badge badge-warning">Incomplete</span></td>
+              </tr>
+              <tr *ngIf="monthly.incompleteTasksList.length === 0">
+                <td colspan="4" class="text-center text-muted">No incomplete tasks this month.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Task Timeline -->
+      <div class="timeline-container mt-md">
+        <h3>📅 Tasks Timeline</h3>
+        <div class="timeline-day-box" *ngFor="let dayGroup of getGroupedTasks(monthly)">
+          <div class="timeline-date">{{ dayGroup.date === 'No Date' ? 'No Date Scheduled' : (dayGroup.date | date:'EEEE, MMMM d, yyyy') }}</div>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let t of dayGroup.tasks">
+              <span class="status-marker" [class.done]="t.status === 'Completed'">{{ t.status === 'Completed' ? '✅' : '○' }}</span>
+              <span class="item-title">{{ t.title }}</span>
+              <span class="item-meta">({{ t.priority }} Priority)</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="getGroupedTasks(monthly).length === 0" class="text-center text-muted py-sm">
+          No tasks scheduled or logged during this period.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: Projects Analysis -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">📁</span> 4. Projects Analysis
+      </h2>
+
+      <!-- Project Statistics -->
+      <div class="sub-stats-grid">
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Total Projects</span>
+          <span class="sub-val">{{ monthly.activeProjectsList.length }}</span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Completed Projects</span>
+          <span class="sub-val success">
+            {{ monthly.activeProjectsList.filter(p => p.isCompleted).length }}
+          </span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Ongoing Projects</span>
+          <span class="sub-val warning">
+            {{ monthly.activeProjectsList.filter(p => !p.isCompleted).length }}
+          </span>
+        </div>
+        <div class="sub-stat-box">
+          <span class="sub-lbl">Avg Progress</span>
+          <span class="sub-val success">
+            {{ getFinalScore(monthly) }}%
+          </span>
+        </div>
+      </div>
+
+      <!-- Projects Table -->
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Project Name</th>
+              <th>Start Date</th>
+              <th>Due Date</th>
+              <th>Progress</th>
+              <th>Milestones (Tasks)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of monthly.activeProjectsList">
+              <td class="bold"><span class="table-icon">{{ p.icon || '📁' }}</span> {{ p.title }}</td>
+              <td>{{ p.createdAt | date:'shortDate' }}</td>
+              <td>{{ p.dueDate ? (p.dueDate | date:'shortDate') : '—' }}</td>
+              <td>
+                <div class="progress-bar-cell">
+                  <div class="progress-track-small">
+                    <div class="progress-fill-small" 
+                         [style.width.%]="getProjectProgress(p)" 
+                         [style.background]="p.color || '#6366f1'">
+                    </div>
+                  </div>
+                  <span class="pct-lbl">{{ getProjectProgress(p) }}%</span>
+                </div>
+              </td>
+              <td class="bold">
+                {{ p.completedTasks }} completed / {{ p.totalTasks - p.completedTasks }} remaining
+              </td>
+              <td>
+                <span class="badge" [class.badge-success]="p.isCompleted" [class.badge-warning]="!p.isCompleted">
+                  {{ p.isCompleted ? 'Completed' : 'In Progress' }}
+                </span>
+              </td>
+            </tr>
+            <tr *ngIf="monthly.activeProjectsList.length === 0">
+              <td colspan="6" class="text-center text-muted">No projects logged during this period.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Project Timeline -->
+      <div class="timeline-container mt-md">
+        <h3>📅 Projects Timeline</h3>
+        <div class="timeline-day-box" *ngFor="let dayGroup of getGroupedProjects(monthly)">
+          <div class="timeline-date">{{ dayGroup.date | date:'EEEE, MMMM d, yyyy' }}</div>
+          <div class="timeline-items">
+            <div class="timeline-item" *ngFor="let p of dayGroup.projects">
+              <span class="status-marker done">📁</span>
+              <span class="item-title">{{ p.title }} Progress: {{ getProjectProgress(p) }}%</span>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="getGroupedProjects(monthly).length === 0" class="text-center text-muted py-sm">
+          No project starts or updates recorded for this period.
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5: Productivity Insights -->
+    <div class="section-card page-break">
+      <h2 class="section-title">
+        <span class="icon">💡</span> 5. Productivity Insights
+      </h2>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-head">📅 Most Productive Day</div>
+          <div class="insight-val">{{ getMostProductiveDay(monthly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">📅 Least Productive Day</div>
+          <div class="insight-val">{{ getLeastProductiveDay(monthly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">🔥 Best-Performing Habit</div>
+          <div class="insight-val">{{ getBestHabit(monthly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">⏳ Most Delayed Task</div>
+          <div class="insight-val">{{ getMostDelayedTask(monthly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">⚡ Fastest Completed Task</div>
+          <div class="insight-val">{{ getFastestCompletedTask(monthly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">📈 Project with Highest Progress</div>
+          <div class="insight-val">{{ getHighestProgressProject(monthly) }}</div>
+        </div>
+        <div class="insight-card">
+          <div class="insight-head">⚠️ Project Requiring Attention</div>
+          <div class="insight-val">{{ getProjectRequiringAttention(monthly) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 6: Recommendations -->
+    <div class="section-card">
+      <h2 class="section-title">
+        <span class="icon">💡</span> 6. Recommendations
+      </h2>
+      <div class="recommendations-box-list">
+        <div class="recommendation-item" *ngFor="let rec of getRecommendations(monthly)">
+          <span class="rec-bullet">⚡</span>
+          <p class="rec-text">{{ rec }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 7: Final Score -->
+    <div class="section-card text-center final-score-card">
+      <h2 class="section-title text-center">
+        <span class="icon">🏆</span> 7. Productivity Score
+      </h2>
+      
+      <div class="score-display-radial">
+        <div class="score-number">{{ getFinalScore(monthly) }}/100</div>
+        <div class="score-label">Performance Level: {{ getPerformanceLevel(getFinalScore(monthly)) }}</div>
+      </div>
+      
+      <p class="score-desc">
+        Calculated dynamically based on Habit completion (40%), Task completion (40%), and Project progress milestones (20%).
+      </p>
+    </div>
+
+    <!-- Print Footer -->
     <div class="print-footer print-only">
-      <p>LevelUP · Personal Report · {{ monthly.userName }} · {{ monthly.generatedAt | date:'mediumDate' }}</p>
+      <p>LevelUP productivity assessment report. Generated automatically on {{ monthly.generatedAt | date:'mediumDate' }}.</p>
     </div>
 
   </div>
