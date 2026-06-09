@@ -147,10 +147,51 @@
       <div class="h-xl"></div>
 
       <!-- Footer -->
-      <footer class="w-full py-md border-t border-surface-variant/20 flex flex-col sm:flex-row items-center justify-between px-gutter font-label-mono text-[10px] text-on-surface-variant/50 gap-sm bg-surface-container-low/10 mt-auto">
-        <p>© 2026 LevelUP — Build elite systems, one micro-step at a time.</p>
-        <p class="uppercase tracking-widest">Protocol Version v1.0.4</p>
+      <footer class="w-full border-t border-surface-variant/20 bg-surface-container-low/10 mt-auto">
+
+        <!-- Footer Links Row -->
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-gutter py-3 border-b border-surface-variant/10">
+          <a
+            routerLink="/about"
+            routerLinkActive="text-primary"
+            class="flex items-center gap-1.5 font-label-mono text-[10px] text-on-surface-variant/50 hover:text-primary transition-colors duration-200 uppercase tracking-widest group">
+            <span class="material-symbols-outlined text-[13px] group-hover:scale-110 transition-transform duration-200" style="font-variation-settings:'FILL' 1;">info</span>
+            About Us
+          </a>
+          <span class="w-px h-3 bg-surface-variant/40"></span>
+          <a
+            routerLink="/count-us"
+            routerLinkActive="text-primary"
+            class="flex items-center gap-1.5 font-label-mono text-[10px] text-on-surface-variant/50 hover:text-primary transition-colors duration-200 uppercase tracking-widest group">
+            <span class="material-symbols-outlined text-[13px] group-hover:scale-110 transition-transform duration-200" style="font-variation-settings:'FILL' 1;">support_agent</span>
+            Contact Us
+          </a>
+          <span class="w-px h-3 bg-surface-variant/40"></span>
+          <a
+            routerLink="/checkout"
+            routerLinkActive="text-primary"
+            class="flex items-center gap-1.5 font-label-mono text-[10px] text-on-surface-variant/50 hover:text-primary transition-colors duration-200 uppercase tracking-widest group">
+            <span class="material-symbols-outlined text-[13px] group-hover:scale-110 transition-transform duration-200" style="font-variation-settings:'FILL' 1;">workspace_premium</span>
+            Premium
+          </a>
+          <span class="w-px h-3 bg-surface-variant/40"></span>
+          <a
+            routerLink="/settings"
+            routerLinkActive="text-primary"
+            class="flex items-center gap-1.5 font-label-mono text-[10px] text-on-surface-variant/50 hover:text-primary transition-colors duration-200 uppercase tracking-widest group">
+            <span class="material-symbols-outlined text-[13px] group-hover:scale-110 transition-transform duration-200">settings</span>
+            Settings
+          </a>
+        </div>
+
+        <!-- Copyright Row -->
+        <div class="flex flex-col sm:flex-row items-center justify-between px-gutter py-2.5 gap-sm">
+          <p class="font-label-mono text-[10px] text-on-surface-variant/50">© 2026 LevelUP — Build elite systems, one micro-step at a time.</p>
+          <p class="font-label-mono text-[10px] text-on-surface-variant/50 uppercase tracking-widest">Protocol Version v1.0.4</p>
+        </div>
+
       </footer>
+
     </main>
 
   </div>

@@ -94,9 +94,8 @@ export class CreateHabit implements OnInit {
         this.isSubmitting = false;
         this.cdr.detectChanges();
 
-        if (this.errorMessage.includes('Upgrade to Premium'))
-          {
-          this.router.navigate(['/checkout']);
+        if (this.errorMessage.includes('Upgrade to Premium')) {
+          this.router.navigate(['/checkout'], { queryParams: { returnUrl: this.router.url } });
         }
 
       }

@@ -36,6 +36,7 @@ export class Register {
 
   onSubmit(): void {
 
+    // Basic client-side validation
     if (!this.formData.userName.trim() ||
         !this.formData.email.trim()    ||
         !this.formData.password.trim()) {
@@ -43,6 +44,7 @@ export class Register {
       this.toastr.warning(this.errorMessage, 'Validation Error');
       return;
     }
+
 
     if (this.formData.password !== this.confirmPassword) {
       this.errorMessage = 'Passwords do not match';
@@ -56,7 +58,7 @@ export class Register {
       return;
     }
 
-    this.isLoading    = true;
+    this.isLoading    = true; //unactivate the register button to prevent multiple submissions
     this.errorMessage = '';
 
     this.authService.register(this.formData).subscribe({

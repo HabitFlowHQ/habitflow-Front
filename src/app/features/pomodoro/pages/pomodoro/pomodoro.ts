@@ -72,17 +72,13 @@ export class Pomodoro implements OnInit, OnDestroy {
     this.CIRCLE_CIRCUMFERENCE * (1 - this.progress())
   );
  
-  // ============================================================
-  // 📌 البيانات
-  // ============================================================
+
   stats: PomodoroStats | null = null;
   tasks: Task[] = [];                      // لاختيار مهمة للربط
   selectedTaskId: number | null = null;    // المهمة المختارة
   isLoadingStats = false;
  
-  // ============================================================
-  // 📌 Timer Internal
-  // ============================================================
+  
   private intervalId: ReturnType<typeof setInterval> | null = null;
  
   constructor(
@@ -102,9 +98,7 @@ export class Pomodoro implements OnInit, OnDestroy {
     this.stopInterval();
   }
  
-  // ============================================================
-  // 1️⃣ checkActiveSession — استئناف جلسة جارية
-  // ============================================================
+  
   checkActiveSession(): void {
     this.pomodoroService.getActiveSession().subscribe({
       next: (session) => {
@@ -137,10 +131,7 @@ export class Pomodoro implements OnInit, OnDestroy {
       }
     });
   }
- 
-  // ============================================================
-  // 2️⃣ changeSessionType — تغيير نوع الجلسة
-  // ============================================================
+
   changeSessionType(type: SessionType): void {
     if (this.timerState === 'running') return;
  
@@ -150,9 +141,7 @@ export class Pomodoro implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
  
-  // ============================================================
-  // 3️⃣ startTimer — بدء الجلسة
-  // ============================================================
+ 
   startTimer(): void {
     if (this.timerState === 'running') return;
  
@@ -175,19 +164,18 @@ export class Pomodoro implements OnInit, OnDestroy {
         this.timerState    = 'running';
         this.secondsLeft.set(this.durations[this.sessionType] * 60);
         this.startInterval();
+        this.toastr.success(`${this.sessionType} session started!`, 'Started');
         this.cdr.detectChanges();
       },
       error: (err) => {
         const msg = err?.error?.message || 'Failed to start Pomodoro session.';
-        alert(msg);
+        this.toastr.error(msg, 'Error');
         this.cdr.detectChanges();
       }
     });
   }
  
-  // ============================================================
-  // 4️⃣ pauseTimer — إيقاف مؤقت
-  // ============================================================
+ 
   pauseTimer(): void {
     if (this.timerState !== 'running') return;
     this.timerState = 'paused';
@@ -206,7 +194,7 @@ export class Pomodoro implements OnInit, OnDestroy {
       return;
     }
  
-    if (!confirm('Cancel session? You will not earn XP.')) return;
+    // Cancel session immediately without browser confirm, notify via Toastr
  
     // أرسل للـ Backend: isCompleted = false (ملغاة)
     this.pomodoroService.completeSession(this.activeSession.id, {

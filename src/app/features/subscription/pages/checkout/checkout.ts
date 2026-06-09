@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectorRef }  from '@angular/core';
 import { CommonModule }        from '@angular/common';
 import { FormsModule }         from '@angular/forms';
-import { Router }              from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient }          from '@angular/common/http';
 import { ToastrService }       from 'ngx-toastr';
 
@@ -16,6 +16,7 @@ export class CheckoutComponent {
 
   private http   = inject(HttpClient);
   private router = inject(Router);
+  private route  = inject(ActivatedRoute);
   private toastr = inject(ToastrService);
   private cdr    = inject(ChangeDetectorRef);
 
@@ -93,7 +94,8 @@ export class CheckoutComponent {
           this.isLoading = false;
           localStorage.setItem('isPremium', 'true');
           this.toastr.success('Your account has been upgraded to Premium successfully!', '  Upgrade to Premium');
-          this.router.navigate(['/dashboard']);
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+          this.router.navigateByUrl(returnUrl);
         },
         error: (err) => {
           this.isLoading = false;

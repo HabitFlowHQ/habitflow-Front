@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
- 
+
 import { Layout }     from './shared/components/layout/layout';
 import { Dashboard }  from './features/dashboard/pages/dashboard/dashboard';
 import { HabitList }  from './features/habits/pages/habit-list/habit-list';
@@ -21,53 +21,56 @@ import { ProjectDetail } from './features/projects/pages/project-detail/project-
 import { CreateProject } from './features/projects/pages/create-project/create-project';
 import { EditProject }   from './features/projects/pages/edit-project/edit-project';
 import { Reports }       from './features/reports/pages/reports/reports';
- 
+
 import { Login }    from './features/auth/pages/login/login';
 import { Register } from './features/auth/pages/register/register';
 import { authGuard } from './core/guards/auth.guard';
 import { premiumGuard } from './core/guards/premium.guard';
 import { CheckoutComponent } from './features/subscription/pages/checkout/checkout';
 import { SettingsComponent } from './features/settings/pages/settings/settings';
- 
+import { AboutPage }       from './features/about/pages/about/about';
+import { CountUsPage }     from './features/count-us/pages/count-us/count-us';
+
 export const routes: Routes = [
- 
+
+  //the page that can be accessed without authentication using guards
   { path: 'login',    component: Login    },
   { path: 'register', component: Register },
- 
+
   {
     path: '',
     component: Layout,
     children: [
       { path: '',                redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard',       component: Dashboard    },
-      
+
       // Habits Protected
       { path: 'habits',          component: HabitList, canActivate: [authGuard] },
       { path: 'habits/create',   component: CreateHabit, canActivate: [authGuard] },
       { path: 'habits/:id',      component: HabitDetail, canActivate: [authGuard] },
       { path: 'habits/:id/edit', component: EditHabit, canActivate: [authGuard]   },
-      
+
       // Tasks Protected
       { path: 'tasks',           component: TaskList, canActivate: [authGuard] },
       { path: 'tasks/create',    component: CreateTask, canActivate: [authGuard]  },
       { path: 'tasks/:id',       component: TaskDetail, canActivate: [authGuard]  },
       { path: 'tasks/:id/edit',  component: EditTask, canActivate: [authGuard]    },
-      
+
       // Notes Protected
       { path: 'notes',             component: NoteList, canActivate: [authGuard, premiumGuard] },
       { path: 'notes/create',      component: CreateNote, canActivate: [authGuard, premiumGuard]   },
       { path: 'notes/:id',         component: NoteDetail, canActivate: [authGuard, premiumGuard]   },
       { path: 'notes/:id/edit',    component: EditNote, canActivate: [authGuard, premiumGuard]     },
-      
+
       { path: 'pomodoro',          component: Pomodoro, canActivate: [authGuard] },
       { path: 'schedule',          component: Schedule, canActivate: [authGuard] },
-      
+
       // Projects Protected
       { path: 'projects',          component: ProjectList, canActivate: [authGuard, premiumGuard] },
       { path: 'projects/create',   component: CreateProject, canActivate: [authGuard, premiumGuard]  },
       { path: 'projects/:id',      component: ProjectDetail, canActivate: [authGuard, premiumGuard]  },
       { path: 'projects/:id/edit', component: EditProject, canActivate: [authGuard, premiumGuard]    },
-      
+
       // Reports Protected
       { path: 'reports',           component: Reports, canActivate: [authGuard, premiumGuard] },
 
@@ -76,9 +79,14 @@ export const routes: Routes = [
 
       // Settings
       { path: 'settings',          component: SettingsComponent, canActivate: [authGuard] },
+
+      // About & Count Us (public)
+      { path: 'about',             component: AboutPage },
+      { path: 'count-us',          component: CountUsPage },
     ]
   },
- 
+
+  //any route that is not defined will be redirected to the dashboard page
   { path: '**', redirectTo: 'dashboard' }
- 
+
 ];

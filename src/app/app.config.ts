@@ -11,10 +11,10 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor])//register the  interceptor
     ),
     provideAnimations(),
-    provideToastr({
+    provideToastr({ // register toastr
       timeOut: 3000,
       positionClass: 'toast-bottom-right',
       preventDuplicates: true,

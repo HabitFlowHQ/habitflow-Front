@@ -28,8 +28,8 @@ export class HabitService {
     return this.http.put<Habit>(`${this.apiUrl}/${id}`, dto);
   }
 
-  deleteHabit(id: number): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/${id}`);
+  deleteHabit(id: number): Observable<string> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' });
   }
 
   completeHabit(id: number): Observable<string> {

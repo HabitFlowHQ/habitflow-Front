@@ -100,9 +100,7 @@ export class CreateTask implements OnInit {
         this.cdr.detectChanges();
 
         if (this.errorMessage.includes('Upgrade to Premium')) {
-          
-          this.router.navigate(['/checkout']);
-
+          this.router.navigate(['/checkout'], { queryParams: { returnUrl: this.router.url } });
         }
       }
     });

@@ -11,6 +11,7 @@ import { WeeklyReport, MonthlyReport } from '../../../../shared/models/report.mo
   templateUrl: './reports.html',
   styleUrl:    './reports.scss',
 })
+
 export class Reports implements OnInit {
 
   private reportService = inject(ReportService);
@@ -19,6 +20,7 @@ export class Reports implements OnInit {
   activeTab: 'weekly' | 'monthly' = 'weekly';
 
   weekly:  WeeklyReport  | null = null;
+
   monthly: MonthlyReport | null = null;
 
   isLoading    = false;
@@ -36,45 +38,58 @@ export class Reports implements OnInit {
   }
 
   loadWeekly(): void {
+
     this.isLoading    = true;
     this.errorMessage = '';
     this.cdr.detectChanges();
 
     this.reportService.getWeeklyReport().subscribe({
-      next:  (r) => { 
-        this.weekly = r;  
-        this.isLoading = false; 
+
+      next:  (r) => {
+
+        this.weekly = r;
+        this.isLoading = false;
         this.cdr.detectChanges();
+
       },
-      error: ()  => { 
-        this.errorMessage = 'Failed to load weekly report.'; 
-        this.isLoading = false; 
+
+      error: ()  => {
+
+        this.errorMessage = 'Failed to load weekly report.';
+        this.isLoading = false;
         this.cdr.detectChanges();
+
       }
+
     });
   }
 
   loadMonthly(): void {
+
     this.isLoading    = true;
     this.errorMessage = '';
     this.cdr.detectChanges();
 
     this.reportService.getMonthlyReport().subscribe({
-      next:  (r) => { 
-        this.monthly = r; 
-        this.isLoading = false; 
+
+      next:  (r) => {
+        this.monthly = r;
+        this.isLoading = false;
         this.cdr.detectChanges();
       },
-      error: ()  => { 
-        this.errorMessage = 'Failed to load monthly report.'; 
-        this.isLoading = false; 
+
+      error: ()  => {
+        this.errorMessage = 'Failed to load monthly report.';
+        this.isLoading = false;
         this.cdr.detectChanges();
       }
+
     });
   }
 
-  // ── Print as PDF ─────────────────────────────────
+  //  Print as PDF
   printReport(): void {
+
     const report = this.activeTab === 'weekly' ? this.weekly : this.monthly;
     if (!report) return;
 
@@ -82,7 +97,7 @@ export class Reports implements OnInit {
     const w = this.weekly;
     const m = this.monthly;
 
-    // ── Helper functions ──
+    //  Helper functions
     const fmt = (d: string | null | undefined, style: 'short' | 'medium' = 'short'): string => {
       if (!d) return '—';
       const date = new Date(d);
@@ -156,7 +171,7 @@ export class Reports implements OnInit {
     const thStyle = `background:#f1f5f9;color:#374151;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.04em;padding:10px 12px;border-bottom:1.5px solid #e2e8f0;text-align:left;`;
     const tdStyle = `padding:10px 12px;border-bottom:1px solid #f1f5f9;color:#1e293b;vertical-align:middle;`;
 
-    // ── Timeline builder ──
+    // Timeline builder
     const buildHabitTimeline = (r: any): string => {
       const groups = this.getGroupedHabits(r);
       if (!groups.length) return `<p style="color:#94a3b8;font-size:13px;text-align:center;padding:12px 0;">No habit timeline logs recorded for this period.</p>`;
@@ -209,11 +224,11 @@ export class Reports implements OnInit {
         </div>`).join('');
     };
 
-    // ── Shared card style ──
+    // Shared card style
     const cardStyle = `background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin-bottom:20px;`;
     const innerBoxStyle = `background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-top:14px;`;
 
-    // ── Build report-specific content ──
+    //  Build report-specific content
     let periodLine = '';
     let reportTitle = '';
     let section1 = '';
@@ -431,7 +446,7 @@ export class Reports implements OnInit {
       </div>`;
 
     } else if (!isWeekly && m) {
-      // ── MONTHLY ──
+      // MONTHLY
       reportTitle = '⚡ LevelUP — Monthly Performance Report';
       periodLine = `Period: ${m.monthLabel} (${fmt(m.monthStart as any, 'medium')} – ${fmt(m.monthEnd as any, 'medium')}) · User: ${m.userName} · Generated: ${fmt(m.generatedAt as any, 'medium')}`;
       const finalScore = this.getFinalScore(m);
@@ -638,7 +653,7 @@ export class Reports implements OnInit {
       </div>`;
     }
 
-    // ── Assemble full HTML document ──
+    //  Assemble full HTML document
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -715,7 +730,7 @@ export class Reports implements OnInit {
     }
   }
 
-  // ── Grouping & Insights Helpers ──────────────────
+  // Grouping & Insights Helpers
   getGroupedHabits(report: any): { date: string, logs: any[] }[] {
     if (!report || !report.habitLogs) return [];
     const groups: Record<string, any[]> = {};
@@ -889,7 +904,7 @@ export class Reports implements OnInit {
     return 'Needs Improvement';
   }
 
-  // ── Grade Color ──────────────────────────────────
+  // Grade Color
   gradeColor(grade: string): string {
     const map: Record<string, string> = {
       S: '#fbbf24', A: '#a4e6ff', B: '#6ee7b7', C: '#ffad82', D: '#f87171'
@@ -897,7 +912,7 @@ export class Reports implements OnInit {
     return map[grade] ?? '#64748b';
   }
 
-  // ── Bar width for charts ─────────────────────────
+  // Bar width for charts
   barWidth(value: number, max: number): number {
     return max === 0 ? 0 : Math.round((value / max) * 100);
   }

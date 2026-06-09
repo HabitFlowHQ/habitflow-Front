@@ -1,0 +1,141 @@
+<!-- ══════════════════════════════════════════════
+     About Us Page
+════════════════════════════════════════════════ -->
+<div class="about-page">
+
+  <!-- ── Hero Banner ── -->
+  <section class="about-hero">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="hero-glow hero-glow-3"></div>
+
+    <div class="hero-badge">
+      <span class="material-symbols-outlined" style="font-size:14px;">bolt</span>
+      About LevelUP
+    </div>
+
+    <h1 class="hero-title">
+      We Build Tools for<br>
+      <span class="hero-gradient">Elite Performers</span>
+    </h1>
+
+    <p class="hero-sub">
+      LevelUP is a productivity platform built by passionate developers to help you track habits,
+      crush tasks, and level up every single day — backed by science and built with love.
+    </p>
+
+    <div class="hero-stats-row">
+      <div class="hero-stat">
+        <span class="hero-stat-val" style="color:#a4e6ff;">2026</span>
+        <span class="hero-stat-lbl">Founded</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" style="color:#ddb7ff;">4</span>
+        <span class="hero-stat-lbl">Core Members</span>
+      </div>
+      <div class="hero-divider"></div>
+      <div class="hero-stat">
+        <span class="hero-stat-val" style="color:#6ee7b7;">∞</span>
+        <span class="hero-stat-lbl">Commitment</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Mission Statement ── -->
+  <section class="mission-section">
+    <div class="mission-card">
+      <div class="mission-icon-wrap">
+        <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size:28px;">flag</span>
+      </div>
+      <div class="mission-body">
+        <p class="mission-eyebrow">Our Mission</p>
+        <h2 class="mission-title">Empower Every Individual to Reach Their Peak Potential</h2>
+        <p class="mission-text">
+          We believe self-improvement should be measurable, rewarding, and even addictive.
+          LevelUP applies game mechanics to real-life productivity, turning daily disciplines into
+          an XP-driven journey you actually look forward to.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Our Values ── -->
+  <section class="section">
+    <div class="section-header">
+      <p class="eyebrow">What Drives Us</p>
+      <h2 class="section-title">Our Core Values</h2>
+    </div>
+
+    <div class="values-grid">
+      <div class="value-card" *ngFor="let v of values">
+        <div class="value-icon" [style.color]="v.color" [style.background]="v.color + '18'">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size:24px;">{{ v.icon }}</span>
+        </div>
+        <h3 class="value-label">{{ v.label }}</h3>
+        <p class="value-desc">{{ v.desc }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Team Grid ── -->
+  <section class="section">
+    <div class="section-header">
+      <p class="eyebrow">The People Behind It</p>
+      <h2 class="section-title">Meet the Team</h2>
+    </div>
+
+    <div class="team-grid">
+      <div class="team-card" *ngFor="let m of teamMembers; let i = index" [attr.data-index]="i">
+        <div class="team-avatar" [style.color]="m.color" [style.background]="m.color + '1a'" [style.borderColor]="m.color + '40'">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size:32px;">{{ m.icon }}</span>
+        </div>
+        <h3 class="team-name">{{ m.name }}</h3>
+        <p class="team-role" [style.color]="m.color">{{ m.role }}</p>
+        <p class="team-desc">{{ m.description }}</p>
+        <div class="team-skills">
+          <span class="skill-chip" *ngFor="let s of m.skills" [style.borderColor]="m.color + '40'" [style.color]="m.color">{{ s }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Timeline ── -->
+  <section class="section">
+    <div class="section-header">
+      <p class="eyebrow">Our Journey</p>
+      <h2 class="section-title">Milestones</h2>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item" *ngFor="let m of milestones; let last = last">
+        <div class="timeline-dot"></div>
+        <div class="timeline-line" *ngIf="!last"></div>
+        <div class="timeline-content">
+          <span class="timeline-year">{{ m.year }}</span>
+          <h4 class="timeline-event">{{ m.event }}</h4>
+          <p class="timeline-desc">{{ m.desc }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section">
+    <div class="cta-glow"></div>
+    <span class="material-symbols-outlined cta-icon" style="font-variation-settings:'FILL' 1;">rocket_launch</span>
+    <h2 class="cta-title">Ready to Level Up?</h2>
+    <p class="cta-sub">Join thousands of achievers who track their growth daily with LevelUP.</p>
+    <div class="cta-actions">
+      <a routerLink="/dashboard" class="btn-cta-primary">
+        <span class="material-symbols-outlined" style="font-size:18px;">dashboard</span>
+        Go to Dashboard
+      </a>
+      <a routerLink="/register" class="btn-cta-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">person_add</span>
+        Create Account
+      </a>
+    </div>
+  </section>
+
+</div>

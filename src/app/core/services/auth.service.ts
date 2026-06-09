@@ -19,8 +19,11 @@ export class AuthService {
 
 
   register(dto: RegisterDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, dto).pipe(
-      tap((response: AuthResponse) => {
+
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, dto)
+    .pipe(
+      tap( //tap : allows us to perform side effects (like storing tokens) without altering the response stream
+        (response: AuthResponse) => {
         if (response.token) {
           localStorage.setItem('token',    response.token);
           localStorage.setItem('userName', response.userName);
@@ -34,8 +37,10 @@ export class AuthService {
 
   login(dto: LoginDto): Observable<AuthResponse> {
 
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, dto).pipe(
-      tap((response: AuthResponse) => {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, dto)
+    .pipe(
+      tap(//tap : allows us to perform side effects (like storing tokens) without altering the response stream
+        (response: AuthResponse) => {
         if (response.token) {
           localStorage.setItem('token',    response.token);
           localStorage.setItem('userName', response.userName);
@@ -48,6 +53,7 @@ export class AuthService {
 
 
   logout(): void {
+    // Clear all auth-related data from localStorage
     localStorage.removeItem('token');
     localStorage.removeItem('userName');
     localStorage.removeItem('email');
@@ -59,6 +65,7 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !! localStorage.getItem('token');
+    //!!: converts the value to a boolean. If token exists, it returns true
   }
 
 

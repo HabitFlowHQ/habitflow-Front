@@ -1,0 +1,212 @@
+<div class="contact-page">
+
+  <!-- ── Hero ── -->
+  <section class="contact-hero">
+    <div class="ch-glow ch-glow-1"></div>
+    <div class="ch-glow ch-glow-2"></div>
+
+    <div class="hero-badge">
+      <span class="material-symbols-outlined" style="font-size:13px; font-variation-settings:'FILL' 1;">support_agent</span>
+      Support Center
+    </div>
+
+    <h1 class="ch-title">
+      We're Here to <span class="ch-gradient">Help You</span>
+    </h1>
+    <p class="ch-sub">
+      Have a question, complaint, or suggestion? Our team is always ready to listen.
+      Reach out through any channel below or fill in the form.
+    </p>
+  </section>
+
+  <!-- ── Contact Channels ── -->
+  <section class="channels-section">
+    <div class="channels-grid">
+      <a
+        *ngFor="let ch of contactChannels"
+        [href]="ch.href"
+        class="channel-card"
+        [style.--ch-color]="ch.color">
+        <div class="ch-icon" [style.color]="ch.color" [style.background]="ch.color + '18'">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size:26px;">{{ ch.icon }}</span>
+        </div>
+        <div class="ch-body">
+          <p class="ch-label">{{ ch.label }}</p>
+          <p class="ch-value" [style.color]="ch.color">{{ ch.value }}</p>
+          <p class="ch-sub-text">{{ ch.sub }}</p>
+        </div>
+        <span class="material-symbols-outlined ch-arrow">arrow_forward</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ── Main Content: Form + FAQ ── -->
+  <div class="main-grid">
+
+    <!-- ── Contact Form ── -->
+    <section class="form-section">
+      <div class="section-header">
+        <p class="eyebrow">Send a Message</p>
+        <h2 class="section-title">Submit a Request</h2>
+        <p class="section-sub">Fill in the details and we'll get back to you as soon as possible.</p>
+      </div>
+
+      <!-- Success State -->
+      <div *ngIf="submitted()" class="success-card">
+        <div class="success-icon">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1; font-size:40px; color:#6ee7b7;">check_circle</span>
+        </div>
+        <h3 class="success-title">Message Sent!</h3>
+        <p class="success-sub">
+          Thank you, <strong>{{ form.name }}</strong>. We've received your request and will respond to
+          <strong>{{ form.email }}</strong> within 24 hours.
+        </p>
+        <button class="btn-reset" (click)="resetForm()">
+          <span class="material-symbols-outlined" style="font-size:16px;">refresh</span>
+          Send Another
+        </button>
+      </div>
+
+      <!-- Form -->
+      <form *ngIf="!submitted()" class="contact-form" (ngSubmit)="onSubmit()" #contactForm="ngForm">
+
+        <!-- Category Chips -->
+        <div class="form-group">
+          <label class="field-label">Category</label>
+          <div class="category-chips">
+            <button
+              type="button"
+              *ngFor="let cat of categories"
+              class="cat-chip"
+              [class.active]="form.category === cat.value"
+              (click)="form.category = cat.value">
+              <span class="material-symbols-outlined" style="font-size:14px; font-variation-settings:'FILL' 1;">{{ cat.icon }}</span>
+              {{ cat.label }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Name & Email Row -->
+        <div class="field-row">
+          <div class="form-group">
+            <label class="field-label" for="cu-name">Full Name <span class="required">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon material-symbols-outlined">person</span>
+              <input
+                id="cu-name"
+                type="text"
+                class="field-input"
+                placeholder="Your full name"
+                [(ngModel)]="form.name"
+                name="name"
+                required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="cu-email">Email Address <span class="required">*</span></label>
+            <div class="input-wrap">
+              <span class="input-icon material-symbols-outlined">mail</span>
+              <input
+                id="cu-email"
+                type="email"
+                class="field-input"
+                placeholder="your@email.com"
+                [(ngModel)]="form.email"
+                name="email"
+                required>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject -->
+        <div class="form-group">
+          <label class="field-label" for="cu-subject">Subject</label>
+          <div class="input-wrap">
+            <span class="input-icon material-symbols-outlined">title</span>
+            <input
+              id="cu-subject"
+              type="text"
+              class="field-input"
+              placeholder="Brief description of your issue"
+              [(ngModel)]="form.subject"
+              name="subject">
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="form-group">
+          <label class="field-label" for="cu-message">Message <span class="required">*</span></label>
+          <textarea
+            id="cu-message"
+            class="field-textarea"
+            placeholder="Describe your issue or question in detail..."
+            [(ngModel)]="form.message"
+            name="message"
+            required
+            rows="5">
+          </textarea>
+          <p class="char-count">{{ form.message.length }} / 1000</p>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="!form.name || !form.email || !form.message || loading()">
+          <span *ngIf="!loading()" class="material-symbols-outlined" style="font-size:18px;">send</span>
+          <div *ngIf="loading()" class="btn-spinner"></div>
+          {{ loading() ? 'Sending...' : 'Send Message' }}
+        </button>
+
+      </form>
+    </section>
+
+    <!-- ── FAQ ── -->
+    <aside class="faq-section">
+      <div class="section-header">
+        <p class="eyebrow">Quick Answers</p>
+        <h2 class="section-title">FAQ</h2>
+      </div>
+
+      <div class="faq-list">
+        <div
+          class="faq-item"
+          *ngFor="let faq of faqs; let i = index"
+          [class.open]="openFaq() === i"
+          (click)="toggleFaq(i)">
+          <div class="faq-question">
+            <span>{{ faq.q }}</span>
+            <span class="material-symbols-outlined faq-chevron">expand_more</span>
+          </div>
+          <div class="faq-answer">
+            <p>{{ faq.a }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Response Time Card -->
+      <div class="response-card">
+        <div class="rc-header">
+          <span class="material-symbols-outlined" style="font-size:20px; color:#6ee7b7; font-variation-settings:'FILL' 1;">schedule</span>
+          <span class="rc-title">Response Times</span>
+        </div>
+        <div class="rc-rows">
+          <div class="rc-row">
+            <span class="rc-type">Email</span>
+            <span class="rc-time" style="color:#a4e6ff;">≤ 24 hours</span>
+          </div>
+          <div class="rc-row">
+            <span class="rc-type">Live Chat</span>
+            <span class="rc-time" style="color:#6ee7b7;">≤ 5 minutes</span>
+          </div>
+          <div class="rc-row">
+            <span class="rc-type">Complaints</span>
+            <span class="rc-time" style="color:#ddb7ff;">≤ 48 hours</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+</div>

@@ -16,7 +16,7 @@ import { LoginDto }    from '../../../../shared/models/auth.model';
 export class Login {
 
   formData: LoginDto = {
-    usernameOrEmail: '',
+    usernameOrEmail: '', //username or email can be used to login
     password: ''
   };
 
@@ -29,7 +29,7 @@ export class Login {
   ) {}
 
   onSubmit(): void {
-
+     // Basic client-side validation
     if (!this.formData.usernameOrEmail.trim() || !this.formData.password.trim()) {
       this.errorMessage = 'Please fill in all fields';
       return;
@@ -38,10 +38,10 @@ export class Login {
     this.isLoading    = true;
     this.errorMessage = '';
 
-    this.authService.login(this.formData).subscribe({
+    this.authService.login(this.formData).subscribe({//call service to login user
 
       next: () => {
-        this.router.navigate(['/habits']);
+        this.router.navigate(['/dashboard']);
       },
 
       error: (err) => {
@@ -50,7 +50,7 @@ export class Login {
         } else {
           this.errorMessage = 'Something went wrong. Please try again.';
         }
-        this.isLoading = false;
+        this.isLoading = false; // activate the login button again
       }
 
     });

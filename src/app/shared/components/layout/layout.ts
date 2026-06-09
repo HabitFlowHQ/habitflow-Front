@@ -23,12 +23,13 @@ export class Layout implements OnInit {
   private router = inject(Router);
 
   isSidebarOpen = signal(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
+
   userName = 'User';
 
   @HostListener('window:resize', ['$event'])
+
   onResize(event: any) {
     if (typeof window !== 'undefined') {
-      // If mobile, close sidebar by default, otherwise open it on desktop
       this.isSidebarOpen.set(window.innerWidth >= 768);
     }
   }
@@ -76,7 +77,9 @@ export class Layout implements OnInit {
 
   bottomLinks = [
     { label: 'Settings',     route: '/settings',     icon: 'settings' },
-    { label: 'Subscription', route: '/checkout',     icon: 'workspace_premium' }
+    { label: 'Subscription', route: '/checkout',     icon: 'workspace_premium' },
+    { label: 'About Us',     route: '/about',        icon: 'info' },
+    { label: 'Contact Us',   route: '/count-us',     icon: 'support_agent' },
   ];
 
   constructor(private authService: AuthService) {}
